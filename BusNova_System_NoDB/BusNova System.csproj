@@ -67,10 +67,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Global.asax" />
     <Content Include="Home.aspx" />
     <Content Include="Images\bus-hero.jpeg" />
     <Content Include="Images\logo.jpeg" />
     <Content Include="Login.aspx" />
+    <Content Include="Logout.aspx" />
+    <Content Include="Error.aspx" />
     <Content Include="Dashboard.aspx" />
     <Content Include="Register.aspx" />
     <Content Include="RegisterBus.aspx" />
@@ -83,6 +86,34 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <!-- Domain model -->
+    <Compile Include="Models\Entities.cs" />
+    <!-- Data access -->
+    <Compile Include="DataAccess\Db.cs" />
+    <!-- Security -->
+    <Compile Include="Security\PasswordHasher.cs" />
+    <Compile Include="Security\SessionHelper.cs" />
+    <!-- Application services -->
+    <Compile Include="Services\AuditService.cs" />
+    <Compile Include="Services\AuthService.cs" />
+    <Compile Include="Services\FleetService.cs" />
+    <Compile Include="Services\AssignmentService.cs" />
+    <!-- Application-level events -->
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Error.aspx.cs">
+      <DependentUpon>Error.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Error.aspx.designer.cs">
+      <DependentUpon>Error.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Logout.aspx.cs">
+      <DependentUpon>Logout.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Dashboard.aspx.cs">
       <DependentUpon>Dashboard.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

@@ -12,6 +12,20 @@ namespace BusNova_System
 {
     public partial class ViewAssignedRoutes
     {
+        protected global::System.Web.UI.WebControls.Label lblMessage;
+
         protected global::System.Web.UI.WebControls.GridView gvAssignedRoutes;
+
+        protected global::System.Web.UI.WebControls.Panel pnlComplete;
+
+        protected global::System.Web.UI.WebControls.Literal litCompleteTrip;
+
+        protected global::System.Web.UI.WebControls.TextBox txtCompletePassengers;
+
+        protected global::System.Web.UI.WebControls.Button btnConfirmComplete;
+
+        protected global::System.Web.UI.WebControls.Button btnCancelComplete;
+
+        protected global::System.Web.UI.WebControls.HiddenField hfCompleteAssignmentId;
     }
 }

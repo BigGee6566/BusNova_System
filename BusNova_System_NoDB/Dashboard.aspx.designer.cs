@@ -12,5 +12,50 @@ namespace BusNova_System
 {
     public partial class Dashboard
     {
+        protected global::System.Web.UI.WebControls.Literal litHeading;
+
+        protected global::System.Web.UI.WebControls.Literal litSubheading;
+
+        // ----- Fleet Manager -----
+        protected global::System.Web.UI.WebControls.PlaceHolder phFleetManager;
+
+        protected global::System.Web.UI.WebControls.Literal litBusCount;
+
+        protected global::System.Web.UI.WebControls.Literal litRouteCount;
+
+        protected global::System.Web.UI.WebControls.Literal litTripsToday;
+
+        protected global::System.Web.UI.WebControls.Literal litCompletedToday;
+
+        protected global::System.Web.UI.WebControls.Panel pnlOverdue;
+
+        protected global::System.Web.UI.WebControls.Literal litOverdue;
+
+        protected global::System.Web.UI.WebControls.GridView gvBuses;
+
+        protected global::System.Web.UI.WebControls.GridView gvRoutes;
+
+        protected global::System.Web.UI.WebControls.GridView gvAssignments;
+
+        // ----- Driver -----
+        protected global::System.Web.UI.WebControls.PlaceHolder phDriver;
+
+        protected global::System.Web.UI.WebControls.Literal litDriverUpcoming;
+
+        protected global::System.Web.UI.WebControls.GridView gvDriverTrips;
+
+        // ----- Maintenance Staff -----
+        protected global::System.Web.UI.WebControls.PlaceHolder phMaintenance;
+
+        protected global::System.Web.UI.WebControls.Literal litMaintOverdue;
+
+        protected global::System.Web.UI.WebControls.Literal litMaintDueSoon;
+
+        protected global::System.Web.UI.WebControls.GridView gvMaintenance;
+
+        // ----- Passenger -----
+        protected global::System.Web.UI.WebControls.PlaceHolder phPassenger;
+
+        protected global::System.Web.UI.WebControls.GridView gvPassengerTrips;
     }
 }

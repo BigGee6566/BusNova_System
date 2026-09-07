@@ -18,19 +18,20 @@
             <div class="row">
                 <div class="col-md-4 mb-3">
                     <label>Route</label>
+                    <%-- Populated from dbo.Route in Page_Load. --%>
                     <asp:DropDownList
                         ID="ddlRoute"
                         runat="server"
-                        CssClass="form-select">
-                        <asp:ListItem Text="-- Select Route --" Value="-- Select Route --" />
-                        <asp:ListItem Text="Alice to East London" Value="Alice to East London" />
-                        <asp:ListItem Text="Forte Town to Gqeberha" Value="Forte Town to Gqeberha" />
-                        <asp:ListItem Text="Mthatha to Queenstown" Value="Mthatha to Queenstown" />
+                        CssClass="form-select"
+                        AppendDataBoundItems="true"
+                        DataTextField="DisplayName"
+                        DataValueField="RouteCode">
+                        <asp:ListItem Text="-- Select Route --" Value="" />
                     </asp:DropDownList>
                     <asp:RequiredFieldValidator
                         runat="server"
                         ControlToValidate="ddlRoute"
-                        InitialValue="-- Select Route --"
+                        InitialValue=""
                         ErrorMessage="Please select a route."
                         CssClass="field-error"
                         Display="Dynamic"
@@ -39,18 +40,20 @@
 
                 <div class="col-md-4 mb-3">
                     <label>Bus</label>
+                    <%-- Active buses only - see FleetService.GetAssignableBuses. --%>
                     <asp:DropDownList
                         ID="ddlBus"
                         runat="server"
-                        CssClass="form-select">
-                        <asp:ListItem Text="-- Select Bus --" Value="-- Select Bus --" />
-                        <asp:ListItem Text="CA 123-456 (Marcopolo Torino)" Value="CA 123-456" />
-                        <asp:ListItem Text="EL 789-012 (Volvo 9800)" Value="EL 789-012" />
+                        CssClass="form-select"
+                        AppendDataBoundItems="true"
+                        DataTextField="DisplayName"
+                        DataValueField="BusId">
+                        <asp:ListItem Text="-- Select Bus --" Value="" />
                     </asp:DropDownList>
                     <asp:RequiredFieldValidator
                         runat="server"
                         ControlToValidate="ddlBus"
-                        InitialValue="-- Select Bus --"
+                        InitialValue=""
                         ErrorMessage="Please select a bus."
                         CssClass="field-error"
                         Display="Dynamic"
@@ -59,18 +62,20 @@
 
                 <div class="col-md-4 mb-3">
                     <label>Driver</label>
+                    <%-- Active drivers only - see FleetService.GetActiveDrivers. --%>
                     <asp:DropDownList
                         ID="ddlDriver"
                         runat="server"
-                        CssClass="form-select">
-                        <asp:ListItem Text="-- Select Driver --" Value="-- Select Driver --" />
-                        <asp:ListItem Text="Thando Mahlangu" Value="Thando Mahlangu" />
-                        <asp:ListItem Text="Sipho Dlamini" Value="Sipho Dlamini" />
+                        CssClass="form-select"
+                        AppendDataBoundItems="true"
+                        DataTextField="FullName"
+                        DataValueField="EmployeeId">
+                        <asp:ListItem Text="-- Select Driver --" Value="" />
                     </asp:DropDownList>
                     <asp:RequiredFieldValidator
                         runat="server"
                         ControlToValidate="ddlDriver"
-                        InitialValue="-- Select Driver --"
+                        InitialValue=""
                         ErrorMessage="Please select a driver."
                         CssClass="field-error"
                         Display="Dynamic"

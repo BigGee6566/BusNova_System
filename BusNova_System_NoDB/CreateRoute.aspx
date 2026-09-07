@@ -17,7 +17,36 @@
 
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label>Route Name</label>
+                    <label>Route Code <span style="color:#C0392B;">*</span></label>
+                    <asp:TextBox
+                        ID="txtRouteCode"
+                        runat="server"
+                        CssClass="form-control"
+                        MaxLength="10"
+                        placeholder="e.g. AL-EL01">
+                    </asp:TextBox>
+                    <span style="display:block; font-size:0.76rem; color:#6B7488; margin-top:4px;">
+                        Short code used to identify this route, e.g. AL-EL01 for Alice to East London.
+                    </span>
+                    <asp:RequiredFieldValidator
+                        runat="server"
+                        ControlToValidate="txtRouteCode"
+                        ErrorMessage="Route code is required."
+                        CssClass="field-error"
+                        Display="Dynamic"
+                        ValidationGroup="CreateRoute" />
+                    <asp:RegularExpressionValidator
+                        runat="server"
+                        ControlToValidate="txtRouteCode"
+                        ErrorMessage="Use 2 to 10 letters, digits or hyphens (e.g. AL-EL01)."
+                        ValidationExpression="^[A-Za-z0-9\-]{2,10}$"
+                        CssClass="field-error"
+                        Display="Dynamic"
+                        ValidationGroup="CreateRoute" />
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label>Route Name <span style="color:#C0392B;">*</span></label>
                     <asp:TextBox
                         ID="txtRouteName"
                         runat="server"
@@ -33,6 +62,9 @@
                         Display="Dynamic"
                         ValidationGroup="CreateRoute" />
                 </div>
+            </div>
+
+            <div class="row">
 
                 <div class="col-md-6 mb-3">
                     <label>Origin</label>

@@ -12,6 +12,8 @@ namespace BusNova_System
 {
     public partial class CreateRoute
     {
+        protected global::System.Web.UI.WebControls.TextBox txtRouteCode;
+
         protected global::System.Web.UI.WebControls.TextBox txtRouteName;
 
         protected global::System.Web.UI.WebControls.TextBox txtOrigin;
