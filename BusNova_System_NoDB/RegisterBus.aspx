@@ -1,0 +1,179 @@
+<%@ Page Title="Register Bus" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="RegisterBus.aspx.cs" Inherits="BusNova_System.RegisterBus" %>
+<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+    <link href="Styles/style.css?v=4" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=4" rel="stylesheet" />
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+
+    <div class="ops-page">
+    <div class="ops-wrap">
+
+        <a class="ops-back-link" href="Dashboard.aspx">&larr; Back to Dashboard</a>
+
+        <div class="ops-box">
+
+            <h3 class="ops-title">Register Bus</h3>
+            <div class="ops-subtitle">Register a new bus into the BusNova fleet management system.</div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label>Registration Number</label>
+                    <asp:TextBox
+                        ID="txtRegistrationNumber"
+                        runat="server"
+                        CssClass="form-control"
+                        MaxLength="15"
+                        placeholder="e.g. CA 123-456">
+                    </asp:TextBox>
+                    <asp:RequiredFieldValidator
+                        runat="server"
+                        ControlToValidate="txtRegistrationNumber"
+                        ErrorMessage="Registration number is required."
+                        CssClass="field-error"
+                        Display="Dynamic"
+                        ValidationGroup="RegisterBus" />
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label>Model</label>
+                    <asp:TextBox
+                        ID="txtModel"
+                        runat="server"
+                        CssClass="form-control"
+                        MaxLength="50"
+                        placeholder="e.g. Marcopolo Torino">
+                    </asp:TextBox>
+                    <asp:RequiredFieldValidator
+                        runat="server"
+                        ControlToValidate="txtModel"
+                        ErrorMessage="Model is required."
+                        CssClass="field-error"
+                        Display="Dynamic"
+                        ValidationGroup="RegisterBus" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label>Manufacturer</label>
+                    <asp:TextBox
+                        ID="txtManufacturer"
+                        runat="server"
+                        CssClass="form-control"
+                        MaxLength="50"
+                        placeholder="e.g. Mercedes-Benz">
+                    </asp:TextBox>
+                    <asp:RequiredFieldValidator
+                        runat="server"
+                        ControlToValidate="txtManufacturer"
+                        ErrorMessage="Manufacturer is required."
+                        CssClass="field-error"
+                        Display="Dynamic"
+                        ValidationGroup="RegisterBus" />
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label>Seating Capacity</label>
+                    <asp:TextBox
+                        ID="txtSeatingCapacity"
+                        runat="server"
+                        CssClass="form-control"
+                        MaxLength="3"
+                        placeholder="e.g. 60">
+                    </asp:TextBox>
+                    <asp:RequiredFieldValidator
+                        runat="server"
+                        ControlToValidate="txtSeatingCapacity"
+                        ErrorMessage="Seating capacity is required."
+                        CssClass="field-error"
+                        Display="Dynamic"
+                        ValidationGroup="RegisterBus" />
+                    <asp:RegularExpressionValidator
+                        runat="server"
+                        ControlToValidate="txtSeatingCapacity"
+                        ErrorMessage="Seating capacity must be a positive whole number."
+                        ValidationExpression="^[1-9][0-9]*$"
+                        CssClass="field-error"
+                        Display="Dynamic"
+                        ValidationGroup="RegisterBus" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label>Fuel Type</label>
+                    <asp:DropDownList
+                        ID="ddlFuelType"
+                        runat="server"
+                        CssClass="form-select">
+                        <asp:ListItem Text="-- Select Fuel Type --" Value="-- Select Fuel Type --" />
+                        <asp:ListItem Text="Diesel" Value="Diesel" />
+                        <asp:ListItem Text="Petrol" Value="Petrol" />
+                        <asp:ListItem Text="Electric" Value="Electric" />
+                        <asp:ListItem Text="Hybrid" Value="Hybrid" />
+                    </asp:DropDownList>
+                    <asp:RequiredFieldValidator
+                        runat="server"
+                        ControlToValidate="ddlFuelType"
+                        InitialValue="-- Select Fuel Type --"
+                        ErrorMessage="Please select a fuel type."
+                        CssClass="field-error"
+                        Display="Dynamic"
+                        ValidationGroup="RegisterBus" />
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label>Year of Manufacture</label>
+                    <asp:TextBox
+                        ID="txtYearOfManufacture"
+                        runat="server"
+                        CssClass="form-control"
+                        MaxLength="4"
+                        placeholder="e.g. 2024">
+                    </asp:TextBox>
+                    <asp:RequiredFieldValidator
+                        runat="server"
+                        ControlToValidate="txtYearOfManufacture"
+                        ErrorMessage="Year of manufacture is required."
+                        CssClass="field-error"
+                        Display="Dynamic"
+                        ValidationGroup="RegisterBus" />
+                    <asp:RegularExpressionValidator
+                        runat="server"
+                        ControlToValidate="txtYearOfManufacture"
+                        ErrorMessage="Enter a valid 4-digit year."
+                        ValidationExpression="^(19|20)\d{2}$"
+                        CssClass="field-error"
+                        Display="Dynamic"
+                        ValidationGroup="RegisterBus" />
+                </div>
+            </div>
+
+            <div class="ops-actions">
+                <asp:Button
+                    ID="btnRegisterBus"
+                    runat="server"
+                    Text="Register Bus"
+                    CssClass="btn-ops-primary"
+                    ValidationGroup="RegisterBus"
+                    OnClick="btnRegisterBus_Click" />
+                <asp:Button
+                    ID="btnClear"
+                    runat="server"
+                    Text="Clear"
+                    CssClass="btn-ops-secondary"
+                    CausesValidation="false"
+                    OnClick="btnClear_Click" />
+            </div>
+
+            <asp:Label
+                ID="lblMessage"
+                runat="server"
+                CssClass="ops-message">
+            </asp:Label>
+
+        </div>
+    </div>
+    </div>
+
+</asp:Content>

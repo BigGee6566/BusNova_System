@@ -1,0 +1,224 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="BusNova_System.Site" %>
+
+<!DOCTYPE html>
+
+<html>
+<head runat="server">
+    <title>BusNova System Management</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="Styles/Home.css?v=4" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+    <form id="form1" runat="server">
+        
+        <div> 
+            <!-- ===================================== -->
+            <!-- NAVIGATION BAR -->
+            <!-- ===================================== -->
+
+            <nav class="navbar navbar-expand-lg navbar-light custom-navbar fixed-top">
+
+                <div class="container">
+
+                    <!-- Logo -->
+
+                    <a class="navbar-brand d-flex align-items-center" href="Home.aspx">
+
+                        <img src="Images/logo.jpeg" alt="Logo" class="logo-img" />
+
+                        <span class="system-name">
+                            BusNova System Management
+                        </span>
+
+                    </a>
+
+                    <!-- Mobile Menu Button -->
+
+                    <button class="navbar-toggler"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#navbarMenu">
+
+                        <span class="navbar-toggler-icon"></span>
+
+                    </button>
+
+                    <!-- Navigation Links -->
+
+                    <div class="collapse navbar-collapse justify-content-end"
+                         id="navbarMenu">
+
+                        <ul class="navbar-nav">
+                             <li class="nav-item">
+                                <a class="<%= GetNavClass("Home.aspx") %>" href="Home.aspx">
+                                    <i class="fas fa-home"></i>
+                                    Home
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+
+                                <a class="<%= GetNavClass("Login.aspx") %>" href="Login.aspx">
+
+                                    <i class="fas fa-sign-in-alt"></i>
+
+                                    Login
+
+                                </a>
+
+                            </li>
+
+                            <li class="nav-item ms-3">
+
+                                <a class="btn btn-primary register-btn"
+                                   href="Register.aspx">
+
+                                    <i class="fas fa-user-plus"></i>
+
+                                    Register
+
+                                </a>
+
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+                </div>
+
+            </nav>
+                
+            <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+            </asp:ContentPlaceHolder>
+            <!-- ===================================== -->
+            <!-- FOOTER -->
+            <!-- ===================================== -->
+
+            <footer class="footer">
+
+                <div class="container">
+
+                    <div class="row">
+
+                        <!-- About -->
+                        <div class="col-lg-4 col-md-6">
+
+                            <h4>BusNova System Management</h4>
+
+                            <p>
+                                A modern transport management platform designed to
+                                improve public transport operations through efficient
+                                fleet management, route planning and passenger services.
+                            </p>
+
+                        </div>
+
+                        <!-- Quick Links -->
+                        <div class="col-lg-4 col-md-6">
+
+                            <h4>Quick Links</h4>
+
+                            <ul class="footer-links">
+
+                                <li>
+                                    <a href="#">About</a>
+                                </li>
+
+                                <li>
+                                    <a href="#">Contact Us</a>
+                                </li>
+
+                                <li>
+                                    <a href="#">Help Centre</a>
+                                </li>
+
+                                <li>
+                                    <a href="#">Privacy Policy</a>
+                                </li>
+
+                                <li>
+                                    <a href="#">Terms &amp; Conditions</a>
+                                </li>
+
+                            </ul>
+
+                        </div>
+
+                        <!-- Contact -->
+                        <div class="col-lg-4 col-md-12">
+
+                            <h4>Contact Us</h4>
+
+                            <p>
+
+                                <i class="fas fa-map-marker-alt"></i>
+                                Forte Town, South Africa
+
+                            </p>
+
+                            <p>
+
+                                <i class="fas fa-envelope"></i>
+                                support@busnova.co.za
+
+                            </p>
+
+                            <p>
+
+                                <i class="fas fa-phone"></i>
+                                +27 43 123 4567
+
+                            </p>
+
+                            <div class="social-icons">
+
+                                <a href="#">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+
+                                <a href="#">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+
+                                <a href="#">
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+
+                                <a href="#">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <hr />
+
+                    <div class="footer-bottom">
+
+                        <p>
+
+                            Copyright © 2026 BusNova System Management.
+                            All Rights Reserved.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </footer>
+        </div>
+    </form>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
