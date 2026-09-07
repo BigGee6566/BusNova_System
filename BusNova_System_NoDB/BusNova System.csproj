@@ -98,6 +98,8 @@
     <Compile Include="Services\AuthService.cs" />
     <Compile Include="Services\FleetService.cs" />
     <Compile Include="Services\AssignmentService.cs" />
+    <Compile Include="Services\OperationsService.cs" />
+    <Compile Include="Services\TicketService.cs" />
     <!-- Application-level events -->
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
