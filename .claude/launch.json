@@ -1,0 +1,14 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "busnova",
+      "runtimeExecutable": "C:\\Program Files\\IIS Express\\iisexpress.exe",
+      "runtimeArgs": [
+        "/path:C:\\Users\\gosoy\\Downloads\\BusNova_System_NoDB(2)\\BusNova_System_NoDB",
+        "/port:5080"
+      ],
+      "port": 5080
+    }
+  ]
+}
