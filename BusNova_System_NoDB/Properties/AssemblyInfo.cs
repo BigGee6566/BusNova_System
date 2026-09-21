@@ -5,6 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
+// Lets BusNova.Tests reach internal members. Used so that pure,
+// database-free validation logic in Services/ can be unit tested
+// without widening the public API of the web project.
+[assembly: InternalsVisibleTo("BusNova.Tests")]
+
 [assembly: AssemblyTitle("BusNova_System")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
