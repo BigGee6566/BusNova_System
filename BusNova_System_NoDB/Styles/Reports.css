@@ -1,0 +1,170 @@
+/* ============================================================
+   Report pages (FIX-001).
+
+   Built on the design-system tokens in busnova-design-system.css.
+   No colour, spacing or radius literal appears below - if a value
+   looks hard-coded it is a token reference, so a later WP-0 palette
+   change reaches these pages without touching this file.
+   ============================================================ */
+
+/* ---------- filter bar ---------- */
+
+.rpt-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--bn-space-4);
+    padding: var(--bn-space-4);
+    background: var(--bn-surface-sunken);
+    border: 1px solid var(--bn-border);
+    border-radius: var(--bn-radius-md);
+    margin-bottom: var(--bn-space-6);
+}
+
+.rpt-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--bn-space-1);
+    min-width: 0;
+}
+
+.rpt-field label {
+    font-size: var(--bn-text-xs);
+    font-weight: 600;
+    color: var(--bn-text-muted);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.rpt-field input[type="text"],
+.rpt-field input[type="date"] {
+    min-height: 44px;
+    padding: 0 var(--bn-space-3);
+    border: 1px solid var(--bn-border-strong);
+    border-radius: var(--bn-radius-sm);
+    font-size: var(--bn-text-base);
+    color: var(--bn-text);
+    background: var(--bn-surface);
+}
+
+.rpt-field input:focus-visible {
+    outline: 2px solid var(--bn-primary);
+    outline-offset: 1px;
+}
+
+.rpt-filters .btn-ops-primary,
+.rpt-filters .btn-ops-secondary {
+    min-height: 44px;
+}
+
+/* ---------- KPI row ----------
+   Four across, then two, then one. Grid rather than floats so the
+   cards stay equal height without a clearfix. */
+
+.rpt-kpis {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--bn-space-4);
+    margin-bottom: var(--bn-space-6);
+}
+
+@media (max-width: 991.98px) {
+    .rpt-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 575.98px) {
+    .rpt-kpis { grid-template-columns: 1fr; }
+}
+
+.rpt-kpi {
+    background: var(--bn-surface);
+    border: 1px solid var(--bn-border);
+    border-inline-start: 3px solid var(--bn-primary);
+    border-radius: var(--bn-radius-md);
+    padding: var(--bn-space-4);
+    box-shadow: var(--bn-shadow-1);
+}
+
+.rpt-kpi--good    { border-inline-start-color: var(--bn-success); }
+.rpt-kpi--warn    { border-inline-start-color: var(--bn-warning); }
+.rpt-kpi--danger  { border-inline-start-color: var(--bn-danger); }
+
+.rpt-kpi__value {
+    font-size: var(--bn-text-2xl);
+    font-weight: 700;
+    color: var(--bn-text);
+    line-height: var(--bn-leading-tight);
+    /* Figures in a column should line up digit for digit. */
+    font-variant-numeric: tabular-nums;
+}
+
+.rpt-kpi__label {
+    font-size: var(--bn-text-sm);
+    color: var(--bn-text-muted);
+    margin-top: var(--bn-space-1);
+}
+
+.rpt-kpi__note {
+    font-size: var(--bn-text-xs);
+    color: var(--bn-text-subtle);
+    margin-top: var(--bn-space-1);
+}
+
+/* ---------- numeric table cells ---------- */
+
+.rpt-num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+/* ---------- method note ----------
+   Every report states how its figures are calculated. A number a
+   manager cannot account for is a number they will not act on. */
+
+.rpt-method {
+    margin-top: var(--bn-space-6);
+    padding: var(--bn-space-4);
+    background: var(--bn-info-subtle);
+    border: 1px solid var(--bn-border);
+    border-radius: var(--bn-radius-md);
+    font-size: var(--bn-text-sm);
+    color: var(--bn-text-muted);
+    line-height: var(--bn-leading-body);
+}
+
+.rpt-method strong {
+    color: var(--bn-text);
+}
+
+/* ---------- empty state ---------- */
+
+.rpt-empty {
+    text-align: center;
+    padding: var(--bn-space-9) var(--bn-space-4);
+    color: var(--bn-text-muted);
+}
+
+.rpt-empty__icon {
+    font-size: var(--bn-text-3xl);
+    color: var(--bn-text-subtle);
+    margin-bottom: var(--bn-space-3);
+}
+
+.rpt-empty__title {
+    font-size: var(--bn-text-lg);
+    font-weight: 600;
+    color: var(--bn-text);
+    margin-bottom: var(--bn-space-1);
+}
+
+/* ---------- inline emphasis inside tables ---------- */
+
+.rpt-flag-overdue { color: var(--bn-danger); font-weight: 600; }
+.rpt-flag-soon    { color: var(--bn-warning); font-weight: 600; }
+.rpt-flag-ok      { color: var(--bn-success); font-weight: 600; }
+.rpt-muted        { color: var(--bn-text-subtle); }
+
+@media print {
+    .rpt-filters { display: none !important; }
+}

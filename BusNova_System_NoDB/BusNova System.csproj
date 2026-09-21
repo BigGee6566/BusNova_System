@@ -87,6 +87,10 @@
     <Content Include="LogFuel.aspx" />
     <Content Include="ReportIssue.aspx" />
     <Content Include="MaintenanceWork.aspx" />
+    <Content Include="ReportRouteCompletion.aspx" />
+    <Content Include="ReportFuelEfficiency.aspx" />
+    <Content Include="ReportDriverPerformance.aspx" />
+    <Content Include="ReportMaintenanceDue.aspx" />
     <Content Include="ManageUsers.aspx" />
     <Content Include="IssueTicket.aspx" />
     <Content Include="SetPassword.aspx" />
@@ -98,6 +102,7 @@
     <Content Include="Styles\Ops.css" />
     <Content Include="Styles\SeatMap.css" />
     <Content Include="Styles\Ticket.css" />
+    <Content Include="Styles\Reports.css" />
     <Content Include="Scripts\seat-map.js" />
     <Content Include="Scripts\password-strength.js" />
     <Content Include="Scripts\payment-simulation.js" />
@@ -127,6 +132,7 @@
     <Compile Include="Services\AssignmentService.cs" />
     <Compile Include="Services\OperationsService.cs" />
     <Compile Include="Services\TicketService.cs" />
+    <Compile Include="Services\ReportingService.cs" />
     <!-- Application-level events -->
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -241,6 +247,34 @@
     </Compile>
     <Compile Include="ReportIssue.aspx.designer.cs">
       <DependentUpon>ReportIssue.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ReportRouteCompletion.aspx.cs">
+      <DependentUpon>ReportRouteCompletion.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ReportRouteCompletion.aspx.designer.cs">
+      <DependentUpon>ReportRouteCompletion.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ReportFuelEfficiency.aspx.cs">
+      <DependentUpon>ReportFuelEfficiency.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ReportFuelEfficiency.aspx.designer.cs">
+      <DependentUpon>ReportFuelEfficiency.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ReportDriverPerformance.aspx.cs">
+      <DependentUpon>ReportDriverPerformance.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ReportDriverPerformance.aspx.designer.cs">
+      <DependentUpon>ReportDriverPerformance.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ReportMaintenanceDue.aspx.cs">
+      <DependentUpon>ReportMaintenanceDue.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ReportMaintenanceDue.aspx.designer.cs">
+      <DependentUpon>ReportMaintenanceDue.aspx</DependentUpon>
     </Compile>
     <Compile Include="MaintenanceWork.aspx.cs">
       <DependentUpon>MaintenanceWork.aspx</DependentUpon>

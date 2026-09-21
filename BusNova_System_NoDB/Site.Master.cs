@@ -25,7 +25,9 @@ namespace BusNova_System
             "Dashboard.aspx", "RegisterBus.aspx", "CreateRoute.aspx", "AssignRoute.aspx",
             "ViewAssignedRoutes.aspx", "BookTrip.aspx", "PaymentSimulation.aspx", "TicketConfirmation.aspx",
             "MyTickets.aspx", "LogFuel.aspx",
-            "ReportIssue.aspx", "MaintenanceWork.aspx", "ManageUsers.aspx", "IssueTicket.aspx"
+            "ReportIssue.aspx", "MaintenanceWork.aspx", "ManageUsers.aspx", "IssueTicket.aspx",
+            "ReportRouteCompletion.aspx", "ReportFuelEfficiency.aspx",
+            "ReportDriverPerformance.aspx", "ReportMaintenanceDue.aspx"
         };
 
         /// <summary>
@@ -48,7 +50,11 @@ namespace BusNova_System
             { "BookTrip.aspx", "Book a Trip" },
             { "PaymentSimulation.aspx", "Payment" },
             { "TicketConfirmation.aspx", "Your Tickets" },
-            { "MyTickets.aspx", "My Tickets" }
+            { "MyTickets.aspx", "My Tickets" },
+            { "ReportRouteCompletion.aspx", "Route Completion" },
+            { "ReportFuelEfficiency.aspx", "Fuel Efficiency" },
+            { "ReportDriverPerformance.aspx", "Driver Performance" },
+            { "ReportMaintenanceDue.aspx", "Maintenance Due" }
         };
 
         /// <summary>

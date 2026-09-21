@@ -163,6 +163,41 @@
                                 </ul>
                             </div>
 
+                            <%-- Reports: the four the Project 6 brief requires. --%>
+                            <div class="bn-sidebar__section">
+                                <div class="bn-sidebar__section-label">Reports</div>
+                                <ul class="bn-sidebar__list">
+                                    <li>
+                                        <a class="<%= GetSidebarNavClass("ReportRouteCompletion.aspx") %>" href="ReportRouteCompletion.aspx"
+                                           data-label="Route Completion" aria-label="Route Completion report"<%= GetAriaCurrent("ReportRouteCompletion.aspx") %>>
+                                            <i class="fas fa-clipboard-check bn-sidebar__nav-icon" aria-hidden="true"></i>
+                                            <span class="bn-sidebar__nav-text">Route Completion</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="<%= GetSidebarNavClass("ReportFuelEfficiency.aspx") %>" href="ReportFuelEfficiency.aspx"
+                                           data-label="Fuel Efficiency" aria-label="Fuel Efficiency report"<%= GetAriaCurrent("ReportFuelEfficiency.aspx") %>>
+                                            <i class="fas fa-chart-line bn-sidebar__nav-icon" aria-hidden="true"></i>
+                                            <span class="bn-sidebar__nav-text">Fuel Efficiency</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="<%= GetSidebarNavClass("ReportDriverPerformance.aspx") %>" href="ReportDriverPerformance.aspx"
+                                           data-label="Driver Performance" aria-label="Driver Performance report"<%= GetAriaCurrent("ReportDriverPerformance.aspx") %>>
+                                            <i class="fas fa-user-check bn-sidebar__nav-icon" aria-hidden="true"></i>
+                                            <span class="bn-sidebar__nav-text">Driver Performance</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="<%= GetSidebarNavClass("ReportMaintenanceDue.aspx") %>" href="ReportMaintenanceDue.aspx"
+                                           data-label="Maintenance Due" aria-label="Maintenance Due report"<%= GetAriaCurrent("ReportMaintenanceDue.aspx") %>>
+                                            <i class="fas fa-wrench bn-sidebar__nav-icon" aria-hidden="true"></i>
+                                            <span class="bn-sidebar__nav-text">Maintenance Due</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+
                             <div class="bn-sidebar__section">
                                 <div class="bn-sidebar__section-label">Admin</div>
                                 <ul class="bn-sidebar__list">
