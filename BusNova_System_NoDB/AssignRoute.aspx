@@ -1,7 +1,7 @@
-<%@ Page Title="Assign Route" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="AssignRoute.aspx.cs" Inherits="BusNova_System.AssignRoute" %>
+﻿<%@ Page Title="Assign Route" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="AssignRoute.aspx.cs" Inherits="BusNova_System.AssignRoute" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=4" rel="stylesheet" />
-    <link href="Styles/Ops.css?v=4" rel="stylesheet" />
+    <link href="Styles/style.css?v=6" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=6" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
@@ -17,7 +17,7 @@
 
             <div class="row">
                 <div class="col-md-4 mb-3">
-                    <label>Route</label>
+                    <label for="<%= ddlRoute.ClientID %>">Route<span class="required-mark">*</span></label>
                     <%-- Populated from dbo.Route in Page_Load. --%>
                     <asp:DropDownList
                         ID="ddlRoute"
@@ -39,7 +39,7 @@
                 </div>
 
                 <div class="col-md-4 mb-3">
-                    <label>Bus</label>
+                    <label for="<%= ddlBus.ClientID %>">Bus<span class="required-mark">*</span></label>
                     <%-- Active buses only - see FleetService.GetAssignableBuses. --%>
                     <asp:DropDownList
                         ID="ddlBus"
@@ -61,7 +61,7 @@
                 </div>
 
                 <div class="col-md-4 mb-3">
-                    <label>Driver</label>
+                    <label for="<%= ddlDriver.ClientID %>">Driver<span class="required-mark">*</span></label>
                     <%-- Active drivers only - see FleetService.GetActiveDrivers. --%>
                     <asp:DropDownList
                         ID="ddlDriver"
@@ -85,7 +85,7 @@
 
             <div class="row">
                 <div class="col-md-4 mb-3">
-                    <label>Assignment Date</label>
+                    <label for="<%= txtAssignmentDate.ClientID %>">Assignment Date<span class="required-mark">*</span></label>
                     <asp:TextBox
                         ID="txtAssignmentDate"
                         runat="server"
@@ -102,7 +102,7 @@
                 </div>
 
                 <div class="col-md-4 mb-3">
-                    <label>Departure Time</label>
+                    <label for="<%= txtDepartureTime.ClientID %>">Departure Time<span class="required-mark">*</span></label>
                     <asp:TextBox
                         ID="txtDepartureTime"
                         runat="server"
@@ -119,7 +119,7 @@
                 </div>
 
                 <div class="col-md-4 mb-3">
-                    <label>Arrival Time</label>
+                    <label for="<%= txtArrivalTime.ClientID %>">Arrival Time</label>
                     <asp:TextBox
                         ID="txtArrivalTime"
                         runat="server"
@@ -132,7 +132,7 @@
             </div>
 
             <div class="mb-3">
-                <label>Passenger Count</label>
+                <label for="<%= txtPassengerCount.ClientID %>">Passenger Count</label>
                 <asp:TextBox
                     ID="txtPassengerCount"
                     runat="server"
