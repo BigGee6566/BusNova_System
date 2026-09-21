@@ -311,16 +311,7 @@ WHERE AssignmentID = @id AND TicketStatus <> 'Cancelled';";
             {
                 try
                 {
-                    // Generated inside the transaction so two simultaneous
-                    // purchases cannot be handed the same number.
-                    string ticketNumber;
-                    using (var numberCmd = new System.Data.SqlClient.SqlCommand(
-                        "SELECT ISNULL(MAX(TicketID), 0) + 1 FROM dbo.Ticket WITH (TABLOCKX);",
-                        connection, transaction))
-                    {
-                        var next = Convert.ToInt32(numberCmd.ExecuteScalar());
-                        ticketNumber = "BN-" + next.ToString("000000");
-                    }
+                    var ticketNumber = NextTicketNumber(connection, transaction);
 
                     int newId;
                     using (var insertCmd = new System.Data.SqlClient.SqlCommand(@"
@@ -438,14 +429,7 @@ SELECT CAST(SCOPE_IDENTITY() AS INT);", connection, transaction))
             {
                 try
                 {
-                    string bookingReference;
-                    using (var refCmd = new System.Data.SqlClient.SqlCommand(
-                        "SELECT ISNULL(MAX(BookingID), 0) + 1 FROM dbo.Booking WITH (TABLOCKX);",
-                        connection, transaction))
-                    {
-                        var next = Convert.ToInt32(refCmd.ExecuteScalar());
-                        bookingReference = "BNB-" + next.ToString("000000");
-                    }
+                    var bookingReference = NextBookingReference(connection, transaction);
 
                     int bookingId;
                     using (var bookingCmd = new System.Data.SqlClient.SqlCommand(@"
@@ -464,14 +448,7 @@ SELECT CAST(SCOPE_IDENTITY() AS INT);", connection, transaction))
 
                     foreach (var traveller in travellers)
                     {
-                        string ticketNumber;
-                        using (var numberCmd = new System.Data.SqlClient.SqlCommand(
-                            "SELECT ISNULL(MAX(TicketID), 0) + 1 FROM dbo.Ticket WITH (TABLOCKX);",
-                            connection, transaction))
-                        {
-                            var next = Convert.ToInt32(numberCmd.ExecuteScalar());
-                            ticketNumber = "BN-" + next.ToString("000000");
-                        }
+                        var ticketNumber = NextTicketNumber(connection, transaction);
 
                         using (var insertCmd = new System.Data.SqlClient.SqlCommand(@"
 INSERT INTO dbo.Ticket
@@ -618,6 +595,67 @@ WHERE TicketID = @id AND TicketStatus = 'Valid';";
 
         /// <summary>The widest value dbo.Ticket.SeatNumber can hold. Exceeding it is a SQL truncation error, not a friendly message.</summary>
         private const int SeatNumberMaxLength = 5;
+
+        // ---------------------------------------------------------------
+        //  Passenger-facing reference numbers
+        // ---------------------------------------------------------------
+        //
+        // These used to be "SELECT MAX(id) + 1 ... WITH (TABLOCKX)", which
+        // was wrong in two ways at once.
+        //
+        // Wrong value: TicketID is an IDENTITY, and MAX(TicketID) + 1 is
+        // not the value the next insert receives. SQL Server caches
+        // identity values and jumps after a restart, which is how
+        // TicketID 1003 ended up carrying BN-000005 - a drift of 998 that
+        // is still visible in the data. It was also only unique by
+        // accident: deleting the highest ticket would have reissued its
+        // number to the next sale.
+        //
+        // Wrong lock: TABLOCKX serialised every ticket sale in the system
+        // behind one exclusive table lock, retaken once per traveller
+        // inside the booking loop (AUD-018).
+        //
+        // A sequence is the object built for this. It is unique by
+        // construction, never reuses a value, and blocks nobody, so the
+        // table lock is gone rather than merely reduced.
+        //
+        // Gaps are possible: a sequence value is consumed even if the
+        // surrounding transaction rolls back, so an abandoned booking
+        // burns a number. That is correct. UC15 requires ticket numbers to
+        // be unique, not consecutive - and treating them as consecutive is
+        // what caused the original defect. (AUD-004)
+
+        private static string NextTicketNumber(System.Data.SqlClient.SqlConnection connection,
+                                               System.Data.SqlClient.SqlTransaction transaction)
+        {
+            return "BN-" + NextSequenceValue(connection, transaction, "dbo.TicketNumberSeq").ToString("000000");
+        }
+
+        private static string NextBookingReference(System.Data.SqlClient.SqlConnection connection,
+                                                   System.Data.SqlClient.SqlTransaction transaction)
+        {
+            return "BNB-" + NextSequenceValue(connection, transaction, "dbo.BookingReferenceSeq").ToString("000000");
+        }
+
+        /// <summary>
+        /// Draws the next value from a sequence.
+        ///
+        /// The sequence name is a compile-time constant supplied by the two
+        /// callers above, never anything derived from a request, so there is
+        /// no user input anywhere near this string. NEXT VALUE FOR does not
+        /// accept a parameter for the sequence name, which is why it is
+        /// concatenated at all.
+        /// </summary>
+        private static int NextSequenceValue(System.Data.SqlClient.SqlConnection connection,
+                                             System.Data.SqlClient.SqlTransaction transaction,
+                                             string sequenceName)
+        {
+            using (var command = new System.Data.SqlClient.SqlCommand(
+                "SELECT NEXT VALUE FOR " + sequenceName + ";", connection, transaction))
+            {
+                return Convert.ToInt32(command.ExecuteScalar());
+            }
+        }
 
         /// <summary>
         /// Checks that a seat label is one this system could legitimately
