@@ -553,6 +553,64 @@ WHERE TicketID = @id AND PassengerID = @passengerId AND TicketStatus = 'Valid';"
             return OperationResult.Ok(ticketId);
         }
 
+        /// <summary>
+        /// Marks a ticket as boarded, moving it Valid -> Used.
+        ///
+        /// Before this existed nothing in the system ever wrote 'Used'. A
+        /// ticket could be presented and accepted an unlimited number of
+        /// times, and no boarding was recorded anywhere - the only 'Used'
+        /// row in the database came from the seed script. (AUD-007)
+        ///
+        /// The status is in the WHERE clause, not just checked beforehand.
+        /// Two conductors scanning the same ticket at the same moment both
+        /// pass a prior read; only one UPDATE can match, so exactly one of
+        /// them is told it worked and the other is told it was already
+        /// used. Checking first and updating second would let both through.
+        ///
+        /// Deliberately NOT gated on the travel date. Whether a ticket may
+        /// be boarded early, late, or only on the day is a policy question,
+        /// and WP-2 introduces TicketValidationLog and a proper validation
+        /// screen where that belongs. Inventing a rule here would be scope
+        /// creep with no acceptance test behind it.
+        /// </summary>
+        public static OperationResult MarkTicketUsed(int ticketId)
+        {
+            var ticket = GetTicketById(ticketId);
+            if (ticket == null)
+                return OperationResult.Fail("That ticket could not be found.");
+
+            const string sql = @"
+UPDATE dbo.Ticket
+SET TicketStatus = 'Used'
+WHERE TicketID = @id AND TicketStatus = 'Valid';";
+
+            var rows = Db.Execute(sql, Db.P("@id", ticketId));
+
+            if (rows == 0)
+            {
+                // The UPDATE matched nothing, so the ticket was not Valid.
+                // Report which it actually is, because "already boarded" and
+                // "this was cancelled" need opposite responses at the door.
+                if (ticket.TicketStatus == "Used")
+                    return OperationResult.Fail(
+                        "Ticket " + ticket.TicketNumber + " has already been used for boarding.");
+
+                if (ticket.TicketStatus == "Cancelled")
+                    return OperationResult.Fail(
+                        "Ticket " + ticket.TicketNumber + " was cancelled and cannot be used for boarding.");
+
+                return OperationResult.Fail(
+                    "Ticket " + ticket.TicketNumber + " cannot be boarded - its status is " +
+                    ticket.TicketStatus + ".");
+            }
+
+            AuditService.Write("TicketBoarded", "Ticket", ticketId.ToString(),
+                ticket.TicketNumber + " seat " + ticket.SeatNumber + " on " + ticket.RouteName +
+                " " + ticket.AssignmentDate.ToString("yyyy-MM-dd"));
+
+            return OperationResult.Ok(ticketId);
+        }
+
         private static string Blank(string value)
         {
             return string.IsNullOrWhiteSpace(value) ? null : value.Trim();

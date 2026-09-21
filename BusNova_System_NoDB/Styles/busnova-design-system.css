@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    BusNova design system - tokens and shared components.
 
    This is the minimal token set the sidebar (WP-0a) needs. The fuller
@@ -591,4 +591,32 @@ html.bn-drawer-open body {
         padding: 0 !important;
         max-width: none !important;
     }
+}
+
+/* ============================================================
+   BOARDING PANEL
+   Shown after a ticket lookup, only when the ticket can actually be
+   boarded. Separate from the lookup itself because one reads and the
+   other cannot be undone.
+   ============================================================ */
+
+.bn-boarding {
+    margin-top: var(--bn-space-4);
+    padding: var(--bn-space-4);
+    border: 1px solid var(--bn-border-strong);
+    border-inline-start: 3px solid var(--bn-success);
+    border-radius: var(--bn-radius-md);
+    background: var(--bn-success-subtle);
+}
+
+.bn-boarding__summary {
+    font-weight: 600;
+    color: var(--bn-text);
+    margin-bottom: var(--bn-space-3);
+}
+
+.bn-boarding__note {
+    margin-top: var(--bn-space-2);
+    font-size: var(--bn-text-sm);
+    color: var(--bn-text-muted);
 }
