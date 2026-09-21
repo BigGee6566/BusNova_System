@@ -18,7 +18,13 @@
 
 **13 fix items** in Phase 0 (**FIX-014 complete**), **4 verification tasks** in Stage 0, **16 Medium findings** absorbed into work packages, **17 Low findings** across four housekeeping items.
 
-### WP-0a — Sidebar navigation (next, approved exception to the Phase 0 gate)
+### WP-0a — Sidebar navigation — **COMPLETE** (2026-09-22, commit `8ad99f4`)
+
+Delivered against every acceptance criterion in the brief, verified under CDP device emulation rather than by eye. Scope decision: the shell applies to the 14 operational screens only; public pages keep the marketing navbar and footer. Two defects found and fixed during the work (a 31px top-bar overflow at 360px, and an orphaned `--%>` leaking raw markup into every dashboard page). AUD-050 resolved; AUD-051 remains open and belongs to WP-0's data-table component. Screenshots for 1920/1280-expanded/1280-collapsed/768/360-closed/360-drawer are held outside the repo pending a decision on where they should live.
+
+Original scope below, retained for reference.
+
+
 
 Converts the top navbar into a collapsible left sidebar. Tier B on `Site.Master`, Tier A for new CSS and JS. Role visibility rules are unchanged — only their rendering location moves.
 
