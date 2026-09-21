@@ -10,6 +10,16 @@
          <globalization> block in Web.config for the other half of this. --%>
     <meta charset="utf-8" />
 
+    <%-- Without this, a phone renders the page at a notional ~980px desktop
+         viewport and scales the result down, so no media query below that
+         width ever fires - the 480px and 560px rules in Ops.css and Home.css
+         have never once applied on a real device. See AUD-050.
+
+         initial-scale=1 and nothing else, deliberately: maximum-scale=1 or
+         user-scalable=no would disable pinch-zoom, which breaks WCAG 1.4.4
+         (text must be resizable to 200% without loss of content). --%>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <title>BusNova System Management</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
