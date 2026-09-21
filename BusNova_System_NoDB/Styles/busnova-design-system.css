@@ -1,0 +1,594 @@
+/* ============================================================
+   BusNova design system - tokens and shared components.
+
+   This is the minimal token set the sidebar (WP-0a) needs. The fuller
+   WP-0 set will EXTEND this file rather than replace it, so nothing
+   defined here should need renaming later.
+
+   The brand palette already existed in Styles/Home.css as --bn-navy,
+   --bn-blue, --bn-text and friends. Those are the real brand values and
+   are deliberately NOT redefined here. What this file adds is a
+   *semantic* layer on top of them: --bn-primary says what the colour is
+   for, --bn-blue says what the colour is. Components reference the
+   semantic name, so re-skinning later is one edit here instead of a
+   sweep through every component.
+
+   Load order matters: Home.css must come first, because the semantic
+   tokens below resolve against the brand tokens it declares.
+   ============================================================ */
+
+:root {
+    /* ---------- colour: semantic layer over the existing brand ---------- */
+    --bn-primary: var(--bn-blue, #2563EB);
+    --bn-primary-hover: var(--bn-blue-deep, #1D4ED8);
+    --bn-primary-subtle: var(--bn-blue-pale, #EAF2FF);
+
+    --bn-surface: var(--bn-white, #FFFFFF);
+    --bn-surface-raised: var(--bn-white, #FFFFFF);
+    --bn-surface-sunken: var(--bn-bg, #F5F7FB);
+
+    --bn-border: rgba(var(--bn-navy-rgb, 20, 33, 61), .10);
+    --bn-border-strong: rgba(var(--bn-navy-rgb, 20, 33, 61), .18);
+
+    /* --bn-text and --bn-text-muted already exist in Home.css. */
+    --bn-text-subtle: var(--bn-text-faint, #8B93A8);
+
+    --bn-success: var(--bn-green, #1E8A5F);
+    --bn-success-subtle: #E7F4EE;
+    --bn-warning: var(--bn-amber-deep, #B8790C);
+    --bn-warning-subtle: #FFF5E2;
+    --bn-danger: var(--bn-red, #C0392B);
+    --bn-danger-subtle: #FBEAE8;
+    --bn-info: var(--bn-cyan, #06B6D4);
+    --bn-info-subtle: #E4F8FC;
+
+    /* ---------- spacing: 4px base scale ---------- */
+    --bn-space-1: 4px;
+    --bn-space-2: 8px;
+    --bn-space-3: 12px;
+    --bn-space-4: 16px;
+    --bn-space-5: 20px;
+    --bn-space-6: 24px;
+    --bn-space-7: 32px;
+    --bn-space-8: 40px;
+    --bn-space-9: 48px;
+    --bn-space-10: 64px;
+
+    /* ---------- radius ---------- */
+    --bn-radius-sm: 6px;
+    --bn-radius-md: 10px;
+    --bn-radius-lg: 16px;
+    --bn-radius-pill: 999px;
+
+    /* ---------- elevation: three levels, no more ---------- */
+    --bn-shadow-1: 0 1px 2px rgba(var(--bn-navy-rgb, 20, 33, 61), .06),
+                   0 2px 8px rgba(var(--bn-navy-rgb, 20, 33, 61), .05);
+    --bn-shadow-2: 0 4px 12px rgba(var(--bn-navy-rgb, 20, 33, 61), .10);
+    --bn-shadow-3: 0 12px 32px rgba(var(--bn-navy-rgb, 20, 33, 61), .18);
+
+    /* ---------- type ---------- */
+    --bn-font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --bn-text-xs: 12px;
+    --bn-text-sm: 13px;
+    --bn-text-base: 15px;
+    --bn-text-lg: 17px;
+    --bn-text-xl: 20px;
+    --bn-text-2xl: 25px;
+    --bn-text-3xl: 32px;
+    --bn-leading-tight: 1.25;
+    --bn-leading-body: 1.6;
+
+    /* ---------- layout ---------- */
+    --bn-sidebar-width: 240px;
+    --bn-sidebar-width-collapsed: 64px;
+    --bn-header-height: 64px;
+    --bn-content-max: 1320px;
+
+    /* Set by the sidebar state. Content margin follows this one value, so
+       expanding and collapsing stay in step by construction rather than by
+       two rules that have to be kept equal by hand. */
+    --bn-sidebar-current: var(--bn-sidebar-width);
+
+    --bn-transition: 200ms ease-out;
+}
+
+/* Anyone who has asked their system not to animate gets no animation.
+   Scoped to the whole document because every transition in this file is
+   decorative - none of them communicates state on its own. */
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        --bn-transition: 0ms;
+    }
+
+    .bn-sidebar,
+    .bn-app-main,
+    .bn-sidebar__nav-link,
+    .bn-drawer-overlay {
+        transition: none !important;
+    }
+}
+
+/* ============================================================
+   APP SHELL
+   Only dashboard pages get this. Public pages (Home, Login, Register,
+   Error) keep the marketing navbar and footer in Site.Master, which is
+   why none of these rules touch .custom-navbar.
+   ============================================================ */
+
+.bn-app {
+    min-height: 100vh;
+    background: var(--bn-surface-sunken);
+}
+
+.bn-app-main {
+    margin-inline-start: var(--bn-sidebar-current);
+    transition: margin-inline-start var(--bn-transition);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.bn-app-content {
+    flex: 1;
+    width: 100%;
+    max-width: var(--bn-content-max);
+    margin: 0 auto;
+    padding: var(--bn-space-6) var(--bn-space-6) var(--bn-space-9);
+}
+
+/* ---------- top bar ---------- */
+
+.bn-topbar {
+    height: var(--bn-header-height);
+    display: flex;
+    align-items: center;
+    gap: var(--bn-space-3);
+    padding: 0 var(--bn-space-6);
+    background: var(--bn-surface);
+    border-bottom: 1px solid var(--bn-border);
+    position: sticky;
+    top: 0;
+    z-index: 30;
+}
+
+.bn-topbar__title {
+    font-size: var(--bn-text-lg);
+    font-weight: 600;
+    color: var(--bn-text);
+    line-height: var(--bn-leading-tight);
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.bn-topbar__spacer {
+    flex: 1;
+}
+
+.bn-topbar__user {
+    display: flex;
+    align-items: center;
+    gap: var(--bn-space-3);
+    min-width: 0;
+}
+
+.bn-topbar__user-name {
+    font-size: var(--bn-text-sm);
+    color: var(--bn-text);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.bn-topbar__user-role {
+    font-size: var(--bn-text-xs);
+    color: var(--bn-text-muted);
+    white-space: nowrap;
+}
+
+.bn-topbar__signout {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--bn-space-2);
+    min-height: 44px;
+    padding: 0 var(--bn-space-4);
+    border-radius: var(--bn-radius-pill);
+    background: var(--bn-primary);
+    color: #fff;
+    font-size: var(--bn-text-sm);
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.bn-topbar__signout:hover,
+.bn-topbar__signout:focus {
+    background: var(--bn-primary-hover);
+    color: #fff;
+}
+
+/* The drawer trigger. Hidden on desktop, where the sidebar's own toggle
+   is reachable; shown below 768px, where the sidebar is off-canvas and
+   its toggle therefore is not. */
+.bn-topbar__drawer-btn {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--bn-border);
+    border-radius: var(--bn-radius-sm);
+    background: var(--bn-surface);
+    color: var(--bn-text);
+    font-size: var(--bn-text-lg);
+    cursor: pointer;
+}
+
+/* ============================================================
+   SIDEBAR
+   Vertical order is fixed by the brief: logo, divider, toggle, nav.
+   ============================================================ */
+
+.bn-sidebar {
+    position: fixed;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: var(--bn-sidebar-current);
+    background: var(--bn-surface);
+    border-inline-end: 1px solid var(--bn-border);
+    display: flex;
+    flex-direction: column;
+    z-index: 40;
+    transition: width var(--bn-transition), transform var(--bn-transition);
+    overflow: hidden;
+}
+
+/* ---------- 1. logo ---------- */
+
+.bn-sidebar__logo {
+    display: flex;
+    align-items: center;
+    gap: var(--bn-space-3);
+    padding: var(--bn-space-5) var(--bn-space-4) var(--bn-space-4);
+    text-decoration: none;
+    min-height: var(--bn-header-height);
+    flex-shrink: 0;
+}
+
+.bn-sidebar__logo-img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.bn-sidebar__logo-text {
+    font-size: var(--bn-text-base);
+    font-weight: 700;
+    color: var(--bn-text);
+    line-height: var(--bn-leading-tight);
+    white-space: nowrap;
+}
+
+/* ---------- 2. divider ----------
+   Inset so it does not touch the sidebar edges, with equal and generous
+   space above and below - --bn-space-4 on each side, per the brief. */
+
+.bn-sidebar__divider {
+    height: 1px;
+    background: var(--bn-border);
+    margin: var(--bn-space-4) var(--bn-space-4);
+    flex-shrink: 0;
+}
+
+/* ---------- 3. hamburger ----------
+   Lives inside the sidebar, which is why the collapsed state is a 64px
+   rail and never fully hidden: hiding the sidebar would take the only
+   control that brings it back with it. */
+
+.bn-sidebar__toggle-row {
+    display: flex;
+    padding: 0 var(--bn-space-4);
+    margin-bottom: var(--bn-space-4);
+    flex-shrink: 0;
+}
+
+.bn-sidebar__toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border: 1px solid var(--bn-border);
+    border-radius: var(--bn-radius-sm);
+    background: var(--bn-surface);
+    color: var(--bn-text);
+    font-size: var(--bn-text-lg);
+    cursor: pointer;
+    transition: background var(--bn-transition), border-color var(--bn-transition);
+}
+
+.bn-sidebar__toggle:hover {
+    background: var(--bn-primary-subtle);
+    border-color: var(--bn-border-strong);
+}
+
+/* ---------- 4. nav ---------- */
+
+.bn-sidebar__nav {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: var(--bn-space-6);
+}
+
+.bn-sidebar__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.bn-sidebar__section-label {
+    font-size: var(--bn-text-xs);
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--bn-text-subtle);
+    padding: var(--bn-space-4) var(--bn-space-5) var(--bn-space-2);
+    white-space: nowrap;
+}
+
+.bn-sidebar__nav-link {
+    display: flex;
+    align-items: center;
+    gap: var(--bn-space-3);
+    min-height: 44px;
+    padding: var(--bn-space-2) var(--bn-space-5);
+    color: var(--bn-text);
+    font-size: var(--bn-text-base);
+    font-weight: 500;
+    text-decoration: none;
+    border-inline-start: 3px solid transparent;
+    transition: background var(--bn-transition), color var(--bn-transition);
+}
+
+.bn-sidebar__nav-link:hover {
+    background: var(--bn-primary-subtle);
+    color: var(--bn-primary);
+}
+
+.bn-sidebar__nav-icon {
+    width: 20px;
+    flex-shrink: 0;
+    text-align: center;
+    font-size: var(--bn-text-base);
+}
+
+.bn-sidebar__nav-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Active item. The left edge bar is what carries the meaning in the
+   collapsed rail, where the label is not rendered - colour alone would
+   not survive that, and would fail AA for anyone who cannot see it. */
+.bn-sidebar__nav-link.is-active {
+    background: var(--bn-primary-subtle);
+    color: var(--bn-primary);
+    font-weight: 700;
+    border-inline-start-color: var(--bn-primary);
+}
+
+/* ---------- focus ----------
+   Replaced, never removed. */
+.bn-sidebar__nav-link:focus-visible,
+.bn-sidebar__toggle:focus-visible,
+.bn-sidebar__logo:focus-visible,
+.bn-topbar__drawer-btn:focus-visible,
+.bn-topbar__signout:focus-visible {
+    outline: 2px solid var(--bn-primary);
+    outline-offset: 2px;
+    border-radius: var(--bn-radius-sm);
+}
+
+/* ============================================================
+   COLLAPSED RAIL (desktop)
+   ============================================================ */
+
+html.bn-sidebar-collapsed {
+    --bn-sidebar-current: var(--bn-sidebar-width-collapsed);
+}
+
+html.bn-sidebar-collapsed .bn-sidebar__logo-text,
+html.bn-sidebar-collapsed .bn-sidebar__nav-text,
+html.bn-sidebar-collapsed .bn-sidebar__section-label {
+    display: none;
+}
+
+html.bn-sidebar-collapsed .bn-sidebar__logo,
+html.bn-sidebar-collapsed .bn-sidebar__toggle-row {
+    padding-inline: var(--bn-space-2);
+    justify-content: center;
+}
+
+html.bn-sidebar-collapsed .bn-sidebar__logo {
+    justify-content: center;
+}
+
+html.bn-sidebar-collapsed .bn-sidebar__divider {
+    margin-inline: var(--bn-space-2);
+}
+
+html.bn-sidebar-collapsed .bn-sidebar__nav-link {
+    justify-content: center;
+    padding-inline: 0;
+    gap: 0;
+}
+
+/* Keep a section's items visually grouped once its label is hidden. */
+html.bn-sidebar-collapsed .bn-sidebar__section + .bn-sidebar__section {
+    border-top: 1px solid var(--bn-border);
+    margin-top: var(--bn-space-2);
+    padding-top: var(--bn-space-2);
+}
+
+/* ---------- tooltip for the icon-only rail ----------
+   Shown on hover AND on keyboard focus, so the label is reachable
+   without a pointer. aria-label on the link carries the same text for
+   assistive technology, so this is a convenience, not the only route. */
+
+.bn-sidebar__nav-link::after {
+    content: attr(data-label);
+    position: fixed;
+    inset-inline-start: calc(var(--bn-sidebar-width-collapsed) + var(--bn-space-2));
+    padding: var(--bn-space-2) var(--bn-space-3);
+    background: var(--bn-text);
+    color: #fff;
+    font-size: var(--bn-text-sm);
+    font-weight: 500;
+    border-radius: var(--bn-radius-sm);
+    box-shadow: var(--bn-shadow-2);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-50%);
+    z-index: 60;
+    display: none;
+}
+
+html.bn-sidebar-collapsed .bn-sidebar__nav-link:hover::after,
+html.bn-sidebar-collapsed .bn-sidebar__nav-link:focus-visible::after {
+    display: block;
+    opacity: 1;
+}
+
+/* ============================================================
+   MOBILE DRAWER (< 768px)
+   The sidebar goes off-canvas, so its own toggle is unreachable - hence
+   the duplicate trigger in the top bar. That duplication is required,
+   not redundant.
+   ============================================================ */
+
+@media (max-width: 767.98px) {
+    .bn-sidebar {
+        transform: translateX(-100%);
+        width: var(--bn-sidebar-width);
+        box-shadow: var(--bn-shadow-3);
+    }
+
+    html.bn-drawer-open .bn-sidebar {
+        transform: translateX(0);
+    }
+
+    /* Content takes the full width; the drawer floats over it. */
+    .bn-app-main {
+        margin-inline-start: 0;
+    }
+
+    .bn-topbar__drawer-btn {
+        display: inline-flex;
+    }
+
+    .bn-app-content {
+        padding: var(--bn-space-4) var(--bn-space-4) var(--bn-space-8);
+    }
+
+    .bn-topbar {
+        padding: 0 var(--bn-space-4);
+    }
+
+    /* At 360px the bar cannot hold a drawer button, a page title, a name,
+       a role and a full "Sign out" pill - measured at 31px of overflow.
+       The identity text goes (the drawer names the user) and the action
+       becomes icon-only, keeping its 44px target and carrying its label
+       through aria-label rather than visible text. */
+    .bn-topbar__user-name,
+    .bn-topbar__user-role {
+        display: none;
+    }
+
+    .bn-topbar__signout {
+        width: 44px;
+        padding: 0;
+        justify-content: center;
+        border-radius: var(--bn-radius-sm);
+    }
+
+    .bn-topbar__signout-text {
+        display: none;
+    }
+
+    /* A collapsed desktop preference must not shrink the drawer when it
+       opens on a phone. The stored preference survives untouched; it just
+       does not apply at this width. */
+    html.bn-sidebar-collapsed .bn-sidebar__logo-text,
+    html.bn-sidebar-collapsed .bn-sidebar__nav-text,
+    html.bn-sidebar-collapsed .bn-sidebar__section-label {
+        display: revert;
+    }
+
+    html.bn-sidebar-collapsed .bn-sidebar__nav-link {
+        justify-content: flex-start;
+        padding-inline: var(--bn-space-5);
+        gap: var(--bn-space-3);
+    }
+
+    html.bn-sidebar-collapsed .bn-sidebar__logo,
+    html.bn-sidebar-collapsed .bn-sidebar__toggle-row {
+        padding-inline: var(--bn-space-4);
+        justify-content: flex-start;
+    }
+
+    html.bn-sidebar-collapsed .bn-sidebar__divider {
+        margin-inline: var(--bn-space-4);
+    }
+
+    /* No tooltips in the drawer - the labels are visible. */
+    .bn-sidebar__nav-link::after {
+        content: none;
+    }
+}
+
+.bn-drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(var(--bn-navy-rgb, 20, 33, 61), .45);
+    z-index: 35;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--bn-transition), visibility var(--bn-transition);
+}
+
+html.bn-drawer-open .bn-drawer-overlay {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Stops the page behind the drawer scrolling under it. */
+html.bn-drawer-open body {
+    overflow: hidden;
+}
+
+/* ============================================================
+   PRINT
+   Neither the sidebar nor the top bar belongs on paper.
+   ============================================================ */
+
+@media print {
+    .bn-sidebar,
+    .bn-topbar,
+    .bn-drawer-overlay {
+        display: none !important;
+    }
+
+    .bn-app-main {
+        margin-inline-start: 0 !important;
+    }
+
+    .bn-app-content {
+        padding: 0 !important;
+        max-width: none !important;
+    }
+}

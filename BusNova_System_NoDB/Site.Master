@@ -25,10 +25,40 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
     <link href="Styles/Home.css?v=6" rel="stylesheet" />
+    <%-- Must load after Home.css: its semantic tokens resolve against the
+         brand tokens Home.css declares. --%>
+    <link href="Styles/busnova-design-system.css?v=1" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
     <asp:ContentPlaceHolder ID="head" runat="server">
     </asp:ContentPlaceHolder>
+
+    <%-- Applies the stored collapsed state before the first paint.
+
+         This has to be inline and in <head>: Scripts/site.js loads at the
+         end of <body>, which is after the browser has already painted, so
+         doing it there would show an expanded sidebar that visibly snaps
+         shut on every navigation. Reading localStorage is cheap and the
+         class lands on <body> the moment it exists.
+
+         Wrapped in try/catch because localStorage access itself throws in
+         a private window or with site data blocked - not merely returns
+         null. A browser that refuses storage gets an expanded sidebar,
+         which is the correct default.
+
+         The class goes on <html> rather than <body>, because <body> does
+         not exist yet at this point in the parse. Scripts/site.js then
+         toggles that same class on that same element, so there is one
+         piece of state rather than two that could disagree. --%>
+    <script>
+        (function () {
+            try {
+                if (localStorage.getItem('busnova.sidebar.collapsed') === 'true') {
+                    document.documentElement.classList.add('bn-sidebar-collapsed');
+                }
+            } catch (e) { }
+        })();
+    </script>
 </head>
 <body>
     <form id="form1" runat="server">
@@ -37,7 +67,244 @@
              that writes to the database. See Security/AntiForgery.cs. --%>
         <asp:HiddenField ID="hfCsrfToken" runat="server" />
 
-        <div>
+        <%-- On a public page these three wrappers carry no class at all, so
+             Home/Login/Register/Error lay out exactly as they did before the
+             sidebar existed. Only an operational screen opts into the grid.
+             Site.master.cs sets the classes. --%>
+        <div id="divAppRoot" runat="server">
+
+            <%-- ===================================== --%>
+            <%-- APP SHELL - operational screens only   --%>
+            <%-- ===================================== --%>
+            <asp:PlaceHolder ID="phAppShell" runat="server" Visible="false">
+
+                <aside id="bnSidebar" class="bn-sidebar" aria-label="Main navigation">
+
+                    <%-- 1. logo --%>
+                    <a class="bn-sidebar__logo" href="Dashboard.aspx">
+                        <img src="Images/logo.jpeg" alt="BusNova" class="bn-sidebar__logo-img" />
+                        <span class="bn-sidebar__logo-text">BusNova</span>
+                    </a>
+
+                    <%-- 2. divider: inset, with equal and generous space above
+                         and below it (--bn-space-4 each side). --%>
+                    <div class="bn-sidebar__divider" role="presentation"></div>
+
+                    <%-- 3. hamburger. It lives inside the sidebar, which is
+                         exactly why the collapsed state is a 64px rail and
+                         never a fully hidden panel: hiding the sidebar would
+                         take the only control that brings it back with it. --%>
+                    <div class="bn-sidebar__toggle-row">
+                        <button type="button"
+                                id="bnSidebarToggle"
+                                class="bn-sidebar__toggle"
+                                aria-label="Toggle navigation"
+                                aria-controls="bnSidebarNav"
+                                aria-expanded="true">
+                            <i class="fas fa-bars" aria-hidden="true"></i>
+                        </button>
+                    </div>
+
+                    <%-- 4. nav --%>
+                    <nav id="bnSidebarNav" class="bn-sidebar__nav">
+
+                        <%-- Manager. Six destinations is enough to justify
+                             grouping; the other three roles have two to four
+                             and stay flat, where a section header would be
+                             noise rather than structure. --%>
+                        <asp:PlaceHolder ID="sbManager" runat="server" Visible="false">
+                            <ul class="bn-sidebar__list">
+                                <li>
+                                    <a class="<%= GetSidebarNavClass("Dashboard.aspx") %>" href="Dashboard.aspx"
+                                       data-label="Dashboard" aria-label="Dashboard"<%= GetAriaCurrent("Dashboard.aspx") %>>
+                                        <i class="fas fa-gauge bn-sidebar__nav-icon" aria-hidden="true"></i>
+                                        <span class="bn-sidebar__nav-text">Dashboard</span>
+                                    </a>
+                                </li>
+                            </ul>
+
+                            <div class="bn-sidebar__section">
+                                <div class="bn-sidebar__section-label">Fleet</div>
+                                <ul class="bn-sidebar__list">
+                                    <li>
+                                        <a class="<%= GetSidebarNavClass("RegisterBus.aspx") %>" href="RegisterBus.aspx"
+                                           data-label="Register Bus" aria-label="Register Bus"<%= GetAriaCurrent("RegisterBus.aspx") %>>
+                                            <i class="fas fa-bus bn-sidebar__nav-icon" aria-hidden="true"></i>
+                                            <span class="bn-sidebar__nav-text">Register Bus</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="<%= GetSidebarNavClass("CreateRoute.aspx") %>" href="CreateRoute.aspx"
+                                           data-label="Create Route" aria-label="Create Route"<%= GetAriaCurrent("CreateRoute.aspx") %>>
+                                            <i class="fas fa-route bn-sidebar__nav-icon" aria-hidden="true"></i>
+                                            <span class="bn-sidebar__nav-text">Create Route</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="<%= GetSidebarNavClass("AssignRoute.aspx") %>" href="AssignRoute.aspx"
+                                           data-label="Assign Route" aria-label="Assign Route"<%= GetAriaCurrent("AssignRoute.aspx") %>>
+                                            <i class="fas fa-calendar-check bn-sidebar__nav-icon" aria-hidden="true"></i>
+                                            <span class="bn-sidebar__nav-text">Assign Route</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="bn-sidebar__section">
+                                <div class="bn-sidebar__section-label">Ticketing</div>
+                                <ul class="bn-sidebar__list">
+                                    <li>
+                                        <a class="<%= GetSidebarNavClass("IssueTicket.aspx") %>" href="IssueTicket.aspx"
+                                           data-label="Issue Ticket" aria-label="Issue Ticket"<%= GetAriaCurrent("IssueTicket.aspx") %>>
+                                            <i class="fas fa-ticket bn-sidebar__nav-icon" aria-hidden="true"></i>
+                                            <span class="bn-sidebar__nav-text">Issue Ticket</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="bn-sidebar__section">
+                                <div class="bn-sidebar__section-label">Admin</div>
+                                <ul class="bn-sidebar__list">
+                                    <li>
+                                        <a class="<%= GetSidebarNavClass("ManageUsers.aspx") %>" href="ManageUsers.aspx"
+                                           data-label="Manage Users" aria-label="Manage Users"<%= GetAriaCurrent("ManageUsers.aspx") %>>
+                                            <i class="fas fa-users-gear bn-sidebar__nav-icon" aria-hidden="true"></i>
+                                            <span class="bn-sidebar__nav-text">Manage Users</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </asp:PlaceHolder>
+
+                        <%-- Driver --%>
+                        <asp:PlaceHolder ID="sbDriver" runat="server" Visible="false">
+                            <ul class="bn-sidebar__list">
+                                <li>
+                                    <a class="<%= GetSidebarNavClass("Dashboard.aspx") %>" href="Dashboard.aspx"
+                                       data-label="Dashboard" aria-label="Dashboard"<%= GetAriaCurrent("Dashboard.aspx") %>>
+                                        <i class="fas fa-gauge bn-sidebar__nav-icon" aria-hidden="true"></i>
+                                        <span class="bn-sidebar__nav-text">Dashboard</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="<%= GetSidebarNavClass("ViewAssignedRoutes.aspx") %>" href="ViewAssignedRoutes.aspx"
+                                       data-label="My Schedule" aria-label="My Schedule"<%= GetAriaCurrent("ViewAssignedRoutes.aspx") %>>
+                                        <i class="fas fa-calendar-days bn-sidebar__nav-icon" aria-hidden="true"></i>
+                                        <span class="bn-sidebar__nav-text">My Schedule</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="<%= GetSidebarNavClass("LogFuel.aspx") %>" href="LogFuel.aspx"
+                                       data-label="Log Fuel" aria-label="Log Fuel"<%= GetAriaCurrent("LogFuel.aspx") %>>
+                                        <i class="fas fa-gas-pump bn-sidebar__nav-icon" aria-hidden="true"></i>
+                                        <span class="bn-sidebar__nav-text">Log Fuel</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="<%= GetSidebarNavClass("ReportIssue.aspx") %>" href="ReportIssue.aspx"
+                                       data-label="Report Issue" aria-label="Report Issue"<%= GetAriaCurrent("ReportIssue.aspx") %>>
+                                        <i class="fas fa-triangle-exclamation bn-sidebar__nav-icon" aria-hidden="true"></i>
+                                        <span class="bn-sidebar__nav-text">Report Issue</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </asp:PlaceHolder>
+
+                        <%-- Maintenance Staff --%>
+                        <asp:PlaceHolder ID="sbMaintenance" runat="server" Visible="false">
+                            <ul class="bn-sidebar__list">
+                                <li>
+                                    <a class="<%= GetSidebarNavClass("Dashboard.aspx") %>" href="Dashboard.aspx"
+                                       data-label="Dashboard" aria-label="Dashboard"<%= GetAriaCurrent("Dashboard.aspx") %>>
+                                        <i class="fas fa-gauge bn-sidebar__nav-icon" aria-hidden="true"></i>
+                                        <span class="bn-sidebar__nav-text">Dashboard</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="<%= GetSidebarNavClass("MaintenanceWork.aspx") %>" href="MaintenanceWork.aspx"
+                                       data-label="Maintenance" aria-label="Maintenance"<%= GetAriaCurrent("MaintenanceWork.aspx") %>>
+                                        <i class="fas fa-screwdriver-wrench bn-sidebar__nav-icon" aria-hidden="true"></i>
+                                        <span class="bn-sidebar__nav-text">Maintenance</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </asp:PlaceHolder>
+
+                        <%-- Passenger --%>
+                        <asp:PlaceHolder ID="sbPassenger" runat="server" Visible="false">
+                            <ul class="bn-sidebar__list">
+                                <li>
+                                    <a class="<%= GetSidebarNavClass("Dashboard.aspx") %>" href="Dashboard.aspx"
+                                       data-label="Dashboard" aria-label="Dashboard"<%= GetAriaCurrent("Dashboard.aspx") %>>
+                                        <i class="fas fa-gauge bn-sidebar__nav-icon" aria-hidden="true"></i>
+                                        <span class="bn-sidebar__nav-text">Dashboard</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="<%= GetSidebarNavClass("BookTrip.aspx") %>" href="BookTrip.aspx"
+                                       data-label="Book Trip" aria-label="Book Trip"<%= GetAriaCurrent("BookTrip.aspx") %>>
+                                        <i class="fas fa-ticket bn-sidebar__nav-icon" aria-hidden="true"></i>
+                                        <span class="bn-sidebar__nav-text">Book Trip</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="<%= GetSidebarNavClass("MyTickets.aspx") %>" href="MyTickets.aspx"
+                                       data-label="My Tickets" aria-label="My Tickets"<%= GetAriaCurrent("MyTickets.aspx") %>>
+                                        <i class="fas fa-receipt bn-sidebar__nav-icon" aria-hidden="true"></i>
+                                        <span class="bn-sidebar__nav-text">My Tickets</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </asp:PlaceHolder>
+
+                    </nav>
+
+                </aside>
+
+                <div id="bnDrawerOverlay" class="bn-drawer-overlay"></div>
+
+            </asp:PlaceHolder>
+
+            <div id="divAppMain" runat="server">
+
+                <%-- Top bar: page context plus the account, and below 768px
+                     the drawer trigger - required there, not redundant,
+                     because the sidebar's own toggle has gone off-canvas. --%>
+                <asp:PlaceHolder ID="phTopBar" runat="server" Visible="false">
+                    <header class="bn-topbar">
+                        <button type="button"
+                                id="bnDrawerToggle"
+                                class="bn-topbar__drawer-btn"
+                                aria-label="Toggle navigation"
+                                aria-controls="bnSidebarNav"
+                                aria-expanded="false">
+                            <i class="fas fa-bars" aria-hidden="true"></i>
+                        </button>
+
+                        <h1 class="bn-topbar__title"><asp:Literal ID="litPageTitle" runat="server" /></h1>
+
+                        <div class="bn-topbar__spacer"></div>
+
+                        <div class="bn-topbar__user">
+                            <span class="bn-topbar__user-name">
+                                <asp:Literal ID="litShellUserName" runat="server" />
+                            </span>
+                            <span class="bn-topbar__user-role">
+                                <asp:Literal ID="litShellUserRole" runat="server" />
+                            </span>
+                            <%-- The label is hidden below 768px, where the bar
+                                 has no room for it, so aria-label carries it
+                                 unconditionally rather than only then. --%>
+                            <a class="bn-topbar__signout" href="Logout.aspx" aria-label="Sign out">
+                                <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
+                                <span class="bn-topbar__signout-text">Sign out</span>
+                            </a>
+                        </div>
+                    </header>
+                </asp:PlaceHolder>
+
+            <asp:PlaceHolder ID="phPublicChrome" runat="server">
             <!-- ===================================== -->
             <!-- NAVIGATION BAR -->
             <!-- ===================================== -->
@@ -246,9 +513,12 @@
                 </div>
 
             </nav>
-                
-            <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
-            </asp:ContentPlaceHolder>
+            </asp:PlaceHolder>
+
+            <div id="divAppContent" runat="server">
+                <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+                </asp:ContentPlaceHolder>
+            </div>
             <!-- ===================================== -->
             <!-- FOOTER -->
             <!-- ===================================== -->
@@ -369,8 +639,11 @@
                 </div>
 
             </footer>
-        </div>
+
+            </div><%-- /divAppMain --%>
+        </div><%-- /divAppRoot --%>
     </form>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="Scripts/site.js?v=1"></script>
 </body>
 </html>

@@ -25,14 +25,94 @@ namespace BusNova_System
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
 
         /// <summary>
+        /// hfCsrfToken control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.HiddenField hfCsrfToken;
+
+        /// <summary>
+        /// divAppRoot control.
+        /// </summary>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divAppRoot;
+
+        /// <summary>
+        /// phAppShell control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.PlaceHolder phAppShell;
+
+        /// <summary>
+        /// sbManager control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.PlaceHolder sbManager;
+
+        /// <summary>
+        /// sbDriver control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.PlaceHolder sbDriver;
+
+        /// <summary>
+        /// sbMaintenance control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.PlaceHolder sbMaintenance;
+
+        /// <summary>
+        /// sbPassenger control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.PlaceHolder sbPassenger;
+
+        /// <summary>
+        /// divAppMain control.
+        /// </summary>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divAppMain;
+
+        /// <summary>
+        /// phTopBar control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.PlaceHolder phTopBar;
+
+        /// <summary>
+        /// litPageTitle control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Literal litPageTitle;
+
+        /// <summary>
+        /// litShellUserName control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Literal litShellUserName;
+
+        /// <summary>
+        /// litShellUserRole control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Literal litShellUserRole;
+
+        /// <summary>
+        /// phPublicChrome control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.PlaceHolder phPublicChrome;
+
+        /// <summary>
+        /// divAppContent control.
+        /// </summary>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divAppContent;
+
+        /// <summary>
+        /// liHome control.
+        /// </summary>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl liHome;
+
+        /// <summary>
+        /// spSystemName control.
+        /// </summary>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl spSystemName;
+
+        /// <summary>
         /// phAnonymous control.
         /// </summary>
         protected global::System.Web.UI.WebControls.PlaceHolder phAnonymous;
 
         /// <summary>
-        /// phFleetManager control.
+        /// phManager control.
         /// </summary>
-        protected global::System.Web.UI.WebControls.PlaceHolder phFleetManager;
+        protected global::System.Web.UI.WebControls.PlaceHolder phManager;
 
         /// <summary>
         /// phDriver control.
@@ -43,6 +123,11 @@ namespace BusNova_System
         /// phOtherRoles control.
         /// </summary>
         protected global::System.Web.UI.WebControls.PlaceHolder phOtherRoles;
+
+        /// <summary>
+        /// phPassenger control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.PlaceHolder phPassenger;
 
         /// <summary>
         /// phSignedIn control.
@@ -63,5 +148,10 @@ namespace BusNova_System
         /// ContentPlaceHolder1 control.
         /// </summary>
         protected global::System.Web.UI.WebControls.ContentPlaceHolder ContentPlaceHolder1;
+
+        /// <summary>
+        /// footerSection control.
+        /// </summary>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl footerSection;
     }
 }

@@ -80,18 +80,45 @@
     <Content Include="CreateRoute.aspx" />
     <Content Include="AssignRoute.aspx" />
     <Content Include="ViewAssignedRoutes.aspx" />
+    <Content Include="BookTrip.aspx" />
+    <Content Include="PaymentSimulation.aspx" />
+    <Content Include="TicketConfirmation.aspx" />
+    <Content Include="MyTickets.aspx" />
+    <Content Include="LogFuel.aspx" />
+    <Content Include="ReportIssue.aspx" />
+    <Content Include="MaintenanceWork.aspx" />
+    <Content Include="ManageUsers.aspx" />
+    <Content Include="IssueTicket.aspx" />
+    <Content Include="SetPassword.aspx" />
+    <Content Include="RequestPasswordLink.aspx" />
     <Content Include="Styles\Home.css" />
+    <Content Include="Styles\busnova-design-system.css" />
+    <Content Include="Scripts\site.js" />
     <Content Include="Styles\style.css" />
     <Content Include="Styles\Ops.css" />
+    <Content Include="Styles\SeatMap.css" />
+    <Content Include="Styles\Ticket.css" />
+    <Content Include="Scripts\seat-map.js" />
+    <Content Include="Scripts\password-strength.js" />
+    <Content Include="Scripts\payment-simulation.js" />
+    <Content Include="Scripts\ticket-confirmation.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
     <!-- Domain model -->
     <Compile Include="Models\Entities.cs" />
+    <!-- Helpers -->
+    <Compile Include="Helpers\GridViewHelpers.cs" />
+    <Compile Include="Helpers\SeatMapRenderer.cs" />
+    <Compile Include="Helpers\UiColors.cs" />
     <!-- Data access -->
     <Compile Include="DataAccess\Db.cs" />
     <!-- Security -->
     <Compile Include="Security\PasswordHasher.cs" />
+    <Compile Include="Security\PasswordPolicy.cs" />
+    <Compile Include="Security\PasswordSetupToken.cs" />
+    <Compile Include="Security\BookingDraftSession.cs" />
+    <Compile Include="Security\AntiForgery.cs" />
     <Compile Include="Security\SessionHelper.cs" />
     <!-- Application services -->
     <Compile Include="Services\AuditService.cs" />
@@ -173,6 +200,84 @@
     <Compile Include="ViewAssignedRoutes.aspx.designer.cs">
       <DependentUpon>ViewAssignedRoutes.aspx</DependentUpon>
     </Compile>
+    <Compile Include="BookTrip.aspx.cs">
+      <DependentUpon>BookTrip.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="BookTrip.aspx.designer.cs">
+      <DependentUpon>BookTrip.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="PaymentSimulation.aspx.cs">
+      <DependentUpon>PaymentSimulation.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="PaymentSimulation.aspx.designer.cs">
+      <DependentUpon>PaymentSimulation.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="TicketConfirmation.aspx.cs">
+      <DependentUpon>TicketConfirmation.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="TicketConfirmation.aspx.designer.cs">
+      <DependentUpon>TicketConfirmation.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="MyTickets.aspx.cs">
+      <DependentUpon>MyTickets.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="MyTickets.aspx.designer.cs">
+      <DependentUpon>MyTickets.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="LogFuel.aspx.cs">
+      <DependentUpon>LogFuel.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="LogFuel.aspx.designer.cs">
+      <DependentUpon>LogFuel.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ReportIssue.aspx.cs">
+      <DependentUpon>ReportIssue.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ReportIssue.aspx.designer.cs">
+      <DependentUpon>ReportIssue.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="MaintenanceWork.aspx.cs">
+      <DependentUpon>MaintenanceWork.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="MaintenanceWork.aspx.designer.cs">
+      <DependentUpon>MaintenanceWork.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ManageUsers.aspx.cs">
+      <DependentUpon>ManageUsers.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ManageUsers.aspx.designer.cs">
+      <DependentUpon>ManageUsers.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="IssueTicket.aspx.cs">
+      <DependentUpon>IssueTicket.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="IssueTicket.aspx.designer.cs">
+      <DependentUpon>IssueTicket.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="SetPassword.aspx.cs">
+      <DependentUpon>SetPassword.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="SetPassword.aspx.designer.cs">
+      <DependentUpon>SetPassword.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RequestPasswordLink.aspx.cs">
+      <DependentUpon>RequestPasswordLink.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RequestPasswordLink.aspx.designer.cs">
+      <DependentUpon>RequestPasswordLink.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Services\AdminService.cs" />
     <Compile Include="Site.Master.cs">
       <DependentUpon>Site.Master</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

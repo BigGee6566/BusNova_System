@@ -1,0 +1,193 @@
+/* ---------- Digital e-ticket cards (TicketConfirmation.aspx) ---------- */
+
+.e-ticket {
+    background: var(--bn-white);
+    border: 1px solid rgba(var(--bn-navy-rgb),0.14);
+    border-left: 4px solid var(--bn-blue);
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(var(--bn-navy-rgb),0.10);
+    margin-top: 20px;
+    overflow: hidden;
+}
+
+.e-ticket-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    background: linear-gradient(90deg, var(--bn-navy), var(--bn-blue-deep));
+    color: var(--bn-white);
+}
+
+.e-ticket-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: 0.02em;
+}
+
+.e-ticket-logo {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    object-fit: cover;
+}
+
+.e-ticket-status {
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    background: rgba(255,255,255,0.14);
+}
+
+.e-ticket-status-valid { background: rgba(30,138,95,0.9); }
+.e-ticket-status-used { background: rgba(255,255,255,0.22); }
+.e-ticket-status-cancelled { background: rgba(192,57,43,0.9); }
+
+.e-ticket-body {
+    padding: 18px;
+}
+
+.e-ticket-route {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+    border-bottom: 1px dashed rgba(var(--bn-navy-rgb),0.2);
+}
+
+    .e-ticket-route i {
+        color: var(--bn-text-faint);
+    }
+
+.e-ticket-route-point {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.e-ticket-route-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--bn-text-muted);
+}
+
+.e-ticket-route-value {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--bn-text);
+}
+
+.e-ticket-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px 16px;
+    margin-bottom: 18px;
+}
+
+    .e-ticket-grid span {
+        display: block;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: var(--bn-text-muted);
+        margin-bottom: 2px;
+    }
+
+    .e-ticket-grid strong {
+        font-size: 0.92rem;
+        color: var(--bn-text);
+    }
+
+.e-ticket-footer {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: 14px;
+    border-top: 1px dashed rgba(var(--bn-navy-rgb),0.2);
+}
+
+.e-ticket-numbers > div {
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+}
+
+    .e-ticket-numbers span {
+        color: var(--bn-text-muted);
+        margin-right: 6px;
+    }
+
+    .e-ticket-numbers strong {
+        color: var(--bn-text);
+        letter-spacing: 0.02em;
+    }
+
+.e-ticket-note {
+    margin: 8px 0 0;
+    font-size: 0.78rem;
+    color: var(--bn-text-secondary);
+    font-style: italic;
+}
+
+.e-ticket-qr {
+    flex-shrink: 0;
+    width: 96px;
+    height: 96px;
+    padding: 4px;
+    background: var(--bn-white);
+    border: 1px solid rgba(var(--bn-navy-rgb),0.14);
+    border-radius: 8px;
+}
+
+@media (max-width: 560px) {
+    .e-ticket-footer {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* ---------- Print ---------- */
+
+@media print {
+    .no-print,
+    .custom-navbar,
+    /* The app shell replaced the top navbar on operational screens, and a
+       printed ticket wants neither. .custom-navbar stays listed because
+       public pages still use it. */
+    .bn-sidebar,
+    .bn-topbar,
+    .bn-drawer-overlay,
+    .footer,
+    .ops-message {
+        display: none !important;
+    }
+
+    .bn-app-main {
+        margin-inline-start: 0 !important;
+    }
+
+    body, .ops-page {
+        background: var(--bn-white) !important;
+        padding-top: 0 !important;
+    }
+
+    .e-ticket {
+        box-shadow: none;
+        border: 1px solid #999;
+        break-inside: avoid;
+    }
+
+    .e-ticket-header {
+        background: var(--bn-navy) !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}
