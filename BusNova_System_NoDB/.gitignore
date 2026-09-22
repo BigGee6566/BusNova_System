@@ -1,0 +1,20 @@
+# Build output
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+
+# NuGet packages are restored, not committed
+packages/
+*.nupkg
+
+# Visual Studio local state
+.vs/
+*.user
+*.suo
+
+# Runtime error logs written by the application
+App_Data/Logs/
+
+# Local database backups taken before running a migration
+*.bak
