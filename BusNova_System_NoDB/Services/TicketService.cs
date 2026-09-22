@@ -256,7 +256,21 @@ WHERE AssignmentID = @id AND TicketStatus <> 'Cancelled';";
         {
             decimal price;
             var configured = ConfigurationManager.AppSettings["BusNova:TicketPrice"];
-            return decimal.TryParse(configured, System.Globalization.NumberStyles.Number,
+
+            // AllowDecimalPoint, NOT NumberStyles.Number. Number includes
+            // AllowThousands, and under InvariantCulture the comma is the
+            // thousands separator - so "200,00", which is exactly how a
+            // price is written in South Africa, parsed as 20000 and charged
+            // a hundred times the intended fare with no error anywhere.
+            // Rejecting it falls through to the documented default instead.
+            // (AUD-057)
+            const System.Globalization.NumberStyles Style =
+                System.Globalization.NumberStyles.AllowDecimalPoint |
+                System.Globalization.NumberStyles.AllowLeadingSign |
+                System.Globalization.NumberStyles.AllowLeadingWhite |
+                System.Globalization.NumberStyles.AllowTrailingWhite;
+
+            return decimal.TryParse(configured, Style,
                                     System.Globalization.CultureInfo.InvariantCulture, out price)
                    && price >= 0
                    ? price

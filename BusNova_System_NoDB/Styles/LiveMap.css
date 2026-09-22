@@ -1,0 +1,51 @@
+/* =============================================================
+   Live map (WP-10)
+
+   The map is an addition to the table, not a replacement for it,
+   so it has a fixed height and never takes over the page.
+   ============================================================= */
+
+.lm-map {
+    height: 420px;
+    width: 100%;
+    border-radius: var(--bn-radius-md, 8px);
+    background: var(--bn-surface-sunken);
+}
+
+/* Leaflet absent, or no positions to draw: say so in the empty box
+   rather than leaving a grey rectangle that looks broken. */
+.lm-map[data-map-state="unavailable"]::after,
+.lm-map[data-map-state="no-positions"]::after,
+.lm-map[data-map-state="bad-data"]::after {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 0 16px;
+    text-align: center;
+    color: var(--bn-text-muted);
+    font-size: 0.9rem;
+}
+
+.lm-map[data-map-state="unavailable"]::after {
+    content: "The map could not load. The table below has the same information.";
+}
+
+.lm-map[data-map-state="no-positions"]::after {
+    content: "No positions have been reported yet.";
+}
+
+.lm-map[data-map-state="bad-data"]::after {
+    content: "The map data could not be read. The table below has the same information.";
+}
+
+.lm-basis {
+    font-size: 0.82rem;
+    color: var(--bn-text-muted);
+    display: block;
+    max-width: 44ch;
+}
+
+@media (max-width: 480px) {
+    .lm-map { height: 300px; }
+}

@@ -25,8 +25,8 @@ See [SYSTEM_OVERVIEW.md](SYSTEM_OVERVIEW.md) for architecture, pages, services, 
 
 1. Open `BusNova System.sln` in Visual Studio.
 2. Create the database by running [App_Data/BusNova_Database_Script.sql](App_Data/BusNova_Database_Script.sql) against your SQL Server instance. This creates the `BusNovaDB` database, its tables, and seed/demo data.
-   - If you're upgrading an existing database instead of recreating it, apply the incremental scripts in `App_Data/Migrations/` in order (`002_PasswordSetup.sql`, `003_RoleConsolidation.sql`, `004_BookingSchema.sql`, `005_TicketSeatIndexFilter.sql`, `006_SeatNumberNormalisation.sql`, `007_TicketNumberSequence.sql`, `008_UnicodeTextColumns.sql`, `009_PaymentGateway.sql`, `010_TicketValidation.sql`, `011_Notifications.sql`, `012_AnalyticsIndexes.sql`, `013_Cancellation.sql`, `014_MaintenanceManagement.sql`).
-   - **`006_SeatNumberNormalisation.sql`, `007_TicketNumberSequence.sql`, `008_UnicodeTextColumns.sql`, `009_PaymentGateway.sql`, `010_TicketValidation.sql`, `011_Notifications.sql`, `012_AnalyticsIndexes.sql`, `013_Cancellation.sql` and `014_MaintenanceManagement.sql` must also be run after a *fresh* create.** `007` creates the sequences ticket numbering now depends on, and `008` converts text columns to `nvarchar` so non-ASCII names are not silently corrupted; neither exists in the creation script. `009` adds the payment tables, which the booking flow writes to on every purchase - without it, confirming a payment fails at the first insert. `010` adds the ticket-validation log the door screen writes to, `011` the notification queue, `012` the missing foreign-key and analytics indexes, `013` the cancellation and refund columns on `dbo.Ticket`, and `014` the maintenance schedules, parts, labour and trip inspections. None of them is in the creation script.
+   - If you're upgrading an existing database instead of recreating it, apply the incremental scripts in `App_Data/Migrations/` in order (`002_PasswordSetup.sql`, `003_RoleConsolidation.sql`, `004_BookingSchema.sql`, `005_TicketSeatIndexFilter.sql`, `006_SeatNumberNormalisation.sql`, `007_TicketNumberSequence.sql`, `008_UnicodeTextColumns.sql`, `009_PaymentGateway.sql`, `010_TicketValidation.sql`, `011_Notifications.sql`, `012_AnalyticsIndexes.sql`, `013_Cancellation.sql`, `014_MaintenanceManagement.sql`, `015_Tracking.sql`).
+   - **`006_SeatNumberNormalisation.sql`, `007_TicketNumberSequence.sql`, `008_UnicodeTextColumns.sql`, `009_PaymentGateway.sql`, `010_TicketValidation.sql`, `011_Notifications.sql`, `012_AnalyticsIndexes.sql`, `013_Cancellation.sql`, `014_MaintenanceManagement.sql` and `015_Tracking.sql` must also be run after a *fresh* create.** `007` creates the sequences ticket numbering now depends on, and `008` converts text columns to `nvarchar` so non-ASCII names are not silently corrupted; neither exists in the creation script. `009` adds the payment tables, which the booking flow writes to on every purchase - without it, confirming a payment fails at the first insert. `010` adds the ticket-validation log the door screen writes to, `011` the notification queue, `012` the missing foreign-key and analytics indexes, `013` the cancellation and refund columns on `dbo.Ticket`, `014` the maintenance schedules, parts, labour and trip inspections, and `015` the position-tracking table and route coordinates. None of them is in the creation script.
    - *(`006` specifically:)* Unlike the others it is not purely an upgrade step: the creation script still seeds two tickets with lettered seat labels (`12A`, `03B`), while the seat map issues plain integers. Until those rows are normalised the map treats seat `3` as free when `03B` is already sold. Correcting the seed itself is pending a separate decision.
    - Run migrations with `sqlcmd -I` (or `SET QUOTED_IDENTIFIER ON`). `dbo.Ticket` carries a filtered index, and SQL Server rejects inserts from a session where that option is off — `sqlcmd` defaults it off.
 3. Update the `BusNovaDb` connection string in [Web.config](Web.config) to point at your SQL Server instance.
@@ -41,6 +41,8 @@ The database script seeds demo accounts for each role (Manager, Driver, Maintena
 ### Configuration
 
 Key `appSettings` in Web.config:
+
+> **Write decimal settings with a full stop, never a comma.** They are parsed with `InvariantCulture`, so `200.00` is two hundred. A comma is rejected and the documented default is used instead. This is deliberate: `200,00` used to parse as **20000** and charge a hundred times the fare (AUD-057).
 
 | Setting | Purpose |
 |---|---|
@@ -57,6 +59,10 @@ Key `appSettings` in Web.config:
 | `BusNova:RefundPartialPercent` | The percentage refunded in that partial tier (default 50) |
 | `BusNova:TripStartGraceMinutes` | How early a driver may start a trip before its scheduled departure (default 60) |
 | `BusNova:DepotAlertEmail` | Where driver delay and emergency alerts are queued (default `depot@busnova.co.za`) |
+| `BusNova:EtaRoadFactorLow` / `BusNova:EtaRoadFactorHigh` | How much longer a real road is than the straight line, used to widen the arrival window (defaults 1.15 and 1.45) |
+| `BusNova:EtaAssumedSpeedKph` | Speed assumed when a bus reports none, or reports zero because it is stopped (default 65) |
+| `BusNova:DynamicPricing` | Turns the WP-11 pricing rules on. **Off by default** — with it off every fare is the standard one |
+| `BusNova:Pricing*` | The individual thresholds and percentages. See `Services/PricingService.cs`, where every rule is documented in order |
 
 `Web.Release.config` swaps in placeholder connection-string credentials and enforces HTTPS-only cookies — replace the placeholders before deploying a release build.
 

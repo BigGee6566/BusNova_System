@@ -183,6 +183,13 @@
                                             <span class="bn-sidebar__nav-text">Manifest</span>
                                         </a>
                                     </li>
+                                    <li>
+                                        <a class="<%= GetSidebarNavClass("LiveMap.aspx") %>" href="LiveMap.aspx"
+                                           data-label="Live Map" aria-label="Live Map"<%= GetAriaCurrent("LiveMap.aspx") %>>
+                                            <i class="fas fa-map-location-dot bn-sidebar__nav-icon" aria-hidden="true"></i>
+                                            <span class="bn-sidebar__nav-text">Live Map</span>
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
 

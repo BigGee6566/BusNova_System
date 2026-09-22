@@ -417,10 +417,60 @@ Shared helper, UTF-8-BOM CSV, HTML-table `.xls`; every report and table gets an 
 
 ## 7. Phase 3 — Differentiation
 
-### WP-10 Live tracking and ETA
+### WP-10 Live tracking and ETA — **COMPLETE** (2026-09-23)
+
+Delivered: migration 015 (`TripPing`, plus origin/destination coordinates on `Route`), `TrackingService`,
+`LiveMap.aspx` with Leaflet and OpenStreetMap, and a position simulator. 19 new unit tests.
+
+**An ETA here is a range, and says why.** There is no road network in this system, so remaining distance is a
+great-circle line. Real roads are longer — typically 15-45% — so the estimate is widened and presented as a
+window with a stated confidence. A single confident-looking time that is twenty minutes out is worse than an
+honest range, because a passenger *acts* on the first and *plans around* the second. The basis is printed on
+every row.
+
+**It refuses to answer rather than guessing.** No fix, a fix older than ten minutes, a route with no destination
+coordinates, or a speed of zero with no fallback — each produces "no estimate" and the reason, not a number.
+
+**The table is the presentation; the map is an addition.** Leaflet loads from a CDN with subresource integrity.
+If it fails — offline, blocked, hash mismatch — the page still answers the question, because the server rendered
+the answer. A stale fix is drawn in a different colour rather than drawn identically and annotated elsewhere.
+
+**Retention is deliberately not implemented.** `TripPing` grows far faster than every other table combined —
+roughly 150 000 rows a month for a ten-bus fleet. Choosing how long to keep position history is an operational
+and arguably a privacy decision, and it belongs to whoever runs the depot.
+
+**No GPS hardware exists in this build**, so positions come from a "Simulate positions" button and every row is
+marked `Source = 'Simulated'`. A real fix can never be confused with a demonstration one.
+
 Ping tables, Leaflet + OSM, manager map, passenger status, haversine ETA with confidence band, delay alerts routed through WP-3.
 
-### WP-11 Differentiation
+### WP-11 Differentiation — **COMPLETE** (2026-09-23)
+
+Delivered: `Services/PricingService.cs` with documented, bounded, testable rules, and AUD-042's prerequisite
+coverage. 25 new unit tests. **Found and fixed AUD-057 in the process** — see below.
+
+**Dynamic pricing nobody can explain is indistinguishable from overcharging**, so every rule is stated, applied
+in a fixed order, bounded, and returned with its reason attached for the booking screen to show. Demand first
+(+15% above 80% full, -10% below 30%), then lead time (+10% within 24 hours, -10% beyond 30 days), then hard
+bounds at 70% and 150% of base. A cap is what stops a bug in one rule producing a fare nobody would pay; a floor
+is what stops the operator losing money on a quiet Tuesday.
+
+**It is off by default.** Turning pricing on is a commercial decision, not a deployment side effect.
+
+**Unknown capacity earns no discount.** Capacity of zero means nobody recorded it, and an unknown occupancy is
+not a low one.
+
+**AUD-057, which this package exists to have found.** The audit asked (AUD-042) that `StandardPrice`'s fallback
+be covered *before* pricing rules were layered on it. Writing that coverage took minutes and exposed a latent
+hundred-fold overcharge: `NumberStyles.Number` under `InvariantCulture` treats the comma as a thousands
+separator, so `BusNova:TicketPrice = "200,00"` — the ordinary South African way to write it — parsed as
+**20000**, silently. `PricingService` had the identical bug, where `10,5` would have parsed as 105 and put every
+percentage out by a factor of ten. Both fixed; both covered.
+
+**Not built:** waitlists, loyalty, and feedback triage. Each is a feature with its own schema and its own
+workflow, not a rule layered on an existing one, and the roadmap lists them alongside pricing rather than
+underneath it.
+
 Waitlists, multiple boarding points, dynamic pricing with documented and testable rules, loyalty, feedback and complaint triage.
 
 **Added acceptance criterion:**

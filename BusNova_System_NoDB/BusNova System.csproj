@@ -87,6 +87,7 @@
     <Content Include="Notifications.aspx" />
     <Content Include="DriverWorkspace.aspx" />
     <Content Include="Manifest.aspx" />
+    <Content Include="LiveMap.aspx" />
     <Content Include="ReportTicketSales.aspx" />
     <Content Include="ReportRouteList.aspx" />
     <Content Include="ReportDriverSchedule.aspx" />
@@ -106,9 +107,11 @@
     <Content Include="Styles\Home.css" />
     <Content Include="Styles\DriverWorkspace.css" />
     <Content Include="Styles\Manifest.css" />
+    <Content Include="Styles\LiveMap.css" />
     <Content Include="Styles\busnova-design-system.css" />
     <Content Include="Styles\busnova-components.css" />
     <Content Include="Scripts\site.js" />
+    <Content Include="Scripts\live-map.js" />
     <Content Include="Scripts\busnova-ui.js" />
     <Content Include="Styles\style.css" />
     <Content Include="Styles\Ops.css" />
@@ -156,6 +159,8 @@
     <Compile Include="Services\MaintenanceScheduleService.cs" />
     <Compile Include="Services\MaintenancePartsService.cs" />
     <Compile Include="Services\MatrixReportsService.cs" />
+    <Compile Include="Services\PricingService.cs" />
+    <Compile Include="Services\TrackingService.cs" />
     <Compile Include="Services\TicketService.cs" />
     <Compile Include="Services\ReportingService.cs" />
     <!-- Application-level events -->
@@ -279,6 +284,13 @@
     </Compile>
     <Compile Include="Manifest.aspx.designer.cs">
       <DependentUpon>Manifest.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="LiveMap.aspx.cs">
+      <DependentUpon>LiveMap.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="LiveMap.aspx.designer.cs">
+      <DependentUpon>LiveMap.aspx</DependentUpon>
     </Compile>
     <Compile Include="ReportTicketSales.aspx.cs">
       <DependentUpon>ReportTicketSales.aspx</DependentUpon>
