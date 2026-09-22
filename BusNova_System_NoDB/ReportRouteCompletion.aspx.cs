@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -131,5 +132,53 @@ namespace BusNova_System
             lblMessage.CssClass = "ops-message ops-message--danger";
             lblMessage.Text = Server.HtmlEncode(message);
         }
+
+        // ---------------- export (WP-9) ----------------
+
+        /// <summary>
+        /// The export's columns. Deliberately derived from the same service
+        /// call the grid uses, so an export cannot quietly drift out of step
+        /// with the report it came from.
+        /// </summary>
+        private static IList<ExportColumn<RouteCompletionRow>> ExportColumns
+        {
+            get
+            {
+                return new List<ExportColumn<RouteCompletionRow>>
+                {
+                    new ExportColumn<RouteCompletionRow>("Route", r => r.RouteName),
+                    new ExportColumn<RouteCompletionRow>("Bus", r => r.BusRegistration),
+                    new ExportColumn<RouteCompletionRow>("Driver", r => r.DriverName),
+                    new ExportColumn<RouteCompletionRow>("Departs", r => r.DepartureTime),
+                    new ExportColumn<RouteCompletionRow>("Status", r => r.TripStatus),
+                    new ExportColumn<RouteCompletionRow>("Seats sold", r => r.SeatsSold),
+                    new ExportColumn<RouteCompletionRow>("Capacity", r => r.SeatingCapacity)
+                };
+            }
+        }
+
+        private List<RouteCompletionRow> ExportRows()
+        {
+            // Same parse the on-screen report uses. This page has no
+            // TryDate helper of its own, so the expression is repeated
+            // rather than a second, subtly different rule being invented.
+            DateTime date;
+            if (!DateTime.TryParseExact(txtDate.Text.Trim(), "yyyy-MM-dd",
+                    CultureInfo.InvariantCulture, DateTimeStyles.None, out date))
+                return new List<RouteCompletionRow>();
+
+            return ReportingService.GetRouteCompletion(date);
+        }
+
+        protected void btnCsv_Click(object sender, EventArgs e)
+        {
+            TableExport.WriteCsv(Response, "route-completion", ExportRows(), ExportColumns);
+        }
+
+        protected void btnExcel_Click(object sender, EventArgs e)
+        {
+            TableExport.WriteExcelHtml(Response, "route-completion", ExportRows(), ExportColumns);
+        }
+
     }
 }

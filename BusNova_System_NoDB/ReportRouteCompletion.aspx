@@ -26,6 +26,10 @@
                             CssClass="btn-ops-primary" OnClick="btnRun_Click" />
                 <asp:Button ID="btnToday" runat="server" Text="Today"
                             CssClass="btn-ops-secondary" OnClick="btnToday_Click" CausesValidation="false" />
+                <asp:Button ID="btnCsv" runat="server" Text="Export CSV"
+                            CssClass="bn-btn bn-btn--secondary" OnClick="btnCsv_Click" />
+                <asp:Button ID="btnExcel" runat="server" Text="Export Excel"
+                            CssClass="bn-btn bn-btn--secondary" OnClick="btnExcel_Click" />
             </div>
 
             <asp:Label ID="lblMessage" runat="server" CssClass="ops-message" />

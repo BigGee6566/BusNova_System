@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Web.UI;
@@ -164,5 +165,46 @@ namespace BusNova_System
             lblMessage.CssClass = "ops-message ops-message--danger";
             lblMessage.Text = Server.HtmlEncode(message);
         }
+
+        // ---------------- export (WP-9) ----------------
+
+        /// <summary>
+        /// The export's columns. Deliberately derived from the same service
+        /// call the grid uses, so an export cannot quietly drift out of step
+        /// with the report it came from.
+        /// </summary>
+        private static IList<ExportColumn<DriverPerformanceRow>> ExportColumns
+        {
+            get
+            {
+                return new List<ExportColumn<DriverPerformanceRow>>
+                {
+                    new ExportColumn<DriverPerformanceRow>("Driver", r => r.DriverName),
+                    new ExportColumn<DriverPerformanceRow>("Trips assigned", r => r.TripsAssigned),
+                    new ExportColumn<DriverPerformanceRow>("Completed", r => r.TripsCompleted),
+                    new ExportColumn<DriverPerformanceRow>("Cancelled", r => r.TripsCancelled),
+                    new ExportColumn<DriverPerformanceRow>("Passengers carried", r => r.PassengersCarried)
+                };
+            }
+        }
+
+        private List<DriverPerformanceRow> ExportRows()
+        {
+            DateTime from, to;
+            if (!TryDate(txtFrom.Text, out from) || !TryDate(txtTo.Text, out to) || to < from)
+                return new List<DriverPerformanceRow>();
+            return ReportingService.GetDriverPerformance(from, to);
+        }
+
+        protected void btnCsv_Click(object sender, EventArgs e)
+        {
+            TableExport.WriteCsv(Response, "driver-performance", ExportRows(), ExportColumns);
+        }
+
+        protected void btnExcel_Click(object sender, EventArgs e)
+        {
+            TableExport.WriteExcelHtml(Response, "driver-performance", ExportRows(), ExportColumns);
+        }
+
     }
 }

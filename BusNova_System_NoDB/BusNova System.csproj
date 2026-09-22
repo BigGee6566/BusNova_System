@@ -86,6 +86,10 @@
     <Content Include="ValidateTicket.aspx" />
     <Content Include="Notifications.aspx" />
     <Content Include="DriverWorkspace.aspx" />
+    <Content Include="ReportTicketSales.aspx" />
+    <Content Include="ReportRouteList.aspx" />
+    <Content Include="ReportDriverSchedule.aspx" />
+    <Content Include="ReportMaintenanceSchedule.aspx" />
     <Content Include="MyTickets.aspx" />
     <Content Include="LogFuel.aspx" />
     <Content Include="ReportIssue.aspx" />
@@ -119,6 +123,7 @@
     <!-- Domain model -->
     <Compile Include="Models\Entities.cs" />
     <!-- Helpers -->
+    <Compile Include="Helpers\TableExport.cs" />
     <Compile Include="Helpers\AppClock.cs" />
     <Compile Include="Helpers\GridViewHelpers.cs" />
     <Compile Include="Helpers\SeatMapRenderer.cs" />
@@ -148,6 +153,7 @@
     <Compile Include="Services\DriverService.cs" />
     <Compile Include="Services\MaintenanceScheduleService.cs" />
     <Compile Include="Services\MaintenancePartsService.cs" />
+    <Compile Include="Services\MatrixReportsService.cs" />
     <Compile Include="Services\TicketService.cs" />
     <Compile Include="Services\ReportingService.cs" />
     <!-- Application-level events -->
@@ -264,6 +270,34 @@
     </Compile>
     <Compile Include="DriverWorkspace.aspx.designer.cs">
       <DependentUpon>DriverWorkspace.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ReportTicketSales.aspx.cs">
+      <DependentUpon>ReportTicketSales.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ReportTicketSales.aspx.designer.cs">
+      <DependentUpon>ReportTicketSales.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ReportRouteList.aspx.cs">
+      <DependentUpon>ReportRouteList.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ReportRouteList.aspx.designer.cs">
+      <DependentUpon>ReportRouteList.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ReportDriverSchedule.aspx.cs">
+      <DependentUpon>ReportDriverSchedule.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ReportDriverSchedule.aspx.designer.cs">
+      <DependentUpon>ReportDriverSchedule.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ReportMaintenanceSchedule.aspx.cs">
+      <DependentUpon>ReportMaintenanceSchedule.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ReportMaintenanceSchedule.aspx.designer.cs">
+      <DependentUpon>ReportMaintenanceSchedule.aspx</DependentUpon>
     </Compile>
     <Compile Include="MyTickets.aspx.cs">
       <DependentUpon>MyTickets.aspx</DependentUpon>

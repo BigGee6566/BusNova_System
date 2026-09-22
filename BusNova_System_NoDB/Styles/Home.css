@@ -524,10 +524,21 @@ body {
 }
 
     .footer-links li {
-        margin-bottom: 12px;
+        /* Was 12px. The anchors below now carry their own vertical
+           padding, so the gap comes from the target rather than from a
+           margin between 21px-high links. */
+        margin-bottom: 2px;
     }
 
+    /* The link is the target, so the link has to be the right size.
+       These rendered 21px high - the bare line box - against WCAG 2.2 AA
+       2.5.8, which asks for 24. inline-block plus padding gets there
+       without moving anything visually, because the padding replaces the
+       li margin it used to sit inside. (AUD-056) */
     .footer-links a {
+        display: inline-block;
+        padding: 6px 0;
+        min-height: 24px;
         color: rgba(255,255,255,.72);
         text-decoration: none;
         transition: all 0.3s ease;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Web.UI;
@@ -142,5 +143,47 @@ namespace BusNova_System
             lblMessage.CssClass = "ops-message ops-message--danger";
             lblMessage.Text = Server.HtmlEncode(message);
         }
+
+        // ---------------- export (WP-9) ----------------
+
+        /// <summary>
+        /// The export's columns. Deliberately derived from the same service
+        /// call the grid uses, so an export cannot quietly drift out of step
+        /// with the report it came from.
+        /// </summary>
+        private static IList<ExportColumn<FuelEfficiencyRow>> ExportColumns
+        {
+            get
+            {
+                return new List<ExportColumn<FuelEfficiencyRow>>
+                {
+                    new ExportColumn<FuelEfficiencyRow>("Bus", r => r.BusRegistration),
+                    new ExportColumn<FuelEfficiencyRow>("Fills", r => r.FillCount),
+                    new ExportColumn<FuelEfficiencyRow>("Litres", r => r.TotalLitres),
+                    new ExportColumn<FuelEfficiencyRow>("Cost", r => r.TotalCost),
+                    new ExportColumn<FuelEfficiencyRow>("Distance (km)", r => r.DistanceKm),
+                    new ExportColumn<FuelEfficiencyRow>("km per litre", r => r.KmPerLitre)
+                };
+            }
+        }
+
+        private List<FuelEfficiencyRow> ExportRows()
+        {
+            DateTime from, to;
+            if (!TryDate(txtFrom.Text, out from) || !TryDate(txtTo.Text, out to) || to < from)
+                return new List<FuelEfficiencyRow>();
+            return ReportingService.GetFuelEfficiency(from, to);
+        }
+
+        protected void btnCsv_Click(object sender, EventArgs e)
+        {
+            TableExport.WriteCsv(Response, "fuel-efficiency", ExportRows(), ExportColumns);
+        }
+
+        protected void btnExcel_Click(object sender, EventArgs e)
+        {
+            TableExport.WriteExcelHtml(Response, "fuel-efficiency", ExportRows(), ExportColumns);
+        }
+
     }
 }

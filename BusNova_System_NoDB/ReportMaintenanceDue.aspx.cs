@@ -1,4 +1,5 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -116,5 +117,42 @@ namespace BusNova_System
 
             return openCount.ToString();
         }
+
+        // ---------------- export (WP-9) ----------------
+
+        /// <summary>
+        /// The export's columns. Deliberately derived from the same service
+        /// call the grid uses, so an export cannot quietly drift out of step
+        /// with the report it came from.
+        /// </summary>
+        private static IList<ExportColumn<MaintenanceDueRow>> ExportColumns
+        {
+            get
+            {
+                return new List<ExportColumn<MaintenanceDueRow>>
+                {
+                    new ExportColumn<MaintenanceDueRow>("Bus", r => r.BusRegistration),
+                    new ExportColumn<MaintenanceDueRow>("Status", r => r.BusStatus),
+                    new ExportColumn<MaintenanceDueRow>("Next service due", r => r.NextServiceDueDate),
+                    new ExportColumn<MaintenanceDueRow>("Open faults", r => r.OpenFaults)
+                };
+            }
+        }
+
+        private List<MaintenanceDueRow> ExportRows()
+        {
+            return ReportingService.GetMaintenanceDue();
+        }
+
+        protected void btnCsv_Click(object sender, EventArgs e)
+        {
+            TableExport.WriteCsv(Response, "maintenance-due", ExportRows(), ExportColumns);
+        }
+
+        protected void btnExcel_Click(object sender, EventArgs e)
+        {
+            TableExport.WriteExcelHtml(Response, "maintenance-due", ExportRows(), ExportColumns);
+        }
+
     }
 }

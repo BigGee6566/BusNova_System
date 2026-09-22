@@ -354,7 +354,31 @@ Origin/destination/date search, filters, return-trip booking, modification, wait
 **Added acceptance criterion:**
 - `MyTickets.aspx` shows booking history as well as ticket history, activating `TicketService.GetBookingsForPassenger` and `GetBookingByReference`, and `SYSTEM_OVERVIEW.md:59` becomes accurate. *(AUD-035, AUD-040 in part.)*
 
-### WP-9 CSV/Excel export
+### WP-9 CSV/Excel export — **COMPLETE** (2026-09-22)
+
+Delivered: `Helpers/TableExport.cs`, `Services/MatrixReportsService.cs`, four new report pages, export on all nine
+reports, and AUD-056. 25 new unit tests (suite 161 → 186).
+
+**No library, because none is needed.** CSV is a text format with four escaping rules. "Excel" here is an HTML
+table served with an Excel content type — the method is called `WriteExcelHtml`, not `WriteXlsx`, because it is
+not one and naming it so would mislead whoever next tries to open it with a spreadsheet library.
+
+**The BOM is not optional.** Excel on Windows reads a CSV without a byte-order mark as the system's ANSI code
+page, so "Msimang" survives and "Müller" does not — the same class of defect as migration 008. Verified on the
+wire: the first three bytes of every CSV are `EF BB BF`.
+
+**Formula injection is defused.** A cell beginning `=`, `+`, `-` or `@` executes when the file opens. A free-text
+fault description is attacker-adjacent and the guard costs one apostrophe.
+
+**Money exports as a bare number** with an invariant decimal point. "R 1 234,50" imports as text, and on a machine
+set to en-ZA a comma decimal separator would split one column into two.
+
+`Response.End` is deliberately not used: it raises `ThreadAbortException`, which `Global.asax` catches and logs, so
+every successful download would fill the error log. Verified — no such entries after eight exports.
+
+**The five Sprint matrix reports** the gap analysis listed are now delivered: Ticket Sales, Driver Schedule,
+Maintenance Schedule, Route List, and the Fuel Efficiency report from FIX-001. That closes AUD-001 in full.
+
 Shared helper, UTF-8-BOM CSV, HTML-table `.xls`; every report and table gets an Export action.
 
 **Added acceptance criteria:**

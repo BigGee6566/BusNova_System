@@ -46,6 +46,13 @@
             </asp:Panel>
 
             <asp:Panel ID="pnlResults" runat="server" Visible="false">
+                <div class="ops-actions">
+                <asp:Button ID="btnCsv" runat="server" Text="Export CSV"
+                            CssClass="bn-btn bn-btn--secondary" OnClick="btnCsv_Click" />
+                <asp:Button ID="btnExcel" runat="server" Text="Export Excel"
+                            CssClass="bn-btn bn-btn--secondary" OnClick="btnExcel_Click" />
+                </div>
+
                 <div class="ops-grid-wrap">
                     <asp:GridView ID="gvBuses" runat="server" CssClass="ops-grid"
                                   AutoGenerateColumns="false" GridLines="None"

@@ -211,6 +211,34 @@
                                             <span class="bn-sidebar__nav-text">Maintenance Due</span>
                                         </a>
                                     </li>
+                                <li>
+                                    <a class="<%= GetSidebarNavClass("ReportTicketSales.aspx") %>" href="ReportTicketSales.aspx"
+                                       data-label="Ticket Sales" aria-label="Ticket Sales"<%= GetAriaCurrent("ReportTicketSales.aspx") %>>
+                                        <i class="fas fa-receipt bn-sidebar__nav-icon" aria-hidden="true"></i>
+                                        <span class="bn-sidebar__nav-text">Ticket Sales</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="<%= GetSidebarNavClass("ReportDriverSchedule.aspx") %>" href="ReportDriverSchedule.aspx"
+                                       data-label="Driver Schedule" aria-label="Driver Schedule"<%= GetAriaCurrent("ReportDriverSchedule.aspx") %>>
+                                        <i class="fas fa-calendar-check bn-sidebar__nav-icon" aria-hidden="true"></i>
+                                        <span class="bn-sidebar__nav-text">Driver Schedule</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="<%= GetSidebarNavClass("ReportMaintenanceSchedule.aspx") %>" href="ReportMaintenanceSchedule.aspx"
+                                       data-label="Maintenance Schedule" aria-label="Maintenance Schedule"<%= GetAriaCurrent("ReportMaintenanceSchedule.aspx") %>>
+                                        <i class="fas fa-screwdriver-wrench bn-sidebar__nav-icon" aria-hidden="true"></i>
+                                        <span class="bn-sidebar__nav-text">Maintenance Schedule</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="<%= GetSidebarNavClass("ReportRouteList.aspx") %>" href="ReportRouteList.aspx"
+                                       data-label="Route List" aria-label="Route List"<%= GetAriaCurrent("ReportRouteList.aspx") %>>
+                                        <i class="fas fa-list bn-sidebar__nav-icon" aria-hidden="true"></i>
+                                        <span class="bn-sidebar__nav-text">Route List</span>
+                                    </a>
+                                </li>
                                 </ul>
                             </div>
 
