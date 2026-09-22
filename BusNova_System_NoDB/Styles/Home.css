@@ -1,4 +1,59 @@
-﻿body {
+﻿/* ===============================
+   COLOUR TOKENS
+
+   The single source of truth for BusNova's palette. Home.css is the only
+   stylesheet loaded unconditionally on every page (Site.Master links it
+   directly, since the nav bar and footer live here) - style.css, Ops.css
+   and SeatMap.css all rely on these variables being defined by the time
+   they render, rather than each redefining its own copy of the same
+   handful of hex values.
+
+   Blue is the dominant identity throughout; purple, amber, cyan, green
+   and red are secondary accents reserved for specific roles (see each
+   token's comment) rather than general-purpose UI colour.
+================================ */
+:root {
+    /* Dark navy - footer, headings, strong-contrast text on a light ground. */
+    --bn-navy: #14213D;
+    --bn-navy-rgb: 20, 33, 61;
+
+    /* Medium/royal blue - primary actions, active nav, links, key icons. */
+    --bn-blue: #2563EB;
+    --bn-blue-rgb: 37, 99, 235;
+    --bn-blue-deep: #1D4ED8;
+
+    /* Light blue - panels, information sections, and cards that need to
+       read as "content area" without the flatness of plain white. */
+    --bn-blue-pale: #EAF2FF;
+
+    /* Cyan/turquoise - small highlights only (a badge, a subtle accent),
+       never a primary action colour. */
+    --bn-cyan: #06B6D4;
+
+    /* Purple - reserved for role indicators and quick-access icons, not
+       general buttons or links (that's what --bn-blue is for). */
+    --bn-purple: #7C3AED;
+
+    /* Amber/orange - warnings, pending states, decorative highlights. */
+    --bn-amber: #FFB020;
+    --bn-amber-deep: #B8790C;
+
+    /* Green - success, valid, paid. */
+    --bn-green: #1E8A5F;
+
+    /* Red - errors, invalid, cancelled, destructive actions. */
+    --bn-red: #C0392B;
+
+    /* Neutrals. */
+    --bn-white: #FFFFFF;
+    --bn-bg: #F5F7FB;
+    --bn-text: #14213D;
+    --bn-text-secondary: #55607A;
+    --bn-text-muted: #6B7488;
+    --bn-text-faint: #8B93A8;
+}
+
+body {
 }
     /* ===============================
    HERO SECTION
@@ -33,9 +88,9 @@
     display: inline-block;
     padding: 8px 18px;
     border-radius: 30px;
-    background: rgba(37,99,235,.10);
-    border: 1px solid #2563eb;
-    color: #2563eb;
+    background: rgba(6,182,212,.12);
+    border: 1px solid var(--bn-cyan);
+    color: var(--bn-cyan);
     font-weight: 600;
     margin-bottom: 25px;
 }
@@ -45,12 +100,12 @@
 .hero-title {
     font-size: 4rem;
     font-weight: 800;
-    color: white;
+    color: var(--bn-white);
     line-height: 1.2;
 }
 
     .hero-title span {
-        color: #2563eb;
+        color: var(--bn-blue);
     }
 
 /* Description */
@@ -79,12 +134,12 @@
 }
 
 .btn-primary {
-    background: #0d6efd;
+    background: var(--bn-blue);
     border: none;
 }
 
     .btn-primary:hover {
-        background: #3d8bfd;
+        background: var(--bn-blue-deep);
         transform: translateY(-4px);
     }
 
@@ -138,14 +193,14 @@
 
 .about-section {
     padding: 90px 0;
-    background: #FFFFFF;
-    color: #14213D;
+    background: var(--bn-white);
+    color: var(--bn-text);
 }
 
 .section-tag {
     display: inline-block;
-    background: #2563eb;
-    color: white;
+    background: var(--bn-blue);
+    color: var(--bn-white);
     padding: 8px 18px;
     border-radius: 30px;
     font-size: 14px;
@@ -156,12 +211,12 @@
     font-size: 42px;
     font-weight: 700;
     margin-bottom: 25px;
-    color: #14213D;
+    color: var(--bn-text);
 }
 
 .about-section p {
     font-size: 18px;
-    color: #4B5468;
+    color: var(--bn-text-secondary);
     line-height: 1.8;
     margin-bottom: 20px;
 }
@@ -178,19 +233,19 @@
     padding: 22px 26px;
     border-radius: 12px;
     background: rgba(255,176,32,0.10);
-    border-left: 4px solid #FFB020;
+    border-left: 4px solid var(--bn-amber);
 }
 
 .stat-number {
     font-size: 2.2rem;
     font-weight: 800;
-    color: #B8790C;
+    color: var(--bn-amber-deep);
     min-width: 80px;
 }
 
 .stat-label {
     font-size: 1rem;
-    color: #4B5468;
+    color: var(--bn-text-secondary);
     font-weight: 500;
 }
 /*==================================
@@ -198,61 +253,61 @@
 ==================================*/
 
 .services-section {
-    background: #F5F7FB;
+    background: var(--bn-bg);
     padding: 90px 0;
 }
 
 .section-title {
-    color: #14213D;
+    color: var(--bn-text);
     font-size: 42px;
     font-weight: 700;
     margin-bottom: 15px;
 }
 
 .section-subtitle {
-    color: #55607A;
+    color: var(--bn-text-secondary);
     font-size: 18px;
     max-width: 700px;
     margin: auto;
 }
 
 .service-card {
-    background: #FFFFFF;
-    border: 1px solid rgba(20,33,61,.14);
+    background: var(--bn-white);
+    border: 1px solid rgba(var(--bn-navy-rgb),.14);
     border-radius: 18px;
     padding: 35px;
     height: 100%;
     transition: .4s;
     text-align: center;
-    box-shadow: 0 10px 25px rgba(20,33,61,.10);
+    box-shadow: 0 10px 25px rgba(var(--bn-navy-rgb),.10);
 }
 
     .service-card:hover {
         transform: translateY(-10px);
-        border-color: #4b8cff;
-        box-shadow: 0 20px 40px rgba(20,33,61,.12);
+        border-color: var(--bn-blue);
+        box-shadow: 0 20px 40px rgba(var(--bn-navy-rgb),.12);
     }
 
 .service-icon {
     font-size: 60px;
-    color: #0d6efd;
+    color: var(--bn-blue);
     margin-bottom: 20px;
     transition: all .3s ease;
 }
 
 .service-card:hover .service-icon {
-    color: #3d8bfd;
+    color: var(--bn-blue-deep);
     transform: scale(1.15);
 }
 
 .service-card h4 {
-    color: #14213D;
+    color: var(--bn-text);
     margin-bottom: 15px;
     font-weight: 600;
 }
 
 .service-card p {
-    color: #55607A;
+    color: var(--bn-text-secondary);
     font-size: 16px;
     line-height: 1.7;
 }
@@ -261,12 +316,12 @@
 ======================================*/
 
 .why-section {
-    background: #FFFFFF;
+    background: var(--bn-white);
     padding: 90px 0;
 }
 
 .why-description {
-    color: #4B5468;
+    color: var(--bn-text-secondary);
     font-size: 18px;
     line-height: 1.8;
     margin-bottom: 35px;
@@ -281,11 +336,11 @@
     align-items: center;
     margin-bottom: 22px;
     font-size: 18px;
-    color: #14213D;
+    color: var(--bn-text);
 }
 
     .feature-item i {
-        color: #2563eb;
+        color: var(--bn-blue);
         font-size: 24px;
         margin-right: 18px;
     }
@@ -319,16 +374,16 @@
 
 .cta-section {
     padding: 100px 0;
-    background: #F5F7FB;
+    background: var(--bn-bg);
 }
 
 .cta-box {
-    background: linear-gradient(135deg,#2563eb,#1d4ed8);
+    background: linear-gradient(135deg, var(--bn-blue), var(--bn-navy));
     padding: 70px 50px;
     border-radius: 25px;
     text-align: center;
-    color: white;
-    box-shadow: 0 20px 50px rgba(20,33,61,.18);
+    color: var(--bn-white);
+    box-shadow: 0 20px 50px rgba(var(--bn-navy-rgb),.18);
 }
 
     .cta-box h2 {
@@ -343,7 +398,7 @@
         max-width: 800px;
         margin: auto;
         margin-bottom: 40px;
-        color: #EAF0FF;
+        color: var(--bn-blue-pale);
     }
 
 .cta-button {
@@ -351,15 +406,15 @@
     font-size: 20px;
     font-weight: 600;
     border-radius: 50px;
-    background: white;
-    color: #2563eb;
+    background: var(--bn-white);
+    color: var(--bn-blue);
     border: none;
     transition: .4s;
 }
 
     .cta-button:hover {
-        background: #14213D;
-        color: white;
+        background: var(--bn-navy);
+        color: var(--bn-white);
         transform: translateY(-5px);
     }
 
@@ -374,8 +429,8 @@
     background: rgba(255,255,255,.96);
     backdrop-filter: blur(10px);
     padding: 15px 0;
-    box-shadow: 0 2px 12px rgba(20,33,61,.08);
-    border-bottom: 1px solid rgba(20,33,61,.06);
+    box-shadow: 0 2px 12px rgba(var(--bn-navy-rgb),.08);
+    border-bottom: 1px solid rgba(var(--bn-navy-rgb),.06);
 }
 
 .logo-img {
@@ -385,26 +440,26 @@
 }
 
 .system-name {
-    color: #14213D;
+    color: var(--bn-text);
     font-size: 22px;
     font-weight: 700;
     margin-left: 15px;
 }
 .nav-link.active {
-    color: #0d6efd !important;
+    color: var(--bn-blue) !important;
     font-weight: 700;
-    border-bottom: 2px solid #0d6efd;
+    border-bottom: 2px solid var(--bn-blue);
 }
 
 .nav-link {
-    color: #14213D !important;
+    color: var(--bn-text) !important;
     font-size: 18px;
     font-weight: 500;
     transition: .3s;
 }
 
     .nav-link:hover {
-        color: #2563eb !important;
+        color: var(--bn-blue) !important;
     }
 
 .register-btn {
@@ -443,21 +498,21 @@
 ======================================*/
 
 .footer {
-    background: #EAEEF5;
-    color: #14213D;
+    background: var(--bn-navy);
+    color: var(--bn-white);
     padding: 60px 0 20px;
-    border-top: 3px solid #0d6efd;
+    border-top: 3px solid var(--bn-blue);
 }
 
     .footer h4 {
-        color: #14213D;
+        color: var(--bn-white);
         font-size: 22px;
         font-weight: 700;
         margin-bottom: 20px;
     }
 
     .footer p {
-        color: #4B5468;
+        color: rgba(255,255,255,.72);
         font-size: 16px;
         line-height: 1.8;
     }
@@ -473,18 +528,18 @@
     }
 
     .footer-links a {
-        color: #4B5468;
+        color: rgba(255,255,255,.72);
         text-decoration: none;
         transition: all 0.3s ease;
     }
 
         .footer-links a:hover {
-            color: #0d6efd;
+            color: var(--bn-cyan);
             padding-left: 6px;
         }
 
 .footer p i {
-    color: #0d6efd;
+    color: var(--bn-cyan);
     margin-right: 10px;
     width: 20px;
 }
@@ -501,23 +556,23 @@
         height: 42px;
         margin-right: 10px;
         border-radius: 50%;
-        background: #FFFFFF;
-        border: 1px solid rgba(20,33,61,.12);
-        color: #14213D;
+        background: rgba(255,255,255,.08);
+        border: 1px solid rgba(255,255,255,.18);
+        color: var(--bn-white);
         font-size: 18px;
         text-decoration: none;
         transition: all 0.3s ease;
     }
 
         .social-icons a:hover {
-            background: #0d6efd;
-            border-color: #0d6efd;
-            color: white;
+            background: var(--bn-blue);
+            border-color: var(--bn-blue);
+            color: var(--bn-white);
             transform: translateY(-4px);
         }
 
 .footer hr {
-    border-color: rgba(20,33,61,0.12);
+    border-color: rgba(255,255,255,.14);
     margin: 40px 0 20px;
 }
 
@@ -527,6 +582,6 @@
 
     .footer-bottom p {
         margin: 0;
-        color: #6B7488;
+        color: rgba(255,255,255,.55);
         font-size: 15px;
     }

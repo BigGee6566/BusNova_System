@@ -6,7 +6,7 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
     <div class="ops-page">
-    <div class="ops-wrap" style="max-width: 1000px;">
+    <div class="ops-wrap ops-wrap--default">
 
         <a class="ops-back-link" href="Dashboard.aspx">&larr; Back to Dashboard</a>
 

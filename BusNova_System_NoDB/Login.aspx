@@ -1,6 +1,6 @@
 ﻿<%@ Page Title="Login" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Login.aspx.cs" Inherits="BusNova_System.Login" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=4" rel="stylesheet" />
+    <link href="Styles/style.css?v=6" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
      <div class="login-wrap">
@@ -14,7 +14,7 @@
          <h3 class="login-title">Sign in</h3>
 
          <div class="mb-3">
-             <label>Email</label>
+             <label for="<%= txtEmail.ClientID %>">Email<span class="required-mark">*</span></label>
              <asp:TextBox
                  ID="txtEmail"
                  runat="server"
@@ -31,7 +31,7 @@
          </div>
 
          <div class="mb-3">
-             <label>Password</label>
+             <label for="<%= txtPassword.ClientID %>">Password<span class="required-mark">*</span></label>
              <asp:TextBox
                  ID="txtPassword"
                  runat="server"
@@ -59,8 +59,7 @@
          <div class="mt-3 text-center">
              <asp:Label
                  ID="lblMessage"
-                 runat="server"
-                 ForeColor="#C0392B">
+                 runat="server">
              </asp:Label>
          </div>
 

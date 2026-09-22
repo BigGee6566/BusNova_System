@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web.UI;
@@ -310,7 +310,7 @@ namespace BusNova_System
 
             if (ticket == null)
             {
-                lblValidateResult.ForeColor = UiColors.Danger;
+                lblValidateResult.CssClass = "ops-message ops-message--danger";
                 lblValidateResult.Text = "No ticket found with that number.";
                 pnlBoarding.Visible = false;
                 hfBoardingTicketId.Value = string.Empty;
@@ -342,7 +342,7 @@ namespace BusNova_System
             int ticketId;
             if (!int.TryParse(hfBoardingTicketId.Value, out ticketId))
             {
-                lblValidateResult.ForeColor = UiColors.Danger;
+                lblValidateResult.CssClass = "ops-message ops-message--danger";
                 lblValidateResult.Text = "Look the ticket up again before marking it boarded.";
                 pnlBoarding.Visible = false;
                 return;
@@ -356,7 +356,7 @@ namespace BusNova_System
 
             if (result.Success)
             {
-                lblValidateResult.ForeColor = UiColors.Success;
+                lblValidateResult.CssClass = "ops-message ops-message--success";
                 lblValidateResult.Text = Server.HtmlEncode(
                     "Boarded. " + (ticket != null ? ticket.TicketNumber : string.Empty) +
                     " is now marked as used and cannot be used again.");
@@ -365,7 +365,7 @@ namespace BusNova_System
                 return;
             }
 
-            lblValidateResult.ForeColor = UiColors.Danger;
+            lblValidateResult.CssClass = "ops-message ops-message--danger";
             lblValidateResult.Text = Server.HtmlEncode(result.ErrorMessage);
 
             if (ticket != null) ShowTicketStatus(ticket);
@@ -385,7 +385,9 @@ namespace BusNova_System
 
             var boardable = ticket.TicketStatus == "Valid";
 
-            lblValidateResult.ForeColor = boardable ? UiColors.Success : UiColors.Danger;
+            lblValidateResult.CssClass = boardable
+                ? "ops-message ops-message--success"
+                : "ops-message ops-message--danger";
             lblValidateResult.Text = Server.HtmlEncode(summary);
 
             pnlBoarding.Visible = boardable;
@@ -415,13 +417,13 @@ namespace BusNova_System
 
         private void ShowError(string message)
         {
-            lblMessage.ForeColor = UiColors.Danger;
+            lblMessage.CssClass = "ops-message ops-message--danger";
             lblMessage.Text = Server.HtmlEncode(message);
         }
 
         private void ShowSuccess(string message)
         {
-            lblMessage.ForeColor = UiColors.Success;
+            lblMessage.CssClass = "ops-message ops-message--success";
             lblMessage.Text = Server.HtmlEncode(message);
         }
     }

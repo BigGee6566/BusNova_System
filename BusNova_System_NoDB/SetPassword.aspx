@@ -1,4 +1,4 @@
-<%@ Page Title="Set Password" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="SetPassword.aspx.cs" Inherits="BusNova_System.SetPassword" %>
+﻿<%@ Page Title="Set Password" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="SetPassword.aspx.cs" Inherits="BusNova_System.SetPassword" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="Styles/style.css?v=6" rel="stylesheet" />
 </asp:Content>
@@ -81,8 +81,7 @@
         <div class="mt-3 text-center">
             <asp:Label
                 ID="lblMessage"
-                runat="server"
-                ForeColor="#C0392B">
+                runat="server">
             </asp:Label>
         </div>
 

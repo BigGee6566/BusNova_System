@@ -16,8 +16,14 @@ namespace BusNova_System
 
         protected global::System.Web.UI.WebControls.Literal litSubheading;
 
-        // ----- Fleet Manager -----
-        protected global::System.Web.UI.WebControls.PlaceHolder phFleetManager;
+        // ----- Manager (Administrator + Fleet Manager + Ticket Conductor) -----
+        protected global::System.Web.UI.WebControls.PlaceHolder phManager;
+
+        protected global::System.Web.UI.WebControls.Literal litStaffCount;
+
+        protected global::System.Web.UI.WebControls.Literal litPassengerCount;
+
+        protected global::System.Web.UI.WebControls.Literal litDeactivatedCount;
 
         protected global::System.Web.UI.WebControls.Literal litBusCount;
 
@@ -36,6 +42,8 @@ namespace BusNova_System
         protected global::System.Web.UI.WebControls.GridView gvRoutes;
 
         protected global::System.Web.UI.WebControls.GridView gvAssignments;
+
+        protected global::System.Web.UI.WebControls.Literal litConductorTickets;
 
         // ----- Driver -----
         protected global::System.Web.UI.WebControls.PlaceHolder phDriver;

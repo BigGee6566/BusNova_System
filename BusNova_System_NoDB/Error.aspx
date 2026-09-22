@@ -1,7 +1,7 @@
-<%@ Page Title="Something went wrong" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Error.aspx.cs" Inherits="BusNova_System.ErrorPage" %>
+﻿<%@ Page Title="Something went wrong" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Error.aspx.cs" Inherits="BusNova_System.ErrorPage" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=5" rel="stylesheet" />
-    <link href="Styles/Ops.css?v=5" rel="stylesheet" />
+    <link href="Styles/style.css?v=6" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=6" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
@@ -12,9 +12,9 @@
             <h3 class="ops-title"><asp:Literal ID="litTitle" runat="server" /></h3>
             <div class="ops-subtitle"><asp:Literal ID="litMessage" runat="server" /></div>
 
-            <p style="color:#55607A; font-size:0.85rem; margin-top:18px;">
+            <p class="bn-note bn-mt-5">
                 If this keeps happening, note what you were doing at the time and
-                report it to your system administrator.
+                report it to a system Manager.
             </p>
 
             <div class="ops-actions">

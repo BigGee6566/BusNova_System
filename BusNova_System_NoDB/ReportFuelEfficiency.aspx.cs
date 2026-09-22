@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Globalization;
 using System.Linq;
 using System.Web.UI;
@@ -139,7 +139,7 @@ namespace BusNova_System
 
         private void ShowError(string message)
         {
-            lblMessage.ForeColor = UiColors.Danger;
+            lblMessage.CssClass = "ops-message ops-message--danger";
             lblMessage.Text = Server.HtmlEncode(message);
         }
     }

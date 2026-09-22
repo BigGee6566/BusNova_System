@@ -1,12 +1,12 @@
-<%@ Page Title="My Schedule" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ViewAssignedRoutes.aspx.cs" Inherits="BusNova_System.ViewAssignedRoutes" %>
+﻿<%@ Page Title="My Schedule" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ViewAssignedRoutes.aspx.cs" Inherits="BusNova_System.ViewAssignedRoutes" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=5" rel="stylesheet" />
-    <link href="Styles/Ops.css?v=5" rel="stylesheet" />
+    <link href="Styles/style.css?v=6" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=6" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
     <div class="ops-page">
-    <div class="ops-wrap" style="max-width: 1000px;">
+    <div class="ops-wrap ops-wrap--default">
 
         <a class="ops-back-link" href="Dashboard.aspx">&larr; Back to Dashboard</a>
 
@@ -29,7 +29,8 @@
                     GridLines="None"
                     DataKeyNames="AssignmentId"
                     EmptyDataText="No routes assigned yet."
-                    OnRowCommand="gvAssignedRoutes_RowCommand">
+                    OnRowCommand="gvAssignedRoutes_RowCommand"
+                    OnRowDataBound="gvAssignedRoutes_RowDataBound">
                     <Columns>
                         <asp:BoundField DataField="AssignmentId" HeaderText="Trip" />
                         <asp:BoundField DataField="RouteName" HeaderText="Route" />
@@ -96,15 +97,15 @@
 
             <%-- Shown only while a trip is being completed, so that the driver
                  can record how many passengers actually travelled (R018). --%>
-            <asp:Panel ID="pnlComplete" runat="server" Visible="false"
-                       style="margin-top:22px; padding:18px; border:1px solid rgba(20,33,61,0.16); border-radius:12px; background:#F5F7FB;">
+            <asp:Panel CssClass="bn-callout bn-mt-6" ID="pnlComplete" runat="server" Visible="false"
+                      >
 
-                <h5 style="margin:0 0 4px; color:#14213D; font-size:1rem;">Complete trip</h5>
-                <div class="ops-subtitle" style="margin-bottom:14px;">
+                <h5 class="bn-subheading--sm">Complete trip</h5>
+                <div class="ops-subtitle bn-mb-4">
                     <asp:Literal ID="litCompleteTrip" runat="server" />
                 </div>
 
-                <label>Passenger count</label>
+                <label for="<%= txtCompletePassengers.ClientID %>">Passenger count</label>
                 <asp:TextBox ID="txtCompletePassengers" runat="server"
                              CssClass="form-control" MaxLength="3"
                              placeholder="How many passengers travelled?" />

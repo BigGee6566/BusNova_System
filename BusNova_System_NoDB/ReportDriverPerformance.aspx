@@ -1,4 +1,4 @@
-<%@ Page Title="Driver Performance" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ReportDriverPerformance.aspx.cs" Inherits="BusNova_System.ReportDriverPerformance" %>
+﻿<%@ Page Title="Driver Performance" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ReportDriverPerformance.aspx.cs" Inherits="BusNova_System.ReportDriverPerformance" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="Styles/style.css?v=6" rel="stylesheet" />
     <link href="Styles/Ops.css?v=6" rel="stylesheet" />
@@ -7,7 +7,7 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
     <div class="ops-page">
-    <div class="ops-wrap" style="max-width: 1180px;">
+    <div class="ops-wrap ops-wrap--wide">
 
         <div class="ops-box">
 

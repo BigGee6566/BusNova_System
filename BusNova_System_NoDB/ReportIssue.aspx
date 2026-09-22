@@ -1,4 +1,4 @@
-<%@ Page Title="Report Issue" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ReportIssue.aspx.cs" Inherits="BusNova_System.ReportIssue" %>
+﻿<%@ Page Title="Report Issue" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ReportIssue.aspx.cs" Inherits="BusNova_System.ReportIssue" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="Styles/style.css?v=6" rel="stylesheet" />
     <link href="Styles/Ops.css?v=6" rel="stylesheet" />
@@ -6,7 +6,7 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
     <div class="ops-page">
-    <div class="ops-wrap" style="max-width: 900px;">
+    <div class="ops-wrap ops-wrap--default">
 
         <a class="ops-back-link" href="Dashboard.aspx">&larr; Back to Dashboard</a>
 
@@ -116,8 +116,8 @@
 
         </div>
 
-        <div class="ops-box" style="margin-top:24px;">
-            <h3 class="ops-title" style="font-size:1.1rem;">Issues you've reported</h3>
+        <div class="ops-box bn-mt-6">
+            <h3 class="ops-title bn-subheading">Issues you've reported</h3>
             <div class="ops-grid-wrap">
                 <asp:GridView ID="gvMyReports" runat="server" CssClass="ops-grid"
                               AutoGenerateColumns="false" GridLines="None"

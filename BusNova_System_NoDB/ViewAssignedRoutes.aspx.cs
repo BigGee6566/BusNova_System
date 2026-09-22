@@ -1,6 +1,7 @@
-using System;
+﻿using System;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using BusNova_System.Helpers;
 using BusNova_System.Models;
 using BusNova_System.Security;
 using BusNova_System.Services;
@@ -38,6 +39,13 @@ namespace BusNova_System
 
         protected void gvAssignedRoutes_RowCommand(object sender, GridViewCommandEventArgs e)
         {
+            if (!AntiForgery.IsValid(((Site)Master).CsrfToken))
+            {
+                ShowError("Your session has expired. Please refresh the page and try again.");
+                BindSchedule();
+                return;
+            }
+
             int assignmentId;
             if (!int.TryParse(Convert.ToString(e.CommandArgument), out assignmentId)) return;
 
@@ -84,6 +92,13 @@ namespace BusNova_System
 
         protected void btnConfirmComplete_Click(object sender, EventArgs e)
         {
+            if (!AntiForgery.IsValid(((Site)Master).CsrfToken))
+            {
+                ShowError("Your session has expired. Please refresh the page and try again.");
+                pnlComplete.Visible = false;
+                return;
+            }
+
             if (!Page.IsValid) return;
 
             int assignmentId;
@@ -135,6 +150,11 @@ namespace BusNova_System
             lblMessage.Text = string.Empty;
         }
 
+        protected void gvAssignedRoutes_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            GridViewHelpers.ApplyResponsiveLabels(e, gvAssignedRoutes);
+        }
+
         // ---------------- formatting helpers used by the markup ----------------
 
         protected string FormatTime(object value)
@@ -153,13 +173,13 @@ namespace BusNova_System
 
         private void ShowError(string message)
         {
-            lblMessage.ForeColor = System.Drawing.ColorTranslator.FromHtml("#C0392B");
+            lblMessage.CssClass = "ops-message ops-message--danger";
             lblMessage.Text = Server.HtmlEncode(message);
         }
 
         private void ShowSuccess(string message)
         {
-            lblMessage.ForeColor = System.Drawing.ColorTranslator.FromHtml("#1E8A5F");
+            lblMessage.CssClass = "ops-message ops-message--success";
             lblMessage.Text = Server.HtmlEncode(message);
         }
     }

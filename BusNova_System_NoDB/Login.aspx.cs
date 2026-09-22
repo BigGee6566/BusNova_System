@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Web;
 using System.Web.UI;
 using BusNova_System.Security;
@@ -40,10 +40,20 @@ namespace BusNova_System
             {
                 ShowError("Your session expired. Please sign in again.");
             }
+            else if (Request.QueryString["passwordset"] == "1")
+            {
+                ShowSuccess("Your password has been set - you can sign in now.");
+            }
         }
 
         protected void btnLogin_Click(object sender, EventArgs e)
         {
+            if (!AntiForgery.IsValid(((Site)Master).CsrfToken))
+            {
+                ShowError("Your session has expired. Please refresh the page and try again.");
+                return;
+            }
+
             if (!Page.IsValid) return;
 
             var email = txtEmail.Text.Trim();
@@ -96,13 +106,13 @@ namespace BusNova_System
 
         private void ShowError(string message)
         {
-            lblMessage.ForeColor = System.Drawing.ColorTranslator.FromHtml("#C0392B");
+            lblMessage.CssClass = "ops-message ops-message--danger";
             lblMessage.Text = Server.HtmlEncode(message);
         }
 
         private void ShowSuccess(string message)
         {
-            lblMessage.ForeColor = System.Drawing.ColorTranslator.FromHtml("#1E8A5F");
+            lblMessage.CssClass = "ops-message ops-message--success";
             lblMessage.Text = Server.HtmlEncode(message);
         }
     }

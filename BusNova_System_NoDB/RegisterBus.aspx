@@ -1,7 +1,7 @@
 <%@ Page Title="Register Bus" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="RegisterBus.aspx.cs" Inherits="BusNova_System.RegisterBus" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=4" rel="stylesheet" />
-    <link href="Styles/Ops.css?v=4" rel="stylesheet" />
+    <link href="Styles/style.css?v=6" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=6" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
@@ -17,7 +17,7 @@
 
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label>Registration Number</label>
+                    <label for="<%= txtRegistrationNumber.ClientID %>">Registration Number<span class="required-mark">*</span></label>
                     <asp:TextBox
                         ID="txtRegistrationNumber"
                         runat="server"
@@ -35,7 +35,7 @@
                 </div>
 
                 <div class="col-md-6 mb-3">
-                    <label>Model</label>
+                    <label for="<%= txtModel.ClientID %>">Model<span class="required-mark">*</span></label>
                     <asp:TextBox
                         ID="txtModel"
                         runat="server"
@@ -55,7 +55,7 @@
 
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label>Manufacturer</label>
+                    <label for="<%= txtManufacturer.ClientID %>">Manufacturer<span class="required-mark">*</span></label>
                     <asp:TextBox
                         ID="txtManufacturer"
                         runat="server"
@@ -73,7 +73,7 @@
                 </div>
 
                 <div class="col-md-6 mb-3">
-                    <label>Seating Capacity</label>
+                    <label for="<%= txtSeatingCapacity.ClientID %>">Seating Capacity<span class="required-mark">*</span></label>
                     <asp:TextBox
                         ID="txtSeatingCapacity"
                         runat="server"
@@ -101,7 +101,7 @@
 
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label>Fuel Type</label>
+                    <label for="<%= ddlFuelType.ClientID %>">Fuel Type<span class="required-mark">*</span></label>
                     <asp:DropDownList
                         ID="ddlFuelType"
                         runat="server"
@@ -123,7 +123,7 @@
                 </div>
 
                 <div class="col-md-6 mb-3">
-                    <label>Year of Manufacture</label>
+                    <label for="<%= txtYearOfManufacture.ClientID %>">Year of Manufacture<span class="required-mark">*</span></label>
                     <asp:TextBox
                         ID="txtYearOfManufacture"
                         runat="server"

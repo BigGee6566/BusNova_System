@@ -1,6 +1,8 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Web.UI;
+using System.Web.UI.WebControls;
+using BusNova_System.Helpers;
 using BusNova_System.Models;
 using BusNova_System.Security;
 using BusNova_System.Services;
@@ -13,6 +15,10 @@ namespace BusNova_System
     /// Which block is shown depends on the signed-in role. The Sprint 1
     /// version was headed "Fleet Manager Dashboard" but every user was sent
     /// here regardless of role, and it performed no access check at all.
+    ///
+    /// Manager's block used to be three separate ones (Administrator, Fleet
+    /// Manager, Ticket Conductor) before those roles were folded into
+    /// Manager - see Models/Entities.cs's Roles class.
     /// </summary>
     public partial class Dashboard : Page
     {
@@ -30,8 +36,8 @@ namespace BusNova_System
 
             switch (role)
             {
-                case Roles.FleetManager:
-                    BindFleetManager();
+                case Roles.Manager:
+                    BindManager();
                     break;
                 case Roles.Driver:
                     BindDriver();
@@ -45,9 +51,21 @@ namespace BusNova_System
             }
         }
 
-        private void BindFleetManager()
+        /// <summary>
+        /// Manager's dashboard - the union of what used to be three separate
+        /// blocks (Administrator's user-management stats, Fleet Manager's
+        /// fleet/route/trip stats, Ticket Conductor's tickets-today count).
+        /// </summary>
+        private void BindManager()
         {
-            phFleetManager.Visible = true;
+            phManager.Visible = true;
+
+            var employees = AdminService.GetAllEmployees();
+            var passengers = AdminService.GetAllPassengers();
+
+            litStaffCount.Text = employees.Count.ToString();
+            litPassengerCount.Text = passengers.Count.ToString();
+            litDeactivatedCount.Text = (employees.Count(x => !x.IsActive) + passengers.Count(x => !x.IsActive)).ToString();
 
             var buses = FleetService.GetAllBuses();
             var routes = FleetService.GetActiveRoutes();
@@ -57,6 +75,10 @@ namespace BusNova_System
             litRouteCount.Text = routes.Count.ToString();
             litTripsToday.Text = AssignmentService.CountToday().ToString();
             litCompletedToday.Text = AssignmentService.CountCompletedToday().ToString();
+
+            litConductorTickets.Text = TicketService.GetAllTickets()
+                .Count(t => t.PurchaseDate.Date == DateTime.Today)
+                .ToString();
 
             var overdue = buses.Count(b => b.IsServiceOverdue);
             if (overdue > 0)
@@ -125,6 +147,41 @@ namespace BusNova_System
             gvPassengerTrips.DataBind();
         }
 
+        // ---------------- responsive table support ----------------
+        // Copies each column's HeaderText onto its cell as data-label, which
+        // Ops.css uses so these tables collapse into stacked cards on a
+        // narrow screen instead of just scrolling sideways.
+
+        protected void gvBuses_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            GridViewHelpers.ApplyResponsiveLabels(e, gvBuses);
+        }
+
+        protected void gvRoutes_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            GridViewHelpers.ApplyResponsiveLabels(e, gvRoutes);
+        }
+
+        protected void gvAssignments_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            GridViewHelpers.ApplyResponsiveLabels(e, gvAssignments);
+        }
+
+        protected void gvDriverTrips_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            GridViewHelpers.ApplyResponsiveLabels(e, gvDriverTrips);
+        }
+
+        protected void gvMaintenance_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            GridViewHelpers.ApplyResponsiveLabels(e, gvMaintenance);
+        }
+
+        protected void gvPassengerTrips_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            GridViewHelpers.ApplyResponsiveLabels(e, gvPassengerTrips);
+        }
+
         // ---------------- formatting helpers used by the markup ----------------
 
         /// <summary>Renders a TimeSpan as 24-hour HH:mm.</summary>
@@ -149,25 +206,65 @@ namespace BusNova_System
             if (date.Date < DateTime.Today)
             {
                 var daysLate = (DateTime.Today - date.Date).Days;
-                return "<span style=\"color:#C0392B; font-weight:600;\">" + text +
+                // Class, not an inline style: this fragment was the one
+                // piece of styled HTML built in C# (AUD-024). The word
+                // "overdue" carries the meaning; the colour reinforces it.
+                return "<span class=\"rpt-flag-overdue\">" + text +
                        " (overdue by " + daysLate + " day" + (daysLate == 1 ? "" : "s") + ")</span>";
             }
 
             return text;
         }
 
+        /// <summary>
+        /// Every bus status that is not Active used to collapse onto one
+        /// style, so a bus in the workshop and a bus permanently off the
+        /// fleet were the same badge. A manager scanning this grid could
+        /// not tell "back on Thursday" from "never coming back".
+        /// (AUD-038)
+        /// </summary>
         protected string StatusCss(object status)
         {
-            var value = Convert.ToString(status);
-            if (value == BusStatus.Active) return "status-completed";
-            return "status-scheduled";
+            switch (Convert.ToString(status))
+            {
+                case BusStatus.Active: return "status-completed";
+                case BusStatus.UnderMaintenance: return "status-warning";
+                case BusStatus.Retired: return "status-muted";
+                default: return "status-scheduled";
+            }
         }
 
+        /// <summary>
+        /// Same defect as StatusCss, and worse here: a Cancelled trip
+        /// rendered in exactly the blue of a Scheduled one, so a trip that
+        /// is not running looked like a trip that is about to.
+        /// </summary>
         protected string TripCss(object status)
         {
-            return Convert.ToString(status) == TripStatus.Completed
-                ? "status-completed"
-                : "status-scheduled";
+            switch (Convert.ToString(status))
+            {
+                case TripStatus.Completed: return "status-completed";
+                case TripStatus.InProgress: return "status-warning";
+                case TripStatus.Cancelled: return "status-danger";
+                default: return "status-scheduled";
+            }
+        }
+
+        /// <summary>
+        /// The badge printed the stored constant verbatim, so it read
+        /// "UnderMaintenance" and "InProgress". Splits the words for
+        /// display only - the stored value is untouched. Returns encoded
+        /// markup, so the caller must not encode it again.
+        /// </summary>
+        protected string StatusText(object status)
+        {
+            var value = Convert.ToString(status);
+            if (string.IsNullOrEmpty(value)) return string.Empty;
+
+            var spaced = System.Text.RegularExpressions.Regex.Replace(
+                value, "(?<=[a-z])(?=[A-Z])", " ");
+
+            return Server.HtmlEncode(spaced);
         }
     }
 }

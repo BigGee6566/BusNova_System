@@ -1,12 +1,12 @@
-<%@ Page Title="Dashboard" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Dashboard.aspx.cs" Inherits="BusNova_System.Dashboard" %>
+﻿<%@ Page Title="Dashboard" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Dashboard.aspx.cs" Inherits="BusNova_System.Dashboard" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=5" rel="stylesheet" />
-    <link href="Styles/Ops.css?v=5" rel="stylesheet" />
+    <link href="Styles/style.css?v=6" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=6" rel="stylesheet" />
     <style>
         .dash-page {
             min-height: calc(100vh - 200px);
             padding-top: 90px;
-            background-color: #F5F7FB;
+            background-color: var(--bn-bg);
         }
 
         .dash-wrap {
@@ -16,8 +16,8 @@
         }
 
         .dash-welcome { margin-bottom: 26px; }
-        .dash-welcome h2 { margin: 0 0 6px; color: #14213D; }
-        .dash-welcome p { color: #55607A; margin: 0; }
+        .dash-welcome h2 { margin: 0 0 6px; color: var(--bn-text); }
+        .dash-welcome p { color: var(--bn-text-secondary); margin: 0; }
 
         /* Key operational numbers, shown before the actions. */
         .stat-grid {
@@ -28,9 +28,9 @@
         }
 
         .stat-card {
-            background: #FFFFFF;
-            border: 1px solid rgba(20,33,61,0.16);
-            border-left: 3px solid #2563eb;
+            background: var(--bn-white);
+            border: 1px solid rgba(var(--bn-navy-rgb),0.16);
+            border-left: 3px solid var(--bn-blue);
             border-radius: 12px;
             padding: 18px;
         }
@@ -39,19 +39,19 @@
             display: block;
             font-size: 1.7rem;
             font-weight: 700;
-            color: #14213D;
+            color: var(--bn-text);
             line-height: 1.1;
         }
 
         .stat-card .stat-caption {
             display: block;
             font-size: 0.78rem;
-            color: #6B7488;
+            color: var(--bn-text-muted);
             margin-top: 4px;
         }
 
-        .stat-card.warn { border-left-color: #C0392B; }
-        .stat-card.warn .stat-value { color: #C0392B; }
+        .stat-card.warn { border-left-color: var(--bn-red); }
+        .stat-card.warn .stat-value { color: var(--bn-red); }
 
         .dash-grid {
             display: grid;
@@ -63,25 +63,25 @@
             display: block;
             padding: 22px;
             border-radius: 12px;
-            border: 1px solid rgba(20,33,61,0.18);
-            background: #FFFFFF;
-            box-shadow: 0 4px 14px rgba(20,33,61,0.10);
+            border: 1px solid rgba(var(--bn-navy-rgb),0.18);
+            background: var(--bn-white);
+            box-shadow: 0 4px 14px rgba(var(--bn-navy-rgb),0.10);
             text-decoration: none !important;
-            color: #14213D !important;
+            color: var(--bn-text) !important;
             font-weight: 600;
             transition: transform .15s ease, box-shadow .15s ease;
         }
 
         .dash-tile:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(20,33,61,0.12);
+            box-shadow: 0 8px 20px rgba(var(--bn-navy-rgb),0.12);
         }
 
         .dash-tile .dash-tile-desc {
             display: block;
             font-weight: 400;
             font-size: 0.82rem;
-            color: #6B7488;
+            color: var(--bn-text-muted);
             margin-top: 4px;
         }
 
@@ -89,18 +89,18 @@
             margin: 34px 0 12px;
             font-size: 1.05rem;
             font-weight: 700;
-            color: #14213D;
+            color: var(--bn-text);
         }
 
         .dash-panel {
-            background: #FFFFFF;
-            border: 1px solid rgba(20,33,61,0.16);
+            background: var(--bn-white);
+            border: 1px solid rgba(var(--bn-navy-rgb),0.16);
             border-radius: 12px;
             padding: 18px;
         }
 
         .empty-note {
-            color: #6B7488;
+            color: var(--bn-text-muted);
             font-size: 0.85rem;
             margin: 0;
         }
@@ -116,10 +116,24 @@
             <p><asp:Literal ID="litSubheading" runat="server" /></p>
         </div>
 
-        <%-- ================= FLEET MANAGER ================= --%>
-        <asp:PlaceHolder ID="phFleetManager" runat="server" Visible="false">
+        <%-- ================= MANAGER =================
+             Folds in what used to be three separate dashboards
+             (Administrator, Fleet Manager, Ticket Conductor). --%>
+        <asp:PlaceHolder ID="phManager" runat="server" Visible="false">
 
             <div class="stat-grid">
+                <div class="stat-card">
+                    <span class="stat-value"><asp:Literal ID="litStaffCount" runat="server" /></span>
+                    <span class="stat-caption">Staff accounts</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value"><asp:Literal ID="litPassengerCount" runat="server" /></span>
+                    <span class="stat-caption">Passenger accounts</span>
+                </div>
+                <div class="stat-card warn">
+                    <span class="stat-value"><asp:Literal ID="litDeactivatedCount" runat="server" /></span>
+                    <span class="stat-caption">Deactivated accounts</span>
+                </div>
                 <div class="stat-card">
                     <span class="stat-value"><asp:Literal ID="litBusCount" runat="server" /></span>
                     <span class="stat-caption">Buses in the fleet</span>
@@ -136,6 +150,10 @@
                     <span class="stat-value"><asp:Literal ID="litCompletedToday" runat="server" /></span>
                     <span class="stat-caption">Completed today</span>
                 </div>
+                <div class="stat-card">
+                    <span class="stat-value"><asp:Literal ID="litConductorTickets" runat="server" /></span>
+                    <span class="stat-caption">Tickets issued today</span>
+                </div>
                 <asp:Panel ID="pnlOverdue" runat="server" CssClass="stat-card warn" Visible="false">
                     <span class="stat-value"><asp:Literal ID="litOverdue" runat="server" /></span>
                     <span class="stat-caption">Buses overdue for service</span>
@@ -143,6 +161,10 @@
             </div>
 
             <div class="dash-grid">
+                <a class="dash-tile" href="ManageUsers.aspx">
+                    Manage Users
+                    <span class="dash-tile-desc">Create staff accounts, assign roles, activate or deactivate</span>
+                </a>
                 <a class="dash-tile" href="RegisterBus.aspx">
                     Register Bus
                     <span class="dash-tile-desc">Add a new bus to the fleet</span>
@@ -155,6 +177,10 @@
                     Assign Route
                     <span class="dash-tile-desc">Assign a bus and driver to a trip</span>
                 </a>
+                <a class="dash-tile" href="IssueTicket.aspx">
+                    Issue Ticket
+                    <span class="dash-tile-desc">Sell a seat to a walk-up passenger, or look up a ticket</span>
+                </a>
             </div>
 
             <div class="dash-section-title">Fleet</div>
@@ -162,6 +188,7 @@
                 <div class="ops-grid-wrap">
                     <asp:GridView ID="gvBuses" runat="server" CssClass="ops-grid"
                                   AutoGenerateColumns="false" GridLines="None"
+                                  OnRowDataBound="gvBuses_RowDataBound"
                                   EmptyDataText="No buses registered yet. Use Register Bus to add the first one.">
                         <Columns>
                             <asp:BoundField DataField="RegistrationNumber" HeaderText="Registration" />
@@ -173,7 +200,7 @@
                             <asp:TemplateField HeaderText="Status">
                                 <ItemTemplate>
                                     <span class='<%# "status-badge " + StatusCss(Eval("Status")) %>'>
-                                        <%# Server.HtmlEncode(Convert.ToString(Eval("Status"))) %>
+                                        <%# StatusText(Eval("Status")) %>
                                     </span>
                                 </ItemTemplate>
                             </asp:TemplateField>
@@ -192,6 +219,7 @@
                 <div class="ops-grid-wrap">
                     <asp:GridView ID="gvRoutes" runat="server" CssClass="ops-grid"
                                   AutoGenerateColumns="false" GridLines="None"
+                                  OnRowDataBound="gvRoutes_RowDataBound"
                                   EmptyDataText="No routes created yet. Use Create Route to add the first one.">
                         <Columns>
                             <asp:BoundField DataField="RouteCode" HeaderText="Code" />
@@ -210,6 +238,7 @@
                 <div class="ops-grid-wrap">
                     <asp:GridView ID="gvAssignments" runat="server" CssClass="ops-grid"
                                   AutoGenerateColumns="false" GridLines="None"
+                                  OnRowDataBound="gvAssignments_RowDataBound"
                                   EmptyDataText="No trips assigned yet. Use Assign Route to schedule one.">
                         <Columns>
                             <asp:BoundField DataField="AssignmentId" HeaderText="#" />
@@ -224,7 +253,7 @@
                             <asp:TemplateField HeaderText="Status">
                                 <ItemTemplate>
                                     <span class='<%# "status-badge " + TripCss(Eval("TripStatus")) %>'>
-                                        <%# Server.HtmlEncode(Convert.ToString(Eval("TripStatus"))) %>
+                                        <%# StatusText(Eval("TripStatus")) %>
                                     </span>
                                 </ItemTemplate>
                             </asp:TemplateField>
@@ -250,6 +279,14 @@
                     My Schedule
                     <span class="dash-tile-desc">View your assigned routes and start or complete a trip</span>
                 </a>
+                <a class="dash-tile" href="LogFuel.aspx">
+                    Log Fuel
+                    <span class="dash-tile-desc">Record a refuelling against a trip or bus</span>
+                </a>
+                <a class="dash-tile" href="ReportIssue.aspx">
+                    Report Issue
+                    <span class="dash-tile-desc">Tell maintenance about a problem with a bus</span>
+                </a>
             </div>
 
             <div class="dash-section-title">Next trips</div>
@@ -257,6 +294,7 @@
                 <div class="ops-grid-wrap">
                     <asp:GridView ID="gvDriverTrips" runat="server" CssClass="ops-grid"
                                   AutoGenerateColumns="false" GridLines="None"
+                                  OnRowDataBound="gvDriverTrips_RowDataBound"
                                   EmptyDataText="No routes assigned yet.">
                         <Columns>
                             <asp:BoundField DataField="RouteName" HeaderText="Route" />
@@ -268,7 +306,7 @@
                             <asp:TemplateField HeaderText="Status">
                                 <ItemTemplate>
                                     <span class='<%# "status-badge " + TripCss(Eval("TripStatus")) %>'>
-                                        <%# Server.HtmlEncode(Convert.ToString(Eval("TripStatus"))) %>
+                                        <%# StatusText(Eval("TripStatus")) %>
                                     </span>
                                 </ItemTemplate>
                             </asp:TemplateField>
@@ -293,11 +331,19 @@
                 </div>
             </div>
 
+            <div class="dash-grid">
+                <a class="dash-tile" href="MaintenanceWork.aspx">
+                    Maintenance
+                    <span class="dash-tile-desc">View reported faults, start work, and log completed service</span>
+                </a>
+            </div>
+
             <div class="dash-section-title">Buses needing attention</div>
             <div class="dash-panel">
                 <div class="ops-grid-wrap">
                     <asp:GridView ID="gvMaintenance" runat="server" CssClass="ops-grid"
                                   AutoGenerateColumns="false" GridLines="None"
+                                  OnRowDataBound="gvMaintenance_RowDataBound"
                                   EmptyDataText="No buses are due for service in the next 14 days.">
                         <Columns>
                             <asp:BoundField DataField="RegistrationNumber" HeaderText="Registration" />
@@ -306,7 +352,7 @@
                             <asp:TemplateField HeaderText="Status">
                                 <ItemTemplate>
                                     <span class='<%# "status-badge " + StatusCss(Eval("Status")) %>'>
-                                        <%# Server.HtmlEncode(Convert.ToString(Eval("Status"))) %>
+                                        <%# StatusText(Eval("Status")) %>
                                     </span>
                                 </ItemTemplate>
                             </asp:TemplateField>
@@ -316,9 +362,8 @@
                         </Columns>
                     </asp:GridView>
                 </div>
-                <p class="empty-note" style="margin-top:14px;">
-                    Recording inspections and repairs arrives in the next iteration.
-                    This view is read-only for now.
+                <p class="empty-note bn-mt-4">
+                    Use Maintenance above to start work or log a completed service.
                 </p>
             </div>
 
@@ -327,11 +372,23 @@
         <%-- ================= PASSENGER ================= --%>
         <asp:PlaceHolder ID="phPassenger" runat="server" Visible="false">
 
+            <div class="dash-grid">
+                <a class="dash-tile" href="BookTrip.aspx">
+                    Book Trip
+                    <span class="dash-tile-desc">Search trips and book up to 5 seats, with simulated payment</span>
+                </a>
+                <a class="dash-tile" href="MyTickets.aspx">
+                    My Tickets
+                    <span class="dash-tile-desc">View or cancel your bookings</span>
+                </a>
+            </div>
+
             <div class="dash-section-title">Upcoming trips you can travel on</div>
             <div class="dash-panel">
                 <div class="ops-grid-wrap">
                     <asp:GridView ID="gvPassengerTrips" runat="server" CssClass="ops-grid"
                                   AutoGenerateColumns="false" GridLines="None"
+                                  OnRowDataBound="gvPassengerTrips_RowDataBound"
                                   EmptyDataText="There are no scheduled trips at the moment.">
                         <Columns>
                             <asp:BoundField DataField="RouteName" HeaderText="Route" />
@@ -345,8 +402,8 @@
                         </Columns>
                     </asp:GridView>
                 </div>
-                <p class="empty-note" style="margin-top:14px;">
-                    Buying a ticket arrives in the next iteration. This view is read-only for now.
+                <p class="empty-note bn-mt-4">
+                    Use Buy Ticket above to book a seat on any of these trips.
                 </p>
             </div>
 

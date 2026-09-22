@@ -370,3 +370,99 @@ textarea.bn-field__control {
     .bn-dialog__actions .bn-btn { width: 100%; }
     .bn-toasts { inset-inline: var(--bn-space-4); max-width: none; }
 }
+
+/* ============================================================
+   UTILITIES (AUD-024)
+
+   The audit found 64 inline style="" attributes across 17 pages.
+   Reading them showed they were not 64 decisions - they were six
+   patterns repeated, with slightly different pixel values each time
+   (24px here, 22px there, 18px elsewhere, all meaning "a gap").
+
+   These classes replace them with token values, so the spacing scale
+   is actually a scale rather than whatever number was typed that day.
+   Kept deliberately small: a utility for every property would just be
+   inline styles with extra steps.
+   ============================================================ */
+
+.bn-mt-2 { margin-top: var(--bn-space-2); }
+.bn-mt-3 { margin-top: var(--bn-space-3); }
+.bn-mt-4 { margin-top: var(--bn-space-4); }
+.bn-mt-6 { margin-top: var(--bn-space-6); }
+.bn-mb-2 { margin-bottom: var(--bn-space-2); }
+.bn-mb-3 { margin-bottom: var(--bn-space-3); }
+.bn-mb-4 { margin-bottom: var(--bn-space-4); }
+.bn-mb-5 { margin-bottom: var(--bn-space-5); }
+.bn-mb-6 { margin-bottom: var(--bn-space-6); }
+.bn-w-full { width: 100%; }
+
+/* Aligns a control with the bottom of a labelled field beside it -
+   the "button next to an input" row that appears on several forms. */
+.bn-align-end { display: flex; align-items: flex-end; }
+
+/* Section heading inside a card. Was font-size:1.1rem or 1rem inline,
+   depending on the page. */
+.bn-subheading {
+    font-size: var(--bn-text-lg);
+    font-weight: 600;
+    color: var(--bn-text);
+    margin: 0 0 var(--bn-space-3);
+}
+
+.bn-subheading--sm { font-size: var(--bn-text-base); }
+
+.bn-note {
+    display: block;
+    font-size: var(--bn-text-sm);
+    color: var(--bn-text-muted);
+    margin-top: var(--bn-space-1);
+}
+
+/* ---------- callout ----------
+   The bordered, tinted panel that several pages built inline - the
+   password-setup link box, the register-passenger panel, the payment
+   summary. Same shape every time, three different hand-written
+   borders. */
+
+.bn-callout {
+    padding: var(--bn-space-4);
+    border: 1px solid var(--bn-border-strong);
+    border-radius: var(--bn-radius-md);
+    background: var(--bn-surface-sunken);
+    margin-bottom: var(--bn-space-5);
+}
+
+.bn-callout--info    { background: var(--bn-primary-subtle); border-color: var(--bn-border); }
+.bn-callout--success { background: var(--bn-success-subtle); border-color: var(--bn-success); }
+
+/* ---------- content width ----------
+   Pages set max-width inline, with five different values. These are
+   the three that were actually meant. */
+
+.ops-wrap--narrow  { max-width: 760px; }
+.ops-wrap--default { max-width: 1000px; }
+.ops-wrap--wide    { max-width: 1180px; }
+
+/* The signed-in user's name in the PUBLIC navbar. It looks like a nav
+   link but is not one, so it must not offer a pointer or a hover
+   colour. The colour was previously a hard-coded #55607A - the only
+   raw hex left in any page - and is now the token it was copied from. */
+.nav-link--static {
+    color: var(--bn-text-secondary) !important;
+    cursor: default;
+}
+
+.nav-user__role { opacity: .7; }
+
+/* ---------- inline message colours ----------
+   Pages used to set lblMessage.ForeColor from Helpers/UiColors, which
+   renders a hard-coded hex as an inline style on every message - the
+   C#-generated half of AUD-024. Setting a class instead keeps the
+   colour in the token layer, where a palette change reaches it.
+
+   The colour is never the whole message: every call site also writes
+   text saying what happened, so meaning survives without it. */
+
+.ops-message--success { color: var(--bn-success) !important; }
+.ops-message--danger  { color: var(--bn-danger) !important; }
+.ops-message--warning { color: var(--bn-warning) !important; }

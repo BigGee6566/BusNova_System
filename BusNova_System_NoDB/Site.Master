@@ -527,10 +527,10 @@
                             <asp:PlaceHolder ID="phSignedIn" runat="server" Visible="false">
 
                                 <li class="nav-item ms-lg-3">
-                                    <span class="nav-link" style="color:#55607A; cursor:default;">
+                                    <span class="nav-link nav-link--static">
                                         <i class="fas fa-user"></i>
                                         <asp:Literal ID="litUserName" runat="server" />
-                                        <span style="opacity:.7;">(<asp:Literal ID="litUserRole" runat="server" />)</span>
+                                        <span class="nav-user__role">(<asp:Literal ID="litUserRole" runat="server" />)</span>
                                     </span>
                                 </li>
 

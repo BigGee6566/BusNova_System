@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Web.UI;
 using BusNova_System.Models;
 using BusNova_System.Security;
@@ -17,13 +17,19 @@ namespace BusNova_System
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            // UC3 precondition: "Fleet Manager is logged in with an active
+            // UC3 precondition: "Manager is logged in with an active
             // session (role-based access)".
-            SessionHelper.RequireRole(this, Roles.FleetManager);
+            if (!SessionHelper.RequireRole(this, Roles.Manager)) return;
         }
 
         protected void btnRegisterBus_Click(object sender, EventArgs e)
         {
+            if (!AntiForgery.IsValid(((Site)Master).CsrfToken))
+            {
+                ShowError("Your session has expired. Please refresh the page and try again.");
+                return;
+            }
+
             if (!Page.IsValid) return;
 
             var registration = txtRegistrationNumber.Text.Trim();
@@ -109,13 +115,13 @@ namespace BusNova_System
 
         private void ShowError(string message)
         {
-            lblMessage.ForeColor = System.Drawing.ColorTranslator.FromHtml("#C0392B");
+            lblMessage.CssClass = "ops-message ops-message--danger";
             lblMessage.Text = Server.HtmlEncode(message);
         }
 
         private void ShowSuccess(string message)
         {
-            lblMessage.ForeColor = System.Drawing.ColorTranslator.FromHtml("#1E8A5F");
+            lblMessage.CssClass = "ops-message ops-message--success";
             lblMessage.Text = Server.HtmlEncode(message);
         }
     }

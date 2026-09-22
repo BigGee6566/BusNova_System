@@ -1,7 +1,7 @@
-<%@ Page Title="Create Route" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="CreateRoute.aspx.cs" Inherits="BusNova_System.CreateRoute" %>
+﻿<%@ Page Title="Create Route" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="CreateRoute.aspx.cs" Inherits="BusNova_System.CreateRoute" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=4" rel="stylesheet" />
-    <link href="Styles/Ops.css?v=4" rel="stylesheet" />
+    <link href="Styles/style.css?v=6" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=6" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
@@ -17,7 +17,7 @@
 
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label>Route Code <span style="color:#C0392B;">*</span></label>
+                    <label for="<%= txtRouteCode.ClientID %>">Route Code<span class="required-mark">*</span></label>
                     <asp:TextBox
                         ID="txtRouteCode"
                         runat="server"
@@ -25,7 +25,7 @@
                         MaxLength="10"
                         placeholder="e.g. AL-EL01">
                     </asp:TextBox>
-                    <span style="display:block; font-size:0.76rem; color:#6B7488; margin-top:4px;">
+                    <span class="bn-note">
                         Short code used to identify this route, e.g. AL-EL01 for Alice to East London.
                     </span>
                     <asp:RequiredFieldValidator
@@ -46,7 +46,7 @@
                 </div>
 
                 <div class="col-md-6 mb-3">
-                    <label>Route Name <span style="color:#C0392B;">*</span></label>
+                    <label for="<%= txtRouteName.ClientID %>">Route Name<span class="required-mark">*</span></label>
                     <asp:TextBox
                         ID="txtRouteName"
                         runat="server"
@@ -67,7 +67,7 @@
             <div class="row">
 
                 <div class="col-md-6 mb-3">
-                    <label>Origin</label>
+                    <label for="<%= txtOrigin.ClientID %>">Origin<span class="required-mark">*</span></label>
                     <asp:TextBox
                         ID="txtOrigin"
                         runat="server"
@@ -87,7 +87,7 @@
 
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label>Destination</label>
+                    <label for="<%= txtDestination.ClientID %>">Destination<span class="required-mark">*</span></label>
                     <asp:TextBox
                         ID="txtDestination"
                         runat="server"
@@ -105,7 +105,7 @@
                 </div>
 
                 <div class="col-md-6 mb-3">
-                    <label>Distance (KM)</label>
+                    <label for="<%= txtDistanceKM.ClientID %>">Distance (KM)<span class="required-mark">*</span></label>
                     <asp:TextBox
                         ID="txtDistanceKM"
                         runat="server"
@@ -132,7 +132,7 @@
             </div>
 
             <div class="mb-3">
-                <label>Estimated Duration (Minutes)</label>
+                <label for="<%= txtEstimatedDuration.ClientID %>">Estimated Duration (Minutes)<span class="required-mark">*</span></label>
                 <asp:TextBox
                     ID="txtEstimatedDuration"
                     runat="server"

@@ -34,7 +34,7 @@ namespace BusNova_System.Services
     /// system exists to solve, so it is enforced in two places:
     ///
     ///   1. Here, by checking for an overlapping trip before inserting, which
-    ///      produces a clear message the Fleet Manager can act on.
+    ///      produces a clear message the Manager can act on.
     ///   2. In the database, by the UQ_Assignment_BusSlot and
     ///      UQ_Assignment_DriverSlot filtered unique indexes, which catch the
     ///      case where two managers save at the same moment and both pass the

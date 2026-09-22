@@ -6,7 +6,7 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
     <div class="ops-page">
-    <div class="ops-wrap" style="max-width: 1100px;">
+    <div class="ops-wrap ops-wrap--wide">
 
         <a class="ops-back-link" href="Dashboard.aspx">&larr; Back to Dashboard</a>
 
@@ -118,8 +118,8 @@
 
         </div>
 
-        <div class="ops-box" style="margin-top:24px;">
-            <h3 class="ops-title" style="font-size:1.1rem;">Staff accounts</h3>
+        <div class="ops-box bn-mt-6">
+            <h3 class="ops-title bn-subheading">Staff accounts</h3>
             <div class="ops-grid-wrap">
                 <asp:GridView
                     ID="gvEmployees"
@@ -170,8 +170,8 @@
             </div>
         </div>
 
-        <div class="ops-box" style="margin-top:24px;">
-            <h3 class="ops-title" style="font-size:1.1rem;">Passenger accounts</h3>
+        <div class="ops-box bn-mt-6">
+            <h3 class="ops-title bn-subheading">Passenger accounts</h3>
             <div class="ops-grid-wrap">
                 <asp:GridView
                     ID="gvPassengers"

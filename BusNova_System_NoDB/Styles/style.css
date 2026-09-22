@@ -6,8 +6,8 @@ html, body {
 }
 
 body {
-    background-color: #F5F7FB;
-    color: #14213D;
+    background-color: var(--bn-bg);
+    color: var(--bn-text);
     font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
@@ -15,6 +15,14 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+}
+
+/* Consistent required-field marker, used on every form's <label> so a
+   mandatory field is flagged before a person submits and hits a
+   validator message. */
+.required-mark {
+    color: var(--bn-red);
+    margin-left: 2px;
 }
 
 /* ---------- Main area ---------- */
@@ -30,69 +38,69 @@ body {
     width: 100%;
     max-width: 440px;
     padding: 34px;
-    background: #FFFFFF;
-    border: 1px solid rgba(20,33,61,0.16);
-    border-left: 3px solid #2563eb;
+    background: var(--bn-white);
+    border: 1px solid rgba(var(--bn-navy-rgb),0.16);
+    border-left: 3px solid var(--bn-blue);
     border-radius: 14px;
-    box-shadow: 0 8px 32px rgba(20,33,61,0.14);
+    box-shadow: 0 8px 32px rgba(var(--bn-navy-rgb),0.14);
 }
 
 .reg-title {
     margin: 0 0 4px;
     font-weight: 700;
     font-size: 1.4rem;
-    color: #14213D;
+    color: var(--bn-text);
 }
 
 .reg-subtitle {
     font-size: 0.85rem;
-    color: #55607A;
+    color: var(--bn-text-secondary);
     margin-bottom: 22px;
 }
 
 label {
     font-size: 0.85rem;
-    color: #33405C;
+    color: var(--bn-text);
     margin-bottom: 4px;
     display: block;
 }
 
 .field-error {
-    color: #C0392B;
+    color: var(--bn-red);
     font-size: 0.78rem;
     display: block;
     margin-top: 4px;
 }
 
 .form-control, .form-select {
-    background: #FFFFFF;
-    border: 1px solid rgba(20,33,61,0.18);
-    color: #14213D;
+    background: var(--bn-white);
+    border: 1px solid rgba(var(--bn-navy-rgb),0.18);
+    color: var(--bn-text);
 }
 
     .form-control::placeholder {
-        color: #8B93A8;
+        color: var(--bn-text-faint);
     }
 
     .form-control:focus, .form-select:focus {
-        background: #FFFFFF;
-        border-color: #2563eb;
-        color: #14213D;
-        box-shadow: 0 0 0 0.2rem rgba(37,99,235,0.15);
+        background: var(--bn-white);
+        border-color: var(--bn-blue);
+        color: var(--bn-text);
+        box-shadow: 0 0 0 0.2rem rgba(var(--bn-blue-rgb),0.15);
     }
 
     .form-select option {
-        background: #FFFFFF;
-        color: #14213D;
+        background: var(--bn-white);
+        color: var(--bn-text);
     }
 
 .btn-register {
     width: 100%;
     margin-top: 14px;
     padding: 10px;
-    background: linear-gradient(90deg, #2563eb, #7C3AED);
+    background: linear-gradient(90deg, var(--bn-blue), var(--bn-blue-deep));
     border: none;
-    color: white;
+    color: var(--bn-white);
     font-weight: 600;
     border-radius: 8px;
 }
@@ -102,15 +110,90 @@ label {
         color: white;
     }
 
+/* ---------- Password strength meter (Register.aspx) ---------- */
+
+.pwd-strength {
+    margin-top: 10px;
+}
+
+.pwd-strength-bar {
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(var(--bn-navy-rgb),0.1);
+    overflow: hidden;
+}
+
+.pwd-strength-bar-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 3px;
+    background: var(--bn-red);
+    transition: width .2s ease, background-color .2s ease;
+}
+
+.pwd-strength--medium .pwd-strength-bar-fill { background: var(--bn-amber-deep); }
+.pwd-strength--strong .pwd-strength-bar-fill { background: var(--bn-green); }
+
+.pwd-strength-label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    margin-top: 6px;
+    color: var(--bn-red);
+}
+
+.pwd-strength--medium .pwd-strength-label { color: var(--bn-amber-deep); }
+.pwd-strength--strong .pwd-strength-label { color: var(--bn-green); }
+
+.pwd-strength-checklist {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0 0;
+    display: grid;
+    gap: 4px;
+    font-size: 0.78rem;
+    color: var(--bn-text-secondary);
+}
+
+    .pwd-strength-checklist li {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .pwd-strength-checklist li::before {
+        content: "\2713";
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        font-size: 10px;
+        line-height: 1;
+        color: transparent;
+        background: rgba(var(--bn-navy-rgb),0.12);
+        flex-shrink: 0;
+    }
+
+    .pwd-strength-checklist li.pwd-rule-met {
+        color: var(--bn-green);
+    }
+
+        .pwd-strength-checklist li.pwd-rule-met::before {
+            color: var(--bn-white);
+            background: var(--bn-green);
+        }
+
 .switch-link {
     text-align: center;
     margin-top: 16px;
     font-size: 0.85rem;
-    color: #55607A;
+    color: var(--bn-text-secondary);
 }
 
     .switch-link a {
-        color: #2563eb;
+        color: var(--bn-blue);
         text-decoration: none;
         font-weight: 600;
     }
@@ -132,11 +215,11 @@ label {
     width: 100%;
     max-width: 380px;
     padding: 32px;
-    background: #FFFFFF;
-    border: 1px solid rgba(20,33,61,0.16);
-    border-left: 3px solid #2563eb;
+    background: var(--bn-white);
+    border: 1px solid rgba(var(--bn-navy-rgb),0.16);
+    border-left: 3px solid var(--bn-blue);
     border-radius: 14px;
-    box-shadow: 0 8px 32px rgba(20,33,61,0.14);
+    box-shadow: 0 8px 32px rgba(var(--bn-navy-rgb),0.14);
 }
 
 .status-pill {
@@ -145,10 +228,10 @@ label {
     gap: 6px;
     padding: 4px 10px;
     border-radius: 20px;
-    background: rgba(37,99,235,0.08);
-    border: 1px solid rgba(37,99,235,0.3);
+    background: rgba(var(--bn-blue-rgb),0.08);
+    border: 1px solid rgba(var(--bn-blue-rgb),0.3);
     font-size: 0.72rem;
-    color: #2563eb;
+    color: var(--bn-blue);
     margin-bottom: 16px;
 }
 
@@ -156,8 +239,8 @@ label {
     width: 7px;
     height: 7px;
     border-radius: 50%;
-    background: #1E8A5F;
-    box-shadow: 0 0 6px #1E8A5F;
+    background: var(--bn-green);
+    box-shadow: 0 0 6px var(--bn-green);
     animation: pulse 1.8s infinite ease-in-out;
 }
 
@@ -175,16 +258,16 @@ label {
     margin: 0 0 22px;
     font-weight: 700;
     font-size: 1.4rem;
-    color: #14213D;
+    color: var(--bn-text);
 }
 
 .btn-login {
     width: 100%;
     margin-top: 14px;
     padding: 10px;
-    background: linear-gradient(90deg, #2563eb, #7C3AED);
+    background: linear-gradient(90deg, var(--bn-blue), var(--bn-blue-deep));
     border: none;
-    color: white;
+    color: var(--bn-white);
     font-weight: 600;
     border-radius: 8px;
 }

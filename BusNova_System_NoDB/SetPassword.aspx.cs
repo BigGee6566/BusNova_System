@@ -1,6 +1,5 @@
-using System;
+﻿using System;
 using System.Web.UI;
-using BusNova_System.Helpers;
 using BusNova_System.Security;
 using BusNova_System.Services;
 
@@ -93,7 +92,7 @@ namespace BusNova_System
 
         private void ShowError(string message)
         {
-            lblMessage.ForeColor = UiColors.Danger;
+            lblMessage.CssClass = "ops-message ops-message--danger";
             lblMessage.Text = Server.HtmlEncode(message);
         }
     }

@@ -1,6 +1,6 @@
 ﻿<%@ Page Title="Home" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Home.aspx.cs" Inherits="BusNova_System.Home" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/Home.css?v=4" rel="stylesheet" />
+    <link href="Styles/Home.css?v=6" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <!-- ===================================== -->
@@ -91,8 +91,8 @@
                             </p>
 
                             <p>
-                                It enables fleet managers, bus drivers, passengers,
-                                maintenance staff and ticket conductors to perform their daily
+                                It enables managers, bus drivers, passengers and
+                                maintenance staff to perform their daily
                                 tasks efficiently through one centralized system.
                             </p>
 

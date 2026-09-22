@@ -8,7 +8,7 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
     <div class="ops-page">
-    <div class="ops-wrap" style="max-width: 1000px;">
+    <div class="ops-wrap ops-wrap--default">
 
         <a class="ops-back-link" href="Dashboard.aspx">&larr; Back to Dashboard</a>
 
@@ -34,11 +34,11 @@
                 </div>
             </div>
 
-            <asp:Panel ID="pnlTripInfo" runat="server" Visible="false" CssClass="empty-note" style="margin-bottom:18px;">
+            <asp:Panel ID="pnlTripInfo" runat="server" Visible="false" CssClass="empty-note bn-mb-5">
                 <asp:Literal ID="litTripInfo" runat="server" />
             </asp:Panel>
 
-            <div class="ops-grid-wrap" style="margin-bottom:22px;">
+            <div class="ops-grid-wrap bn-mb-6">
                 <asp:GridView ID="gvTripTickets" runat="server" CssClass="ops-grid"
                               AutoGenerateColumns="false" GridLines="None"
                               OnRowDataBound="gvTripTickets_RowDataBound"
@@ -60,27 +60,27 @@
 
             <hr />
 
-            <h4 style="font-size:1rem; color:var(--bn-text);">Find or register the passenger</h4>
+            <h4 class="bn-subheading--sm">Find or register the passenger</h4>
             <div class="row">
                 <div class="col-md-8 mb-3">
                     <label for="<%= txtContact.ClientID %>">Passenger email or phone</label>
                     <asp:TextBox ID="txtContact" runat="server" CssClass="form-control"
                                  placeholder="e.g. name@example.com or 0821234567" />
                 </div>
-                <div class="col-md-4 mb-3" style="display:flex; align-items:flex-end;">
+                <div class="col-md-4 mb-3 bn-align-end">
                     <asp:Button ID="btnFindPassenger" runat="server" Text="Find passenger"
-                                CssClass="btn-ops-secondary" CausesValidation="false"
-                                OnClick="btnFindPassenger_Click" style="width:100%;" />
+                                CssClass="btn-ops-secondary bn-w-full" CausesValidation="false"
+                                OnClick="btnFindPassenger_Click" />
                 </div>
             </div>
 
-            <asp:Panel ID="pnlFound" runat="server" Visible="false" CssClass="empty-note" style="margin-bottom:14px;">
+            <asp:Panel ID="pnlFound" runat="server" Visible="false" CssClass="empty-note bn-mb-4">
                 Passenger found: <asp:Literal ID="litFoundName" runat="server" />
             </asp:Panel>
 
-            <asp:Panel ID="pnlRegister" runat="server" Visible="false"
-                       style="margin-bottom:18px; padding:16px; border:1px solid rgba(var(--bn-navy-rgb),0.16); border-radius:12px; background:var(--bn-blue-pale);">
-                <div class="empty-note" style="margin-bottom:10px;">
+            <asp:Panel CssClass="bn-callout bn-callout--info" ID="pnlRegister" runat="server" Visible="false"
+                      >
+                <div class="empty-note bn-mb-3">
                     No account found for that email or phone. Register the passenger now so their ticket can be issued.
                 </div>
                 <div class="row">
@@ -106,21 +106,21 @@
                             OnClick="btnRegisterPassenger_Click" />
             </asp:Panel>
 
-            <asp:Panel ID="pnlPasswordSetup" runat="server" Visible="false"
-                       style="margin-bottom:18px; padding:16px; border:1px solid rgba(30,138,95,0.35); border-radius:12px; background:rgba(30,138,95,0.08);">
-                <div style="margin-bottom:8px;">
+            <asp:Panel CssClass="bn-callout bn-callout--success" ID="pnlPasswordSetup" runat="server" Visible="false"
+                      >
+                <div class="bn-mb-2">
                     Read this link to the passenger, or let them copy it, so they can set their own
                     password before they try to sign in. It works once and expires in 48 hours.
                 </div>
                 <asp:TextBox ID="txtSetupLink" runat="server" CssClass="form-control" ReadOnly="true" />
-                <div style="margin-top:8px;">
+                <div class="bn-mt-2">
                     <asp:HyperLink ID="hlSetupLink" runat="server" Target="_blank">Open this link</asp:HyperLink>
                 </div>
             </asp:Panel>
 
             <asp:Panel ID="pnlIssue" runat="server" Visible="false" data-role="seat-form">
                 <hr />
-                <h4 style="font-size:1rem; color:var(--bn-text);">Issue the ticket</h4>
+                <h4 class="bn-subheading--sm">Issue the ticket</h4>
 
                 <div class="seat-summary">
                     <div class="seat-summary-item">
@@ -172,17 +172,17 @@
 
         </div>
 
-        <div class="ops-box" style="margin-top:24px;">
-            <h3 class="ops-title" style="font-size:1.1rem;">Validate a ticket</h3>
+        <div class="ops-box bn-mt-6">
+            <h3 class="ops-title bn-subheading">Validate a ticket</h3>
             <div class="row">
                 <div class="col-md-8 mb-3">
                     <label for="<%= txtValidateNumber.ClientID %>">Ticket number</label>
                     <asp:TextBox ID="txtValidateNumber" runat="server" CssClass="form-control" placeholder="e.g. BN-000012" />
                 </div>
-                <div class="col-md-4 mb-3" style="display:flex; align-items:flex-end;">
+                <div class="col-md-4 mb-3 bn-align-end">
                     <asp:Button ID="btnValidate" runat="server" Text="Look up"
-                                CssClass="btn-ops-secondary" CausesValidation="false"
-                                OnClick="btnValidate_Click" style="width:100%;" />
+                                CssClass="btn-ops-secondary bn-w-full" CausesValidation="false"
+                                OnClick="btnValidate_Click" />
                 </div>
             </div>
             <asp:Label ID="lblValidateResult" runat="server" CssClass="ops-message" />

@@ -1,6 +1,7 @@
-<%@ Page Title="Register" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Register.aspx.cs" Inherits="BusNova_System.Register" %>
+﻿<%@ Page Title="Register" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Register.aspx.cs" Inherits="BusNova_System.Register" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=4" rel="stylesheet" />
+    <link href="Styles/style.css?v=6" rel="stylesheet" />
+    <script src="Scripts/password-strength.js?v=1"></script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <div class="reg-wrap">
@@ -11,7 +12,7 @@
 
         <div class="row">
             <div class="col-md-6 mb-3">
-                <label>First Name</label>
+                <label for="<%= txtFirstName.ClientID %>">First Name<span class="required-mark">*</span></label>
                 <asp:TextBox
                     ID="txtFirstName"
                     runat="server"
@@ -29,7 +30,7 @@
             </div>
 
             <div class="col-md-6 mb-3">
-                <label>Last Name</label>
+                <label for="<%= txtLastName.ClientID %>">Last Name<span class="required-mark">*</span></label>
                 <asp:TextBox
                     ID="txtLastName"
                     runat="server"
@@ -48,7 +49,7 @@
         </div>
 
         <div class="mb-3">
-            <label>Email</label>
+            <label for="<%= txtRegEmail.ClientID %>">Email<span class="required-mark">*</span></label>
             <asp:TextBox
                 ID="txtRegEmail"
                 runat="server"
@@ -74,7 +75,7 @@
         </div>
 
         <div class="mb-3">
-            <label>Contact Number</label>
+            <label for="<%= txtContactNumber.ClientID %>">Contact Number<span class="required-mark">*</span></label>
             <asp:TextBox
                 ID="txtContactNumber"
                 runat="server"
@@ -102,13 +103,14 @@
         
 
         <div class="mb-3">
-            <label>Password</label>
+            <label for="<%= txtRegPassword.ClientID %>">Password<span class="required-mark">*</span></label>
             <asp:TextBox
                 ID="txtRegPassword"
                 runat="server"
                 TextMode="Password"
                 CssClass="form-control"
-                placeholder="Enter your password">
+                placeholder="Enter your password"
+                data-role="password-strength-input">
             </asp:TextBox>
             <asp:RequiredFieldValidator
                 runat="server"
@@ -120,15 +122,32 @@
             <asp:RegularExpressionValidator
                 runat="server"
                 ControlToValidate="txtRegPassword"
-                ErrorMessage="Password must be at least 8 characters."
-                ValidationExpression=".{8,}"
+                ErrorMessage="Password must be at least 8 characters and include an uppercase letter, a lowercase letter, a number and a special character."
+                ValidationExpression="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$"
                 CssClass="field-error"
                 Display="Dynamic"
                 ValidationGroup="Register" />
+
+            <%-- Live strength meter, purely a UX convenience - the
+                 RegularExpressionValidator above and PasswordPolicy on the
+                 server are what actually enforce the rule either way. --%>
+            <div class="pwd-strength" data-role="password-strength-meter" aria-live="polite">
+                <div class="pwd-strength-bar">
+                    <div class="pwd-strength-bar-fill" data-role="password-strength-fill"></div>
+                </div>
+                <div class="pwd-strength-label" data-role="password-strength-label">&nbsp;</div>
+                <ul class="pwd-strength-checklist">
+                    <li data-rule="length">At least 8 characters</li>
+                    <li data-rule="uppercase">An uppercase letter</li>
+                    <li data-rule="lowercase">A lowercase letter</li>
+                    <li data-rule="digit">A number</li>
+                    <li data-rule="special">A special character (e.g. ! @ # $ %)</li>
+                </ul>
+            </div>
         </div>
 
         <div class="mb-3">
-            <label>Confirm Password</label>
+            <label for="<%= txtConfirmPassword.ClientID %>">Confirm Password<span class="required-mark">*</span></label>
             <asp:TextBox
                 ID="txtConfirmPassword"
                 runat="server"
@@ -164,8 +183,7 @@
         <div class="mt-3 text-center">
             <asp:Label
                 ID="lblRegMessage"
-                runat="server"
-                ForeColor="#1E8A5F">
+                runat="server">
             </asp:Label>
         </div>
 
