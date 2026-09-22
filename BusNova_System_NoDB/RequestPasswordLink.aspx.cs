@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Web.UI;
 using BusNova_System.Security;
 using BusNova_System.Services;
@@ -46,8 +46,11 @@ namespace BusNova_System
             var token = AuthService.IssuePasswordSetupToken(passengerId.Value);
             if (token == null) return;
 
+            // Fragment, not query string - see AUD-022 and the comment in
+            // IssueTicket.aspx.cs. Both link producers must agree, or one
+            // of them quietly keeps leaking.
             var link = ResolveUrl("~/SetPassword.aspx") + "?pid=" + passengerId.Value +
-                       "&token=" + System.Web.HttpUtility.UrlEncode(token);
+                       "#t=" + Uri.EscapeDataString(token);
             var absoluteLink = new Uri(Request.Url, link).ToString();
 
             txtLink.Text = absoluteLink;

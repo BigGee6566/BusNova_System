@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Globalization;
@@ -344,6 +344,116 @@ WHERE PaymentTransactionID = @id AND Status = @authorised;", connection, transac
                     SafeRollback(transaction);
                     throw;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Records a refund against the payment that paid for a ticket.
+        ///
+        /// Best-effort by design. The ticket is already cancelled and the
+        /// seat already released by the time this runs; failing to write
+        /// the refund row must not undo that or throw an error page at a
+        /// passenger whose cancellation actually succeeded. A refund that
+        /// is owed but unrecorded is recoverable from the ticket's own
+        /// RefundAmount; an exception here would not be.
+        ///
+        /// Silently does nothing when the ticket has no payment behind it,
+        /// which is every ticket sold at the counter before WP-1 and every
+        /// ticket in the seed data.
+        /// </summary>
+        public static void RecordRefundForTicket(Models.Ticket ticket, RefundDecision decision,
+                                                 string reasonCode, int requestedByUserId)
+        {
+            if (ticket == null || decision == null || decision.RefundAmount <= 0m) return;
+            if (!ticket.BookingId.HasValue) return;
+
+            try
+            {
+                using (var connection = Db.OpenConnection())
+                using (var transaction = connection.BeginTransaction())
+                {
+                    try
+                    {
+                        int transactionId;
+                        using (var find = new SqlCommand(
+                            "SELECT TOP 1 PaymentTransactionID FROM dbo.PaymentTransaction " +
+                            "WHERE BookingID = @bookingId AND Status = @captured;", connection, transaction))
+                        {
+                            find.Parameters.Add(Db.P("@bookingId", ticket.BookingId.Value));
+                            find.Parameters.Add(Db.P("@captured", PaymentStatuses.Captured));
+
+                            var found = find.ExecuteScalar();
+                            if (found == null || found == DBNull.Value)
+                            {
+                                transaction.Rollback();
+                                return;
+                            }
+                            transactionId = Convert.ToInt32(found);
+                        }
+
+                        var reference = "BNREF-" + NextSequenceValue(connection, transaction, "dbo.RefundReferenceSeq")
+                            .ToString("000000");
+
+                        using (var insert = new SqlCommand(@"
+INSERT INTO dbo.PaymentRefund
+    (PaymentTransactionID, Reference, Amount, ReasonCode, Reason, Status,
+     GatewayReference, RequestedByUserID, CreatedAt, CompletedAt)
+VALUES
+    (@transactionId, @reference, @amount, @reasonCode, @reason, @status,
+     @gatewayReference, @byUserId, @now, @now);", connection, transaction))
+                        {
+                            insert.Parameters.AddRange(new[]
+                            {
+                                Db.P("@transactionId", transactionId),
+                                Db.P("@reference", reference),
+                                Db.P("@amount", decision.RefundAmount),
+                                Db.P("@reasonCode", reasonCode),
+                                Db.P("@reason", Truncate(decision.Explanation, 300)),
+                                Db.P("@status", "Succeeded"),
+                                Db.P("@gatewayReference", NewGatewayReference()),
+                                Db.P("@byUserId", requestedByUserId),
+                                Db.P("@now", AppClock.Now())
+                            });
+                            insert.ExecuteNonQuery();
+                        }
+
+                        // Partial refunds leave the payment partly refunded,
+                        // which is a different thing from fully refunded and
+                        // must not be collapsed into it.
+                        var fully = decision.RefundPercent >= 100;
+                        using (var mark = new SqlCommand(@"
+UPDATE dbo.PaymentTransaction
+SET Status = @status, UpdatedAt = @now
+WHERE PaymentTransactionID = @id AND Status = @captured;", connection, transaction))
+                        {
+                            mark.Parameters.AddRange(new[]
+                            {
+                                Db.P("@status", fully ? PaymentStatuses.Refunded : PaymentStatuses.PartiallyRefunded),
+                                Db.P("@now", AppClock.Now()),
+                                Db.P("@id", transactionId),
+                                Db.P("@captured", PaymentStatuses.Captured)
+                            });
+                            mark.ExecuteNonQuery();
+                        }
+
+                        WriteEvent(connection, transaction, transactionId, PaymentEventTypes.Refunded,
+                            PaymentStatuses.Captured,
+                            fully ? PaymentStatuses.Refunded : PaymentStatuses.PartiallyRefunded,
+                            reference + " - " + decision.Tier + " - " +
+                            decision.RefundAmount.ToString("0.00"));
+
+                        transaction.Commit();
+                    }
+                    catch
+                    {
+                        SafeRollback(transaction);
+                        throw;
+                    }
+                }
+            }
+            catch
+            {
+                // Deliberate - see the summary above.
             }
         }
 

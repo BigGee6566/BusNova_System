@@ -77,11 +77,66 @@ namespace BusNova_System
                 return;
             }
 
-            // Simulated, as the brief specifies - no real email is sent.
+            // This used to say "A copy was emailed to you" and send
+            // nothing whatsoever. It is now a real queued notification
+            // (WP-3), and the wording below says what actually happened
+            // rather than what a passenger would like to have happened.
+            //
             // SessionHelper.Email is the passenger's own registered
             // address; travellers other than the account holder have no
             // email of their own in this system; see Ticket.TravellerName.
-            ShowSuccess("Tickets sent. A copy was emailed to " + SessionHelper.Email + ".");
+            // Re-resolve and re-check ownership here rather than trusting
+            // anything carried over. Page_Load returns early on postback,
+            // so its ownership check does not run for this request, and the
+            // booking id is in the query string where a signed-in passenger
+            // could put someone else's. Same wording as Page_Load, so a
+            // visitor cannot tell "no such booking" from "not yours".
+            int bookingId;
+            Booking booking = null;
+            if (int.TryParse(Request.QueryString["bookingId"], out bookingId))
+            {
+                booking = TicketService.GetBookingById(bookingId);
+            }
+
+            if (booking == null || booking.PassengerId != SessionHelper.UserId)
+            {
+                ShowError("We couldn't find that booking on your account.");
+                return;
+            }
+
+            var tickets = TicketService.GetTicketsForBooking(booking.BookingId);
+
+            var body = new System.Text.StringBuilder();
+            body.AppendLine("Your BusNova booking " + booking.BookingReference + " is confirmed.");
+            body.AppendLine(booking.RouteName + " on " + booking.AssignmentDate.ToString("dd MMM yyyy"));
+            body.AppendLine();
+            foreach (var ticket in tickets)
+            {
+                body.AppendLine("  " + ticket.TicketNumber + "  seat " + ticket.SeatNumber +
+                                "  " + ticket.TravellerName);
+            }
+            body.AppendLine();
+            body.AppendLine("Show the QR code on your ticket when boarding, or give the conductor the ticket number.");
+
+            var id = NotificationService.Queue(
+                NotificationChannels.Email,
+                SessionHelper.Email,
+                NotificationTypes.BookingConfirmed,
+                "Your BusNova tickets - " + booking.BookingReference,
+                body.ToString(),
+                SessionHelper.UserId,
+                "Passenger",
+                booking.BookingReference);
+
+            if (id == 0)
+            {
+                ShowError("Your tickets could not be queued for sending just now. " +
+                          "They are still valid - show this page or your ticket number when boarding.");
+                return;
+            }
+
+            ShowSuccess("Queued for delivery to " + SessionHelper.Email +
+                        ". Your tickets are valid either way - you can board with the QR code on this page.");
         }
 
         /// <summary>

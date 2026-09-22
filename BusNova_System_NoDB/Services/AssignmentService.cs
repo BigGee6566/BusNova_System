@@ -36,9 +36,22 @@ namespace BusNova_System.Services
     ///   1. Here, by checking for an overlapping trip before inserting, which
     ///      produces a clear message the Manager can act on.
     ///   2. In the database, by the UQ_Assignment_BusSlot and
-    ///      UQ_Assignment_DriverSlot filtered unique indexes, which catch the
-    ///      case where two managers save at the same moment and both pass the
-    ///      check in step 1 before either has committed.
+    ///      UQ_Assignment_DriverSlot unique indexes.
+    ///
+    /// Those two are NOT equivalent, and this comment used to imply they
+    /// were. The indexes are unique on (BusID/EmployeeID, AssignmentDate,
+    /// DepartureTime), so they catch two managers saving the EXACT same
+    /// slot at the same moment. They do not catch an OVERLAP - 08:00-11:00
+    /// against 10:00-13:00 is two different departure times and passes the
+    /// index cleanly. No unique index can express an overlap; that is a
+    /// range comparison and a unique constraint has no notion of a range.
+    ///
+    /// So for the overlap case, which is the case the PID actually cares
+    /// about, step 1 is the ONLY defence. There is no database backstop
+    /// behind it, and two managers saving overlapping trips in the same
+    /// instant can still both succeed. Anyone changing this code should
+    /// know that the check below is load-bearing rather than advisory.
+    /// (AUD-013)
     /// </summary>
     public static class AssignmentService
     {
@@ -125,6 +138,27 @@ ORDER BY ra.AssignmentDate, ra.DepartureTime;";
             return Db.Query(sql, Map, Db.P("@employeeId", employeeId));
         }
 
+        /// <summary>
+        /// The next few scheduled departures, for the passenger dashboard.
+        ///
+        /// TOP in SQL rather than GetAll().Take(20) in memory. The old form
+        /// loaded every assignment ever made in order to show twenty of
+        /// them, which is fine on a seeded database and gets quietly worse
+        /// forever on a real one. (AUD-039)
+        /// </summary>
+        public static List<RouteAssignment> GetUpcomingScheduled(int max)
+        {
+            var sql = SelectColumns + @"
+WHERE ra.AssignmentDate >= @today
+  AND ra.TripStatus = 'Scheduled'
+ORDER BY ra.AssignmentDate, ra.DepartureTime
+OFFSET 0 ROWS FETCH NEXT @max ROWS ONLY;";
+
+            return Db.Query(sql, Map,
+                Db.P("@today", BusNova_System.Helpers.AppClock.Today()),
+                Db.P("@max", max));
+        }
+
         /// <summary>Trips on a given date, used by the route-completion report.</summary>
         public static List<RouteAssignment> GetByDate(DateTime date)
         {
@@ -174,6 +208,15 @@ ORDER BY ra.AssignmentDate, ra.DepartureTime;";
         ///
         /// Cancelled trips are ignored - cancelling is exactly how you free
         /// a slot up.
+        ///
+        /// The candidate rows span the day either side of the proposed
+        /// date, not just the date itself. The overlap arithmetic below was
+        /// always correct; the date filter was not. A trip departing 23:00
+        /// and running three hours crosses midnight, so on the following
+        /// morning it is a row with YESTERDAY's AssignmentDate that
+        /// overlaps - and a filter of AssignmentDate = @date could never
+        /// see it. Both a bus and a driver could therefore be double-booked
+        /// across midnight. (AUD-014)
         /// </summary>
         public static bool HasBusConflict(int busId, DateTime date, TimeSpan departure,
                                           int durationMinutes, int? excludeAssignmentId = null)
@@ -186,7 +229,7 @@ SELECT COUNT(*)
 FROM dbo.RouteAssignment ra
 INNER JOIN dbo.Route r ON r.RouteCode = ra.RouteCode
 WHERE ra.BusID = @busId
-  AND ra.AssignmentDate = @date
+  AND ra.AssignmentDate BETWEEN DATEADD(DAY, -1, @date) AND DATEADD(DAY, 1, @date)
   AND ra.TripStatus <> 'Cancelled'
   AND (@excludeId IS NULL OR ra.AssignmentID <> @excludeId)
   AND (CAST(ra.AssignmentDate AS DATETIME) + CAST(ra.DepartureTime AS DATETIME)) < @newEnd
@@ -213,7 +256,7 @@ SELECT COUNT(*)
 FROM dbo.RouteAssignment ra
 INNER JOIN dbo.Route r ON r.RouteCode = ra.RouteCode
 WHERE ra.EmployeeID = @employeeId
-  AND ra.AssignmentDate = @date
+  AND ra.AssignmentDate BETWEEN DATEADD(DAY, -1, @date) AND DATEADD(DAY, 1, @date)
   AND ra.TripStatus <> 'Cancelled'
   AND (@excludeId IS NULL OR ra.AssignmentID <> @excludeId)
   AND (CAST(ra.AssignmentDate AS DATETIME) + CAST(ra.DepartureTime AS DATETIME)) < @newEnd

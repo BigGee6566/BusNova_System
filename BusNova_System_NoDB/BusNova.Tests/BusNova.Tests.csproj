@@ -61,6 +61,9 @@
     <Compile Include="PasswordSetupTokenTests.cs" />
     <Compile Include="PaymentServiceTests.cs" />
     <Compile Include="TicketTokenTests.cs" />
+    <Compile Include="RefundPolicyTests.cs" />
+    <Compile Include="NotificationAndAnalyticsTests.cs" />
+    <Compile Include="ServiceValidationTests.cs" />
     <Compile Include="RolesTests.cs" />
     <Compile Include="TicketPricingTests.cs" />
     <Compile Include="SeatValidationTests.cs" />

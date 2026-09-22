@@ -185,14 +185,57 @@ Signed opaque token carrying no PII, `TicketValidationLog`, conductor/driver val
 **Depends on FIX-007**, which introduces the `Used` transition this package's validation flow builds on. Added acceptance criterion:
 - The QR payload is a signed opaque token, not the bare ticket number. The current implementation encodes `TicketNumber` directly, client-side, with no signature (`Scripts/ticket-confirmation.js`, `TicketConfirmation.aspx:85`) — a forged QR is currently trivial.
 
-### WP-3 Notifications
+### WP-3 Notifications — **COMPLETE** (2026-09-22)
+
+Delivered: migration 011 (`Notification`), `Services/NotificationService.cs` with `INotificationSender`,
+`Notifications.aspx` for the operator, and AUD-022's transport fix. 9 new unit tests.
+
+**Durable queue, not inline send.** A passenger completing a booking should not wait on a mail server, and a send
+that fails during checkout should not vanish. Retry uses exponential backoff capped at 30 minutes; after
+`MaxAttempts` a message is dead-lettered rather than retried forever, because a message that has failed five times
+is misaddressed and needs a person, not a sixth attempt. Dead-lettered rows are kept — "we never told the
+passenger" is exactly what someone needs to establish later.
+
+**There is no mail server, and the code says so.** `QueueOnlySender` succeeds honestly: delivery is the durable
+row, and an operator can read it. It is not a stub that reports success while discarding the message — that is
+precisely the bug this package removed, where `TicketConfirmation` told a passenger "a copy was emailed to you"
+and emailed nothing. The wording now matches what happened.
+
+**Dispatch is a button, not a timer**, because a Web Forms site has no host process that outlives a request. That
+is an honest limitation, and it is why the queue is durable: the work waits rather than being lost. A real
+scheduler later calls the same `DispatchDue`.
+
+**AUD-022** — the one-time token moved from the query string to the URL fragment, which browsers never send to any
+server. Verified end to end: the server saw only `?pid=1005`, the token arrived in the POST body, the password was
+set and the token consumed. A link pasted without the part after the `#` gets a specific message.
+
 `Notification` table with retry/backoff/dead-letter; `INotificationSender`; DB-queued by default, SMTP optional.
 
 **Absorbs AUD-022.** Added acceptance criterion:
 - The walk-up password-setup link is delivered through the notification channel rather than displayed on screen and passed in a URL query string, or — where it must still be handed over in person — the token moves out of the query string. Tokens no longer appear in IIS logs, browser history, or `Referer` headers sent to the CDN. *(AUD-022)*
 - The simulated "send to my email" action on `TicketConfirmation.aspx:73-86` becomes a real queued notification.
 
-### WP-4 Analytics dashboard
+### WP-4 Analytics dashboard — **COMPLETE** (2026-09-22)
+
+Delivered: `Services/AnalyticsService.cs`, migration 012 (7 foreign-key indexes + 3 covering indexes), a rebuilt
+manager dashboard with revenue, occupancy and a "Needs attention" table. 4 new unit tests.
+
+**Occupancy is defined, not assumed.** Seats sold over seats offered, summed independently and divided once — not
+the mean of per-trip percentages, which would let a half-empty 12-seater weigh as much as a full 60-seater.
+Cancelled tickets are excluded because they did not occupy a seat. Trips whose bus has no recorded capacity
+contribute to neither side rather than contributing a zero. No seats offered gives a dash, not 0%, because "no
+trips ran" and "trips ran empty" are different facts. The whole definition is in a tooltip on the page, so the
+figure can be argued with rather than believed.
+
+**AUD-039** — all three offenders now count in SQL rather than loading whole tables.
+**AUD-019** — verified by re-running the audit's own detection query: zero unindexed foreign keys remain.
+**AUD-014** — the overlap arithmetic was always right; the date filter was not. Candidate rows now span the day
+either side, so a trip crossing midnight is visible to the check.
+**AUD-013** — *not* fixed, because it cannot be fixed with an index. An overlap is a range comparison and a unique
+constraint has no notion of a range. What was fixed is the claim: the code and `SYSTEM_OVERVIEW.md` said the
+indexes prevented overlapping double-bookings, and they never did. The application check is now documented as the
+only defence and as load-bearing.
+
 The full metric list from the Operations brief, occupancy % per route with a worked tooltip, attention-required tables.
 
 **Absorbs AUD-013, AUD-014, AUD-019.** Added acceptance criteria:
@@ -201,7 +244,26 @@ The full metric list from the Operations brief, occupancy % per route with a wor
 - The seven unindexed foreign keys gain supporting indexes, and each dashboard query is checked for a scan that the new indexes should have removed. *(AUD-019)*
 - Dashboard counters are computed in SQL rather than by loading whole tables into memory. *(AUD-039, pulled forward from HK-2 — the analytics rewrite touches exactly these code paths.)*
 
-### WP-5 Cancellation and refund policy
+### WP-5 Cancellation and refund policy — **COMPLETE** (2026-09-22)
+
+Delivered: `Services/RefundPolicyService.cs`, migration 013 (reason, tier, amount, who, when on `dbo.Ticket`),
+refund movements into `dbo.PaymentRefund`, and an honest cancellation message. 20 new unit tests.
+
+**The tiers**, measured from the departure MOMENT and all configurable: full beyond 24h, 50% between 2h and 24h,
+none inside 2h, and no cancellation at all after departure. Operator-side cancellations refund in full regardless
+of timing — charging a passenger a late-cancellation penalty for the operator's own decision is indefensible.
+
+**"No refund but still cancellable" is deliberate.** Refusing the cancellation would keep the seat blocked for a
+passenger who is definitely not coming: the operator loses a resaleable seat and the passenger gains nothing.
+
+**AUD-015** — fixed in both halves, the service and the screen. Verified: a trip moved to today 07:30 offered zero
+Cancel buttons at 21:39, where the date-only rule would have offered one all day.
+**AUD-023** — reason code, tier, amount, who and when are stored, and the money movement is a `PaymentRefund` row
+with a `PaymentEvent`. Verified at runtime across both tiers: Full 185.00 and Partial 92.50, with the payment
+moving Captured → Refunded.
+**AUD-028** — the refund policy is tested, and so is the previously untested validation in `CreateBooking` and
+`CreateEmployee`, by calling the real methods rather than reimplementing their rules.
+
 Configurable cut-off / partial / no-refund tiers, admin cancellation, automatic seat release, reason codes, `RefundPolicyService` with unit tests.
 
 **Absorbs AUD-015, AUD-023, AUD-028.** Added acceptance criteria:

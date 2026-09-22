@@ -140,9 +140,9 @@ namespace BusNova_System
                 return;
             }
 
-            var match = AdminService.GetAllPassengers().FirstOrDefault(p =>
-                string.Equals(p.Email, contact, StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(p.PhoneNumber, contact, StringComparison.Ordinal));
+            // Matched in SQL. This used to load every passenger in the
+            // database to find one. (AUD-039)
+            var match = AdminService.FindPassengerByContact(contact);
 
             pnlPasswordSetup.Visible = false;
 
@@ -226,12 +226,32 @@ namespace BusNova_System
             SelectPassenger(newId, (firstName + " " + lastName).Trim());
             pnlRegister.Visible = false;
 
+            // The token goes in the FRAGMENT, after the '#', not the query
+            // string. A query string reaches IIS request logs, browser
+            // history and the Referer header sent to the CDN this site
+            // loads assets from; a fragment is never sent to any server.
+            // (AUD-022)
             var link = ResolveUrl("~/SetPassword.aspx") + "?pid=" + newId +
-                       "&token=" + System.Web.HttpUtility.UrlEncode(setupToken);
+                       "#t=" + Uri.EscapeDataString(setupToken);
             var absoluteLink = new Uri(Request.Url, link).ToString();
             txtSetupLink.Text = absoluteLink;
             hlSetupLink.NavigateUrl = absoluteLink;
             pnlPasswordSetup.Visible = true;
+
+            // Also queued, so the passenger has a copy that does not depend
+            // on them keeping the piece of paper. The on-screen link stays:
+            // this is a walk-up counter and the passenger is standing here.
+            NotificationService.Queue(
+                NotificationChannels.Email,
+                email,
+                NotificationTypes.PasswordSetup,
+                "Set your BusNova password",
+                "Welcome to BusNova. Use this one-time link to set your password:" +
+                Environment.NewLine + absoluteLink + Environment.NewLine +
+                "The link can only be used once. If it has expired, request a new one from the Sign in page.",
+                newId,
+                "Passenger",
+                "passenger:" + newId);
 
             ShowSuccess("Passenger registered and selected. Give them the link below to set a password.");
             UpdateIssuePanelVisibility();

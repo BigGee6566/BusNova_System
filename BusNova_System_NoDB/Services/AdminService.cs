@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using BusNova_System.DataAccess;
@@ -184,6 +184,41 @@ ORDER BY FirstName, LastName;";
                 DateRegistered = Db.GetDateTime(r, "DateRegistered"),
                 IsActive = Db.GetBool(r, "IsActive")
             });
+        }
+
+        /// <summary>
+        /// Finds one passenger by their exact email address or phone
+        /// number, for the counter screen's "find passenger" box.
+        ///
+        /// The counter used to load every passenger in the database and
+        /// match in memory (AUD-039). Matching in SQL also gets the
+        /// comparison right: email is matched case-insensitively because
+        /// addresses are, and the phone number exactly, because a phone
+        /// number that differs by a character is a different phone number.
+        /// </summary>
+        public static Passenger FindPassengerByContact(string contact)
+        {
+            contact = (contact ?? string.Empty).Trim();
+            if (contact.Length == 0) return null;
+
+            const string sql = @"
+SELECT TOP 1 PassengerID, FirstName, LastName, Email, PhoneNumber, DateRegistered, IsActive
+FROM dbo.Passenger
+WHERE LOWER(Email) = LOWER(@contact) OR PhoneNumber = @contact
+ORDER BY PassengerID;";
+
+            var matches = Db.Query(sql, r => new Passenger
+            {
+                PassengerId = Db.GetInt(r, "PassengerID"),
+                FirstName = Db.GetString(r, "FirstName"),
+                LastName = Db.GetString(r, "LastName"),
+                Email = Db.GetString(r, "Email"),
+                PhoneNumber = Db.GetString(r, "PhoneNumber"),
+                DateRegistered = Db.GetDateTime(r, "DateRegistered"),
+                IsActive = Db.GetBool(r, "IsActive")
+            }, Db.P("@contact", contact));
+
+            return matches.Count > 0 ? matches[0] : null;
         }
 
         public static bool SetPassengerActive(int passengerId, bool isActive)

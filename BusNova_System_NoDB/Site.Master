@@ -169,6 +169,13 @@
                                             <span class="bn-sidebar__nav-text">Validate Ticket</span>
                                         </a>
                                     </li>
+                                    <li>
+                                        <a class="<%= GetSidebarNavClass("Notifications.aspx") %>" href="Notifications.aspx"
+                                           data-label="Notifications" aria-label="Notifications"<%= GetAriaCurrent("Notifications.aspx") %>>
+                                            <i class="fas fa-bell bn-sidebar__nav-icon" aria-hidden="true"></i>
+                                            <span class="bn-sidebar__nav-text">Notifications</span>
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -22,6 +23,8 @@ namespace BusNova_System
     /// </summary>
     public partial class Dashboard : Page
     {
+        private static readonly CultureInfo Money = CultureInfo.GetCultureInfo("en-ZA");
+
         protected void Page_Load(object sender, EventArgs e)
         {
             // Server-side gate. Without this, typing /Dashboard.aspx works.
@@ -76,9 +79,30 @@ namespace BusNova_System
             litTripsToday.Text = AssignmentService.CountToday().ToString();
             litCompletedToday.Text = AssignmentService.CountCompletedToday().ToString();
 
-            litConductorTickets.Text = TicketService.GetAllTickets()
-                .Count(t => t.PurchaseDate.Date == DateTime.Today)
-                .ToString();
+            // Counted in SQL. This used to pull every ticket in the
+            // database into memory to count the ones bought today. (AUD-039)
+            var snapshot = AnalyticsService.GetFleetSnapshot(
+                AppClock.Today().AddDays(-29), AppClock.Today());
+
+            litConductorTickets.Text = snapshot.TicketsSoldToday.ToString();
+            litRevenueToday.Text = snapshot.RevenueToday.ToString("C", Money);
+            litRevenueMonth.Text = snapshot.RevenueMonth.ToString("C", Money);
+
+            // Occupancy is seats sold over seats offered across the window,
+            // divided once - not the mean of per-trip percentages, which
+            // would let a half-empty 12-seater weigh as much as a full
+            // 60-seater. A dash when no seats were offered, because "no
+            // trips ran" is not "trips ran empty".
+            litOccupancy.Text = snapshot.OccupancyPercent.HasValue
+                ? snapshot.OccupancyPercent.Value.ToString("0.0") + "%"
+                : "&mdash;";
+            litOccupancyDetail.Text = Server.HtmlEncode(
+                snapshot.SeatsOffered > 0
+                    ? snapshot.SeatsSold + " of " + snapshot.SeatsOffered + " seats over the last 30 days"
+                    : "No seats offered in the last 30 days");
+
+            gvAttention.DataSource = AnalyticsService.GetAttentionRequired();
+            gvAttention.DataBind();
 
             var overdue = buses.Count(b => b.IsServiceOverdue);
             if (overdue > 0)
@@ -135,16 +159,25 @@ namespace BusNova_System
         {
             phPassenger.Visible = true;
 
-            var upcoming = AssignmentService.GetAll()
-                .Where(a => a.AssignmentDate.Date >= DateTime.Today &&
-                            a.TripStatus == TripStatus.Scheduled)
-                .OrderBy(a => a.AssignmentDate)
-                .ThenBy(a => a.DepartureTime)
-                .Take(20)
-                .ToList();
-
-            gvPassengerTrips.DataSource = upcoming;
+            // TOP 20 in SQL. This used to load every assignment in the
+            // database to show twenty of them. (AUD-039)
+            gvPassengerTrips.DataSource = AssignmentService.GetUpcomingScheduled(20);
             gvPassengerTrips.DataBind();
+        }
+
+        protected void gvAttention_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            GridViewHelpers.ApplyResponsiveLabels(e, gvAttention);
+        }
+
+        protected string SeverityCss(object severity)
+        {
+            switch (Convert.ToString(severity))
+            {
+                case "danger": return "status-danger";
+                case "warning": return "status-warning";
+                default: return "status-muted";
+            }
         }
 
         // ---------------- responsive table support ----------------

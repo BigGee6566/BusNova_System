@@ -84,6 +84,7 @@
     <Content Include="PaymentSimulation.aspx" />
     <Content Include="TicketConfirmation.aspx" />
     <Content Include="ValidateTicket.aspx" />
+    <Content Include="Notifications.aspx" />
     <Content Include="MyTickets.aspx" />
     <Content Include="LogFuel.aspx" />
     <Content Include="ReportIssue.aspx" />
@@ -139,6 +140,9 @@
     <Compile Include="Services\OperationsService.cs" />
     <Compile Include="Services\PaymentService.cs" />
     <Compile Include="Services\TicketValidationService.cs" />
+    <Compile Include="Services\NotificationService.cs" />
+    <Compile Include="Services\AnalyticsService.cs" />
+    <Compile Include="Services\RefundPolicyService.cs" />
     <Compile Include="Services\TicketService.cs" />
     <Compile Include="Services\ReportingService.cs" />
     <!-- Application-level events -->
@@ -241,6 +245,13 @@
     </Compile>
     <Compile Include="ValidateTicket.aspx.designer.cs">
       <DependentUpon>ValidateTicket.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Notifications.aspx.cs">
+      <DependentUpon>Notifications.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Notifications.aspx.designer.cs">
+      <DependentUpon>Notifications.aspx</DependentUpon>
     </Compile>
     <Compile Include="MyTickets.aspx.cs">
       <DependentUpon>MyTickets.aspx</DependentUpon>

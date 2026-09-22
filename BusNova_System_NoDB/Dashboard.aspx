@@ -154,6 +154,25 @@
                     <span class="stat-value"><asp:Literal ID="litConductorTickets" runat="server" /></span>
                     <span class="stat-caption">Tickets issued today</span>
                 </div>
+                <div class="stat-card">
+                    <span class="stat-value"><asp:Literal ID="litRevenueToday" runat="server" /></span>
+                    <span class="stat-caption">Revenue today</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value"><asp:Literal ID="litRevenueMonth" runat="server" /></span>
+                    <span class="stat-caption">Revenue, last 30 days</span>
+                </div>
+                <%-- The definition is on the page, not just in the code. A
+                     percentage a manager cannot interrogate is a percentage
+                     they will either over-trust or ignore. --%>
+                <div class="stat-card"
+                     title="Seats sold divided by seats offered, across all non-cancelled trips in the last 30 days. Seats sold counts Valid and Used tickets; cancelled tickets are excluded because they did not occupy a seat. Trips whose bus has no recorded capacity are left out of both sides rather than counted as zero.">
+                    <span class="stat-value"><asp:Literal ID="litOccupancy" runat="server" /></span>
+                    <span class="stat-caption">
+                        Seat occupancy
+                        <span class="bn-note"><asp:Literal ID="litOccupancyDetail" runat="server" /></span>
+                    </span>
+                </div>
                 <asp:Panel ID="pnlOverdue" runat="server" CssClass="stat-card warn" Visible="false">
                     <span class="stat-value"><asp:Literal ID="litOverdue" runat="server" /></span>
                     <span class="stat-caption">Buses overdue for service</span>
@@ -183,9 +202,30 @@
                 </a>
             </div>
 
+            <div class="dash-section-title">Needs attention</div>
+            <div class="dash-panel">
+                <asp:GridView ID="gvAttention" runat="server" AutoGenerateColumns="false"
+                              CssClass="ops-grid" GridLines="None" UseAccessibleHeader="true"
+                              OnRowDataBound="gvAttention_RowDataBound"
+                              EmptyDataText="Nothing needs attention right now.">
+                    <Columns>
+                        <asp:BoundField DataField="Category" HeaderText="Area" />
+                        <asp:BoundField DataField="Subject" HeaderText="What" />
+                        <asp:BoundField DataField="Detail" HeaderText="Why" />
+                        <asp:TemplateField HeaderText="Priority">
+                            <ItemTemplate>
+                                <span class='<%# "status-badge " + SeverityCss(Eval("Severity")) %>'>
+                                    <%# Server.HtmlEncode(Convert.ToString(Eval("Severity")) == "danger" ? "Act now" : "Soon") %>
+                                </span>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                    </Columns>
+                </asp:GridView>
+            </div>
+
             <div class="dash-section-title">Fleet</div>
             <div class="dash-panel">
-                <div class="ops-grid-wrap">
+<div class="ops-grid-wrap">
                     <asp:GridView ID="gvBuses" runat="server" CssClass="ops-grid"
                                   AutoGenerateColumns="false" GridLines="None"
                                   OnRowDataBound="gvBuses_RowDataBound"

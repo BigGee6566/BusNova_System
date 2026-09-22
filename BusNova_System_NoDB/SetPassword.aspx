@@ -1,6 +1,10 @@
 ﻿<%@ Page Title="Set Password" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="SetPassword.aspx.cs" Inherits="BusNova_System.SetPassword" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="Styles/style.css?v=6" rel="stylesheet" />
+    <%-- Reads the one-time token out of the URL fragment. See the file
+         header and AUD-022 - the token is deliberately not in the query
+         string, because query strings reach IIS logs and Referer headers. --%>
+    <script src="Scripts/setup-token.js?v=1" defer></script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <div class="reg-wrap">
@@ -9,6 +13,12 @@
         <h3 class="reg-title">Set your password</h3>
 
         <asp:Panel ID="pnlForm" runat="server">
+
+            <%-- A plain HTML hidden input rather than asp:HiddenField: the server
+                 control does not pass through arbitrary attributes, so data-role
+                 would not reach the browser and the script would find nothing. --%>
+            <input type="hidden" id="hfToken" runat="server" data-role="setup-token" />
+
             <div class="reg-subtitle">
                 <asp:Literal ID="litIntro" runat="server" />
             </div>

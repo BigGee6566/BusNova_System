@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using BusNova_System.DataAccess;
@@ -12,6 +12,15 @@ namespace BusNova_System.Services
         public bool Success { get; set; }
         public string ErrorMessage { get; set; }
         public int NewId { get; set; }
+
+        /// <summary>
+        /// Text for the success path. A few operations succeed but still
+        /// have something to say - cancellation has to explain which refund
+        /// tier applied - and putting that in ErrorMessage would leave the
+        /// next reader parsing a field called "error" for a message that is
+        /// not one.
+        /// </summary>
+        public string Message { get; set; }
 
         public static OperationResult Ok(int id = 0)
         {

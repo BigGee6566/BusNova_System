@@ -74,13 +74,13 @@
                                     data-bn-confirm-title="Cancel this ticket?"
                                     data-bn-confirm='<%# "Ticket " + Server.HtmlEncode(Convert.ToString(Eval("TicketNumber"))) + " will be cancelled and the seat released. This cannot be undone." %>'
                                     data-bn-confirm-ok="Cancel ticket" 
-                                    Visible='<%# CanCancel(Eval("TicketStatus"), Eval("AssignmentDate")) %>'
+                                    Visible='<%# CanCancel(Eval("TicketStatus"), Eval("AssignmentDate"), Eval("DepartureTime")) %>'
                                     Text="Cancel" />
                                 <asp:Label
                                     ID="lblNoAction"
                                     runat="server"
                                     Text="&mdash;"
-                                    Visible='<%# !CanCancel(Eval("TicketStatus"), Eval("AssignmentDate")) %>' />
+                                    Visible='<%# !CanCancel(Eval("TicketStatus"), Eval("AssignmentDate"), Eval("DepartureTime")) %>' />
                             </ItemTemplate>
                         </asp:TemplateField>
                     </Columns>

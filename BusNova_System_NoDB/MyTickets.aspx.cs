@@ -46,11 +46,26 @@ namespace BusNova_System
             int ticketId;
             if (!int.TryParse(Convert.ToString(e.CommandArgument), out ticketId)) return;
 
-            var result = TicketService.CancelTicket(ticketId, SessionHelper.UserId);
+            var result = TicketService.CancelTicket(ticketId, SessionHelper.UserId,
+                CancellationReasons.PassengerRequest, SessionHelper.UserId, SessionHelper.Role);
 
             if (result.Success)
             {
-                ShowSuccess("Ticket cancelled. Any payment made has been marked refunded.");
+                // The message is the refund policy's own explanation, not a
+                // fixed sentence. It used to say "Any payment made has been
+                // marked refunded" whatever actually happened - which after
+                // WP-5 would be untrue for anything inside the cut-off.
+                ShowSuccess("Ticket cancelled. " + result.Message);
+
+                NotificationService.Queue(
+                    NotificationChannels.Email,
+                    SessionHelper.Email,
+                    NotificationTypes.TicketCancelled,
+                    "Your BusNova ticket was cancelled",
+                    "Your ticket has been cancelled." + Environment.NewLine + result.Message,
+                    SessionHelper.UserId,
+                    "Passenger",
+                    "ticket:" + ticketId);
             }
             else
             {
@@ -90,11 +105,28 @@ namespace BusNova_System
         }
 
         /// <summary>A ticket can be cancelled while it is Valid and the trip hasn't departed.</summary>
-        protected bool CanCancel(object status, object assignmentDate)
+        /// <summary>
+        /// Whether to offer a Cancel button for this row.
+        ///
+        /// Takes the departure TIME as well as the date. Comparing dates
+        /// alone offered a Cancel button all day for a trip that left at
+        /// 07:30 that morning: the service refused it, correctly, but only
+        /// after the passenger had clicked. This is the screen half of
+        /// AUD-015 - the service half is in TicketService.CancelTicket.
+        ///
+        /// This is a display rule, not the rule. RefundPolicyService
+        /// decides, and it decides again on the server when the button is
+        /// pressed; hiding the button is a courtesy, not a control.
+        /// </summary>
+        protected bool CanCancel(object status, object assignmentDate, object departureTime)
         {
             if (Convert.ToString(status) != "Valid") return false;
-            var date = Convert.ToDateTime(assignmentDate);
-            return date.Date >= DateTime.Today;
+
+            var departsAt = Convert.ToDateTime(assignmentDate).Date;
+            if (departureTime != null && departureTime != DBNull.Value)
+                departsAt = departsAt.Add((TimeSpan)departureTime);
+
+            return departsAt > AppClock.Now();
         }
 
         private void ShowError(string message)

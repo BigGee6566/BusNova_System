@@ -1,4 +1,4 @@
-# BusNova System — System Overview
+﻿# BusNova System — System Overview
 
 BusNova is an ASP.NET Web Forms application (.NET Framework 4.7.2) for a small bus operator, covering fleet/route setup, driver scheduling, fuel and maintenance logging, and passenger ticketing/booking. This document describes the architecture, roles, pages, services, and database schema as they currently stand in the working tree (which includes substantial work not yet committed to git — see [Development status](#development-status)).
 
@@ -95,7 +95,7 @@ SQL Server database `BusNovaDB`:
 | `dbo.Passenger` | Passenger accounts, including walk-up password-setup-token fields. |
 | `dbo.Bus` | Fleet vehicles, capacity, status, next service due date. |
 | `dbo.Route` | Route reference data (business code, origin/destination/distance/duration). |
-| `dbo.RouteAssignment` | A bus+driver assigned to a route on a date/time; filtered unique indexes prevent double-booking a bus or driver in an overlapping slot. |
+| `dbo.RouteAssignment` | A bus+driver assigned to a route on a date/time. `UQ_Assignment_BusSlot` and `UQ_Assignment_DriverSlot` prevent an **identical** slot only - same bus/driver, same date, same departure time. They do **not** prevent an **overlapping** one, and no unique index can: an overlap is a range comparison, and a unique constraint has no notion of a range. The application-level check in `AssignmentService.HasBusConflict` / `HasDriverConflict` is therefore the only defence against an overlapping double-booking, not a convenience in front of a database backstop. (AUD-013) |
 | `dbo.FuelLog` | Fuel purchases per bus/driver/trip. |
 | `dbo.MaintenanceLog` | One row spans a fault's life, from driver report through maintenance close-out. |
 | `dbo.Booking` | A multi-traveller booking (reference, total amount, payment status/method). |

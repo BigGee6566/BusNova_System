@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Data;
 using System.Linq;
 using BusNova_System.DataAccess;
+using BusNova_System.Helpers;
 using BusNova_System.Models;
 
 namespace BusNova_System.Services
@@ -496,12 +497,45 @@ VALUES
         }
 
         /// <summary>
+        /// Works out what cancelling a ticket would be worth, without
+        /// cancelling it. The screen shows this before asking the passenger
+        /// to confirm, so nobody discovers the penalty afterwards.
+        /// </summary>
+        public static RefundDecision PreviewCancellation(int ticketId, int passengerId, string reason)
+        {
+            var ticket = GetTicketById(ticketId);
+            if (ticket == null || ticket.PassengerId != passengerId)
+                return new RefundDecision { CanCancel = false, Explanation = "That ticket was not found on your account." };
+
+            return RefundPolicyService.Decide(ticket.TicketPrice, DepartureMoment(ticket), AppClock.Now(), reason);
+        }
+
+        /// <summary>
         /// Cancels a ticket, freeing the seat. The passenger id is part of the
         /// WHERE clause so nobody can cancel somebody else's booking by
         /// guessing a ticket id.
+        ///
+        /// WHAT CHANGED (WP-5, AUD-015 and AUD-023)
+        ///
+        /// This used to flip PaymentStatus to 'Refunded' unconditionally -
+        /// no cut-off, no partial refund, no reason code, and no record of
+        /// who cancelled or when. It also compared dates only, so a ticket
+        /// for a trip that departed at 07:30 could be cancelled at 14:00
+        /// the same day and marked refunded for a journey that had already
+        /// run.
+        ///
+        /// The refund is now decided by RefundPolicyService from the trip's
+        /// actual departure MOMENT, and what it decided is written to the
+        /// ticket: reason, tier, amount, who, when. A refund movement is
+        /// also recorded against the payment that paid for it, when there
+        /// is one.
         /// </summary>
-        public static OperationResult CancelTicket(int ticketId, int passengerId)
+        public static OperationResult CancelTicket(int ticketId, int passengerId,
+                                                   string reason = null, int? cancelledByUserId = null,
+                                                   string cancelledByRole = null)
         {
+            reason = CancellationReasons.IsKnown(reason) ? reason : CancellationReasons.PassengerRequest;
+
             var ticket = GetTicketById(ticketId);
             if (ticket == null || ticket.PassengerId != passengerId)
                 return OperationResult.Fail("That ticket was not found on your account.");
@@ -512,22 +546,58 @@ VALUES
             if (ticket.TicketStatus == "Used")
                 return OperationResult.Fail("That trip has already been travelled, so it cannot be cancelled.");
 
-            if (ticket.AssignmentDate.Date < DateTime.Today)
-                return OperationResult.Fail("That trip has already departed, so it cannot be cancelled.");
+            var decision = RefundPolicyService.Decide(
+                ticket.TicketPrice, DepartureMoment(ticket), AppClock.Now(), reason);
+
+            if (!decision.CanCancel)
+                return OperationResult.Fail(decision.Explanation);
 
             const string sql = @"
 UPDATE dbo.Ticket
 SET TicketStatus  = 'Cancelled',
-    PaymentStatus = CASE WHEN PaymentStatus = 'Paid' THEN 'Refunded' ELSE PaymentStatus END
+    PaymentStatus = CASE WHEN PaymentStatus = 'Paid' AND @refundAmount > 0
+                         THEN 'Refunded' ELSE PaymentStatus END,
+    CancellationReason = @reason,
+    CancelledAt        = @now,
+    CancelledByUserID  = @byUserId,
+    CancelledByRole    = @byRole,
+    RefundAmount       = @refundAmount,
+    RefundTier         = @tier
 WHERE TicketID = @id AND PassengerID = @passengerId AND TicketStatus = 'Valid';";
 
-            var rows = Db.Execute(sql, Db.P("@id", ticketId), Db.P("@passengerId", passengerId));
+            var rows = Db.Execute(sql,
+                Db.P("@id", ticketId),
+                Db.P("@passengerId", passengerId),
+                Db.P("@reason", reason),
+                Db.P("@now", AppClock.Now()),
+                Db.P("@byUserId", cancelledByUserId ?? passengerId),
+                Db.P("@byRole", cancelledByRole),
+                Db.P("@refundAmount", decision.RefundAmount),
+                Db.P("@tier", decision.Tier));
 
             if (rows == 0)
                 return OperationResult.Fail("That ticket could not be cancelled.");
 
-            AuditService.Write("TicketCancelled", "Ticket", ticketId.ToString(), ticket.TicketNumber);
-            return OperationResult.Ok(ticketId);
+            // The money movement belongs with the payment, not the ticket.
+            if (decision.RefundAmount > 0m)
+                PaymentService.RecordRefundForTicket(ticket, decision, reason, cancelledByUserId ?? passengerId);
+
+            AuditService.Write("TicketCancelled", "Ticket", ticketId.ToString(),
+                ticket.TicketNumber + " - " + CancellationReasons.Display(reason) +
+                ", " + decision.Tier + ", refund " + decision.RefundAmount.ToString("0.00"));
+
+            return new OperationResult { Success = true, Message = decision.Explanation };
+        }
+
+        /// <summary>
+        /// The moment a trip actually leaves - date plus departure time.
+        ///
+        /// Comparing only the date is what let a ticket for an 07:30
+        /// departure be cancelled at 14:00 the same day. (AUD-015)
+        /// </summary>
+        internal static DateTime DepartureMoment(Ticket ticket)
+        {
+            return ticket.AssignmentDate.Date.Add(ticket.DepartureTime);
         }
 
         /// <summary>
