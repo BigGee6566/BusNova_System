@@ -156,13 +156,16 @@ namespace BusNova_System
 
             if (result.Success)
             {
-                ShowSuccess("Service logged and the fault has been closed.");
+                // The message says what actually happened, including
+                // whether the bus went back on the road. LogService used to
+                // report failure in the case where the work saved but the
+                // bus had to stay grounded, and this page carried a comment
+                // explaining that contradiction rather than the service
+                // fixing it.
+                ShowSuccess(result.Message);
             }
             else
             {
-                // LogService can succeed at saving but still report a
-                // business-rule reason the bus couldn't return to service -
-                // either way the record was updated, so refresh the lists.
                 ShowError(result.ErrorMessage);
             }
 

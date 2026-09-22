@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -52,6 +52,82 @@ namespace BusNova_System.DataAccess
         public static SqlParameter P(string name, object value)
         {
             return new SqlParameter(name, value ?? DBNull.Value);
+        }
+
+        // ================================================================
+        //  Transactions
+        //
+        //  Every method above opens its own connection, which is right for
+        //  a single statement and wrong for several that must happen
+        //  together. Three service operations write to more than one table
+        //  and were doing it with separate calls, so a failure between them
+        //  left the database in a state the domain does not have - a
+        //  maintenance record closed while the bus still reads
+        //  UnderMaintenance, or a fuel row recorded against a stale
+        //  odometer. (AUD-017)
+        //
+        //  These take the connection and transaction explicitly rather than
+        //  hiding them in ambient state. It is more typing at the call
+        //  site, and it means you can see what is inside the transaction by
+        //  reading the method.
+        // ================================================================
+
+        /// <summary>
+        /// Runs <paramref name="work"/> inside a transaction, committing if
+        /// it returns and rolling back if it throws.
+        ///
+        /// The rollback is itself guarded: if the connection has already
+        /// gone, Rollback throws too, and that second exception would
+        /// replace the first one - which is the one that says what actually
+        /// went wrong.
+        /// </summary>
+        public static T InTransaction<T>(Func<SqlConnection, SqlTransaction, T> work)
+        {
+            using (var connection = OpenConnection())
+            using (var transaction = connection.BeginTransaction())
+            {
+                try
+                {
+                    var result = work(connection, transaction);
+                    transaction.Commit();
+                    return result;
+                }
+                catch
+                {
+                    try { transaction.Rollback(); } catch { /* connection already gone */ }
+                    throw;
+                }
+            }
+        }
+
+        /// <summary>INSERT / UPDATE / DELETE inside an existing transaction.</summary>
+        public static int ExecuteIn(SqlConnection connection, SqlTransaction transaction,
+                                    string sql, params SqlParameter[] parameters)
+        {
+            using (var command = new SqlCommand(sql, connection, transaction))
+            {
+                if (parameters != null) command.Parameters.AddRange(parameters);
+                return command.ExecuteNonQuery();
+            }
+        }
+
+        /// <summary>A single-value query inside an existing transaction.</summary>
+        public static object ScalarIn(SqlConnection connection, SqlTransaction transaction,
+                                      string sql, params SqlParameter[] parameters)
+        {
+            using (var command = new SqlCommand(sql, connection, transaction))
+            {
+                if (parameters != null) command.Parameters.AddRange(parameters);
+                return command.ExecuteScalar();
+            }
+        }
+
+        /// <summary>Convenience wrapper around ScalarIn for counts and inserted ids.</summary>
+        public static int ScalarIntIn(SqlConnection connection, SqlTransaction transaction,
+                                      string sql, params SqlParameter[] parameters)
+        {
+            var value = ScalarIn(connection, transaction, sql, parameters);
+            return value == null || value == DBNull.Value ? 0 : Convert.ToInt32(value);
         }
 
         /// <summary>Runs INSERT / UPDATE / DELETE. Returns rows affected.</summary>

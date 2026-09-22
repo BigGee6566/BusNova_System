@@ -53,15 +53,15 @@ namespace BusNova_System
             {
                 // The service also filters on EmployeeID, so a driver cannot
                 // start somebody else's trip by posting a different id.
-                if (AssignmentService.StartTrip(assignmentId, SessionHelper.UserId))
-                {
-                    ShowSuccess("Trip " + assignmentId + " started. Drive safely.");
-                }
-                else
-                {
-                    ShowError("That trip could not be started. It may already be under way, " +
-                              "or it may not be assigned to you.");
-                }
+                // The service now says WHICH reason applies rather than
+                // listing the possibilities, so pass its message straight
+                // through. A driver standing at a bus at 05:00 needs to know
+                // whether they are early or whether the bus is grounded.
+                // (AUD-016)
+                var start = AssignmentService.StartTrip(assignmentId, SessionHelper.UserId);
+
+                if (start.Success) ShowSuccess(start.Message);
+                else ShowError(start.ErrorMessage);
 
                 pnlComplete.Visible = false;
                 BindSchedule();

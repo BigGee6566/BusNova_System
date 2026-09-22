@@ -275,13 +275,72 @@ Configurable cut-off / partial / no-refund tiers, admin cancellation, automatic 
 
 ## 6. Phase 2 — Operational efficiency
 
-### WP-6 Maintenance management
+### WP-6 Maintenance management — **COMPLETE** (2026-09-22)
+
+Delivered: migration 014 (labour and release-approval columns, `MaintenancePart`, `BusServiceSchedule`,
+`TripInspection`), `MaintenanceScheduleService`, `MaintenancePartsService`, transaction support in `Db`, and
+AUD-017. 14 new unit tests.
+
+**AUD-017** — all three multi-statement writes are now single transactions. `Db.InTransaction` takes the
+connection and transaction explicitly rather than hiding them in ambient state: more typing at the call site, and
+you can see what is inside the transaction by reading the method. `LogService`’s "is another critical fault still
+open" check moved inside the transaction as well — outside it, two staff closing the last two critical faults at
+the same moment could both see zero others open and both put the bus back on the road.
+
+**LogService’s contract was contradictory** and is fixed: it returned `Fail` in the case where the work had
+saved but the bus had to stay grounded. The page carried a comment explaining the contradiction rather than the
+service not having it. It now always succeeds if the work saved, and says in `Message` whether the bus went back
+on the road.
+
+**Preventive schedules** express "every 15 000 km or 6 months, whichever comes first", which the single
+`Bus.NextServiceDueDate` column cannot. `Due()` is pure — odometer and clock are arguments — and says which limit
+brought the work due, because "due in 400 km" and "due in 3 days" lead to different decisions today. A schedule
+never serviced is reported as due rather than fine: no baseline means nobody knows, and "fine for another
+15 000 km" would be a guess presented as a measurement.
+
+**Parts are rows, not free text.** `PartsUsed` stays for existing records — inventing structured rows from
+"brake pads + fluid" would be making data up — but new work itemises name, number, supplier, quantity and unit
+cost, with the line total computed in the database so it cannot disagree with its inputs.
+
+**Scoped out, deliberately:** attachments and fault photos, which need a file store and an upload policy this
+brief does not settle. Release approval has its columns and is not yet enforced; turning it on means the person
+who does the work can no longer release the bus, which is an operational decision, not a code change.
+
 Odometer, inspections, preventive schedules (km or months), parts and suppliers, labour, attachments, history, overdue alerts, release approval.
 
 **Absorbs AUD-017.** Added acceptance criterion:
 - `LogService`'s multi-statement write becomes a single transaction. A forced failure partway through leaves no state in which the maintenance record is closed while the bus row still reads `UnderMaintenance`. Same for `LogFuel` and `ReportIssue`. *(AUD-017 — the fuel half is shared with WP-7.)*
 
-### WP-7 Driver mobile workspace
+### WP-7 Driver mobile workspace — **COMPLETE** (2026-09-22)
+
+Delivered: `DriverWorkspace.aspx` (+ its own stylesheet), `DriverService`, `TripInspection`, and AUD-016.
+
+**360px first**, and verified as such rather than assumed: measured under CDP device emulation at a true 360px
+viewport — `innerWidth` 360, `scrollWidth` 360, **zero** horizontal overflow, no overflowing elements, primary
+buttons 52px tall, checklist rows 48px. This is not the desktop schedule squeezed down; it is a single column of
+large targets, the trip is chosen for the driver, and the destructive action is the only red thing on the page.
+
+**AUD-016** — `StartTrip` was a single UPDATE with no gating whatsoever: a driver could start a trip scheduled
+for next month, on a bus that had been grounded since the assignment was made. It now checks the departure moment
+and the bus status, and returns a reason rather than a bool. Each branch verified at runtime; see AUD-016 in the
+findings for the exact messages.
+
+**The boarded count is taken from the tickets**, not typed by the driver. It is already recorded by the
+validation screen, so reading it from there means the trip’s passenger figure agrees with its tickets instead of
+being a second, independent guess.
+
+**An unticked inspection item means NOT CHECKED, not a fault.** Conflating the two would turn every rushed
+inspection into a maintenance backlog and bury the real faults. The counts are stored so the gap is visible
+without pretending to know what it means.
+
+**Emergency is deliberately blunt**: one button, one action, and the action is the safe one. Grounding a bus that
+turns out to be fine costs a morning; not grounding one that is not fine costs considerably more. The
+confirmation dialog stops an accidental press; once pressed it does not ask again.
+
+**Scoped out, deliberately:** the offline queue, which needs a service worker and a conflict-resolution policy for
+work submitted from a tunnel, and fault photos (see WP-6). Both are real features, not oversights, and neither is
+a small addition to this page.
+
 360px-first; manifest, checklists, pre/post-trip inspection, fuel and odometer, fault photos, emergency button, delay report, boarding count, offline queue.
 
 **Absorbs AUD-016.** Added acceptance criteria:

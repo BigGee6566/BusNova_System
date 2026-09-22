@@ -64,6 +64,7 @@
     <Compile Include="RefundPolicyTests.cs" />
     <Compile Include="NotificationAndAnalyticsTests.cs" />
     <Compile Include="ServiceValidationTests.cs" />
+    <Compile Include="MaintenanceScheduleTests.cs" />
     <Compile Include="RolesTests.cs" />
     <Compile Include="TicketPricingTests.cs" />
     <Compile Include="SeatValidationTests.cs" />

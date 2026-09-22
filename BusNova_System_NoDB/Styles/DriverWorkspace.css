@@ -1,0 +1,133 @@
+/* =============================================================
+   Driver workspace (WP-7)
+
+   360px first. Every rule here is written for the narrow case and
+   then relaxed upward, rather than written wide and patched with
+   max-width overrides - a driver reads this on a phone, at a bus,
+   often before dawn, sometimes in gloves.
+
+   Targets are deliberately large: the WCAG minimum is 24px and the
+   practical minimum for a cold thumb is rather more.
+   ============================================================= */
+
+.dw .bn-card { margin-bottom: var(--bn-space-4, 1rem); }
+
+/* ---------- the trip itself ---------- */
+
+.dw-trip { text-align: left; }
+
+.dw-route {
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--bn-text-primary);
+}
+
+.dw-when {
+    font-size: 1.05rem;
+    color: var(--bn-text-secondary);
+    margin-top: 2px;
+}
+
+.dw-bus {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    font-weight: 600;
+}
+
+/* ---------- the three numbers ---------- */
+
+.dw-counts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin: 16px 0;
+}
+
+.dw-count {
+    text-align: center;
+    padding: 10px 4px;
+    border-radius: var(--bn-radius-md, 8px);
+    background: var(--bn-surface-sunken);
+}
+
+.dw-count__value {
+    display: block;
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--bn-text-primary);
+}
+
+.dw-count__label {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--bn-text-muted);
+}
+
+/* ---------- actions ---------- */
+
+.dw-actions { display: flex; flex-direction: column; gap: 10px; }
+
+/* Full width and tall enough to hit without looking. */
+.dw-btn {
+    width: 100%;
+    min-height: 52px;
+    font-size: 1.05rem;
+}
+
+.dw-select { min-height: 48px; font-size: 1rem; }
+
+/* ---------- checklist ---------- */
+
+.dw-checks { list-style: none; margin: 0 0 12px; padding: 0; }
+
+.dw-checks li { margin: 0; }
+
+/* The whole row is the target, not just the 13px box. */
+.dw-checks label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 48px;
+    padding: 4px 2px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.dw-checks input[type="checkbox"] {
+    width: 24px;
+    height: 24px;
+    flex: 0 0 auto;
+    accent-color: var(--bn-primary, #1D4ED8);
+}
+
+/* ---------- emergency ---------- */
+
+.dw-emergency { border-color: var(--bn-danger); }
+
+.dw-emergency .bn-subheading { color: var(--bn-danger); }
+
+/* ---------- empty state ---------- */
+
+.dw-empty { text-align: center; }
+
+/* ---------- wider screens ----------
+   The phone layout is the real one; this only stops it looking
+   stranded on a desk. */
+
+@media (min-width: 768px) {
+    .dw-actions { flex-direction: row; }
+    .dw-btn { width: auto; min-width: 200px; }
+    .dw-counts { max-width: 420px; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .dw-btn { transition: background-color 120ms ease-in-out; }
+}

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using BusNova_System.DataAccess;
+using BusNova_System.Helpers;
 using BusNova_System.Models;
 using BusNova_System.Security;
 
@@ -407,26 +408,116 @@ SELECT CAST(SCOPE_IDENTITY() AS INT);";
         }
 
         /// <summary>UC12: driver starts the trip.</summary>
-        public static bool StartTrip(int assignmentId, int employeeId)
+        /// <summary>
+        /// How early, in minutes, a driver may start a trip before its
+        /// scheduled departure. Boarding starts before departure, so this
+        /// is not zero.
+        /// </summary>
+        public static int StartEarlyGraceMinutes
         {
+            get
+            {
+                int parsed;
+                return int.TryParse(
+                    System.Configuration.ConfigurationManager.AppSettings["BusNova:TripStartGraceMinutes"],
+                    out parsed) && parsed >= 0 ? parsed : 60;
+            }
+        }
+
+        /// <summary>
+        /// UC12: driver starts their trip.
+        ///
+        /// WHAT CHANGED (AUD-016)
+        ///
+        /// This used to be a single UPDATE with no date or time gating at
+        /// all. A driver could start a trip scheduled for next month, and
+        /// nothing checked that the assigned bus was still Active - so a
+        /// trip could be started on a bus that had been grounded for a
+        /// critical fault since the assignment was made.
+        ///
+        /// It also returned a bare bool, which meant the screen could only
+        /// ever say "that could not be started" and list the possible
+        /// reasons. A driver standing at a bus at 05:00 deserves to be told
+        /// WHICH reason applies.
+        ///
+        /// The EmployeeID stays in the WHERE clause: the checks below
+        /// produce the helpful message, and the WHERE clause is what
+        /// guarantees a driver cannot start somebody else's trip even by
+        /// posting a different id.
+        /// </summary>
+        public static OperationResult StartTrip(int assignmentId, int employeeId)
+        {
+            var trip = GetById(assignmentId);
+
+            if (trip == null || trip.EmployeeId != employeeId)
+                return OperationResult.Fail("That trip is not on your schedule.");
+
+            if (trip.TripStatus == TripStatus.InProgress)
+                return OperationResult.Fail("That trip is already under way.");
+
+            if (trip.TripStatus == TripStatus.Completed)
+                return OperationResult.Fail("That trip has already been completed.");
+
+            if (trip.TripStatus == TripStatus.Cancelled)
+                return OperationResult.Fail("That trip was cancelled and cannot be started.");
+
+            var departsAt = trip.AssignmentDate.Date.Add(trip.DepartureTime);
+            var now = AppClock.Now();
+            var earliest = departsAt.AddMinutes(-StartEarlyGraceMinutes);
+
+            if (now < earliest)
+            {
+                return OperationResult.Fail(
+                    "That trip is not due yet. It departs " +
+                    departsAt.ToString("dd MMM yyyy 'at' HH:mm") +
+                    ", and it can be started from " + earliest.ToString("HH:mm") +
+                    (earliest.Date == now.Date ? "." : " on " + earliest.ToString("dd MMM") + "."));
+            }
+
+            var bus = FleetService.GetBusById(trip.BusId);
+            if (bus == null)
+                return OperationResult.Fail("The bus assigned to this trip no longer exists. Speak to a manager.");
+
+            if (bus.Status != BusStatus.Active)
+            {
+                return OperationResult.Fail(
+                    bus.RegistrationNumber + " is not available - its status is " +
+                    (bus.Status == BusStatus.UnderMaintenance ? "under maintenance" : "retired") +
+                    ". Do not take this bus out. Speak to a manager about a replacement.");
+            }
+
             const string sql = @"
 UPDATE dbo.RouteAssignment
-SET TripStatus = @inProgress, ActualStartTime = GETDATE()
+SET TripStatus = @inProgress, ActualStartTime = @now
 WHERE AssignmentID = @id
   AND EmployeeID = @employeeId
   AND TripStatus = @scheduled;";
 
             var rows = Db.Execute(sql,
                 Db.P("@inProgress", TripStatus.InProgress),
+                Db.P("@now", AppClock.Now()),
                 Db.P("@id", assignmentId),
                 Db.P("@employeeId", employeeId),
                 Db.P("@scheduled", TripStatus.Scheduled));
 
-            if (rows > 0)
+            if (rows == 0)
             {
-                AuditService.Write("TripStarted", "RouteAssignment", assignmentId.ToString());
+                // Everything above passed, so the only way to get here is a
+                // race - somebody changed the trip between the read and the
+                // write.
+                return OperationResult.Fail(
+                    "That trip changed while you were starting it. Refresh and try again.");
             }
-            return rows > 0;
+
+            AuditService.Write("TripStarted", "RouteAssignment", assignmentId.ToString(),
+                trip.RouteName + " on " + bus.RegistrationNumber);
+
+            return new OperationResult
+            {
+                Success = true,
+                NewId = assignmentId,
+                Message = "Trip started on " + bus.RegistrationNumber + ". Drive safely."
+            };
         }
 
         /// <summary>

@@ -239,6 +239,13 @@
                                     </a>
                                 </li>
                                 <li>
+                                    <a class="<%= GetSidebarNavClass("DriverWorkspace.aspx") %>" href="DriverWorkspace.aspx"
+                                       data-label="My Trip" aria-label="My Trip"<%= GetAriaCurrent("DriverWorkspace.aspx") %>>
+                                        <i class="fas fa-bus bn-sidebar__nav-icon" aria-hidden="true"></i>
+                                        <span class="bn-sidebar__nav-text">My Trip</span>
+                                    </a>
+                                </li>
+                                <li>
                                     <a class="<%= GetSidebarNavClass("ViewAssignedRoutes.aspx") %>" href="ViewAssignedRoutes.aspx"
                                        data-label="My Schedule" aria-label="My Schedule"<%= GetAriaCurrent("ViewAssignedRoutes.aspx") %>>
                                         <i class="fas fa-calendar-days bn-sidebar__nav-icon" aria-hidden="true"></i>

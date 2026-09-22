@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using BusNova_System.DataAccess;
+using BusNova_System.Helpers;
 using BusNova_System.Models;
 
 namespace BusNova_System.Services
@@ -141,27 +142,36 @@ SELECT MAX(v) FROM (
                     " km for " + bus.RegistrationNumber + ". Please check the figure.");
             }
 
-            const string insertSql = @"
+            // The fuel row and the bus odometer go together or not at all.
+            // Two separate calls could leave a fuel row recorded while the
+            // bus still carries a stale odometer, and the next reading
+            // would then be validated against the wrong figure. (AUD-017)
+            var newId = Db.InTransaction((connection, transaction) =>
+            {
+                const string insertSql = @"
 INSERT INTO dbo.FuelLog
     (BusID, EmployeeID, AssignmentID, DateLogged, FuelAmountLiters, Cost, OdometerReading, Station)
 VALUES
     (@busId, @employeeId, @assignmentId, @date, @litres, @cost, @odometer, @station);
 SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
-            var newId = Convert.ToInt32(Db.Scalar(insertSql,
-                Db.P("@busId", busId),
-                Db.P("@employeeId", employeeId),
-                Db.P("@assignmentId", assignmentId),
-                Db.P("@date", dateLogged.Date),
-                Db.P("@litres", litres),
-                Db.P("@cost", cost),
-                Db.P("@odometer", odometerReading),
-                Db.P("@station", string.IsNullOrWhiteSpace(station) ? null : station.Trim())));
+                var id = Db.ScalarIntIn(connection, transaction, insertSql,
+                    Db.P("@busId", busId),
+                    Db.P("@employeeId", employeeId),
+                    Db.P("@assignmentId", assignmentId),
+                    Db.P("@date", dateLogged.Date),
+                    Db.P("@litres", litres),
+                    Db.P("@cost", cost),
+                    Db.P("@odometer", odometerReading),
+                    Db.P("@station", string.IsNullOrWhiteSpace(station) ? null : station.Trim()));
 
-            // Keep the bus's own odometer in step with the newest reading.
-            Db.Execute(
-                "UPDATE dbo.Bus SET OdometerReading = @odometer WHERE BusID = @busId AND OdometerReading < @odometer;",
-                Db.P("@odometer", odometerReading), Db.P("@busId", busId));
+                // Keep the bus's own odometer in step with the newest reading.
+                Db.ExecuteIn(connection, transaction,
+                    "UPDATE dbo.Bus SET OdometerReading = @odometer WHERE BusID = @busId AND OdometerReading < @odometer;",
+                    Db.P("@odometer", odometerReading), Db.P("@busId", busId));
+
+                return id;
+            });
 
             AuditService.Write("FuelLogged", "FuelLog", newId.ToString(),
                 bus.RegistrationNumber + ": " + litres + " L at " + odometerReading + " km");
@@ -279,19 +289,31 @@ VALUES
     (@busId, @employeeId, @issue, @severity, @status, @reported, @condition);
 SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
-            var newId = Convert.ToInt32(Db.Scalar(sql,
-                Db.P("@busId", busId),
-                Db.P("@employeeId", reportedByEmployeeId),
-                Db.P("@issue", issueDescription.Trim()),
-                Db.P("@severity", severity),
-                Db.P("@status", MaintenanceStatus.Reported),
-                Db.P("@reported", DateTime.Today),
-                Db.P("@condition", vehicleCondition.Trim())));
-
-            if (severity == "Critical" && bus.Status == BusStatus.Active)
+            // A critical fault takes the bus off the road. Reporting the
+            // fault and grounding the bus must be one operation: a failure
+            // between them would leave a critical fault recorded against a
+            // bus still marked Active and still being assigned to trips.
+            // (AUD-017)
+            var newId = Db.InTransaction((connection, transaction) =>
             {
-                FleetService.UpdateBusStatus(busId, BusStatus.UnderMaintenance);
-            }
+                var id = Db.ScalarIntIn(connection, transaction, sql,
+                    Db.P("@busId", busId),
+                    Db.P("@employeeId", reportedByEmployeeId),
+                    Db.P("@issue", issueDescription.Trim()),
+                    Db.P("@severity", severity),
+                    Db.P("@status", MaintenanceStatus.Reported),
+                    Db.P("@reported", AppClock.Today()),
+                    Db.P("@condition", vehicleCondition.Trim()));
+
+                if (severity == "Critical" && bus.Status == BusStatus.Active)
+                {
+                    Db.ExecuteIn(connection, transaction,
+                        "UPDATE dbo.Bus SET Status = @status WHERE BusID = @busId;",
+                        Db.P("@status", BusStatus.UnderMaintenance), Db.P("@busId", busId));
+                }
+
+                return id;
+            });
 
             AuditService.Write("MaintenanceIssueReported", "MaintenanceLog", newId.ToString(),
                 bus.RegistrationNumber + " (" + severity + "): " + issueDescription.Trim());
@@ -336,7 +358,20 @@ SELECT CAST(SCOPE_IDENTITY() AS INT);";
             if (string.IsNullOrWhiteSpace(vehicleCondition))
                 return OperationResult.Fail("Please record the condition of the bus after the work.");
 
-            const string updateSql = @"
+            // Four writes that must happen together: the maintenance row,
+            // the bus's next service date, its odometer, and possibly its
+            // status. Done separately, a failure part-way through leaves
+            // the fault closed while the bus still reads UnderMaintenance -
+            // a state the domain does not have and nothing would correct.
+            // (AUD-017)
+            //
+            // The "is another critical fault still open" check is inside
+            // the transaction too. Outside it, two maintenance staff closing
+            // the last two critical faults at the same moment could both see
+            // zero others open and both return the bus to service.
+            var returnedToService = Db.InTransaction((connection, transaction) =>
+            {
+                const string updateSql = @"
 UPDATE dbo.MaintenanceLog
 SET ServicedByEmployeeID = @servicedBy,
     WorkPerformed        = @work,
@@ -349,56 +384,69 @@ SET ServicedByEmployeeID = @servicedBy,
     Status               = @completed
 WHERE MaintenanceLogID = @id;";
 
-            Db.Execute(updateSql,
-                Db.P("@servicedBy", servicedByEmployeeId),
-                Db.P("@work", workPerformed.Trim()),
-                Db.P("@parts", string.IsNullOrWhiteSpace(partsUsed) ? null : partsUsed.Trim()),
-                Db.P("@cost", cost),
-                Db.P("@serviceDate", serviceDate.Date),
-                Db.P("@nextDue", nextServiceDueDate.Date),
-                Db.P("@odometer", odometerAtService),
-                Db.P("@condition", vehicleCondition.Trim()),
-                Db.P("@completed", MaintenanceStatus.Completed),
-                Db.P("@id", maintenanceLogId));
+                Db.ExecuteIn(connection, transaction, updateSql,
+                    Db.P("@servicedBy", servicedByEmployeeId),
+                    Db.P("@work", workPerformed.Trim()),
+                    Db.P("@parts", string.IsNullOrWhiteSpace(partsUsed) ? null : partsUsed.Trim()),
+                    Db.P("@cost", cost),
+                    Db.P("@serviceDate", serviceDate.Date),
+                    Db.P("@nextDue", nextServiceDueDate.Date),
+                    Db.P("@odometer", odometerAtService),
+                    Db.P("@condition", vehicleCondition.Trim()),
+                    Db.P("@completed", MaintenanceStatus.Completed),
+                    Db.P("@id", maintenanceLogId));
 
-            // UC19: the bus record follows the work.
-            Db.Execute(
-                "UPDATE dbo.Bus SET NextServiceDueDate = @nextDue WHERE BusID = @busId;",
-                Db.P("@nextDue", nextServiceDueDate.Date), Db.P("@busId", record.BusId));
+                // UC19: the bus record follows the work.
+                Db.ExecuteIn(connection, transaction,
+                    "UPDATE dbo.Bus SET NextServiceDueDate = @nextDue WHERE BusID = @busId;",
+                    Db.P("@nextDue", nextServiceDueDate.Date), Db.P("@busId", record.BusId));
 
-            if (odometerAtService.HasValue)
-            {
-                Db.Execute(
-                    "UPDATE dbo.Bus SET OdometerReading = @odometer WHERE BusID = @busId AND OdometerReading < @odometer;",
-                    Db.P("@odometer", odometerAtService.Value), Db.P("@busId", record.BusId));
-            }
+                if (odometerAtService.HasValue)
+                {
+                    Db.ExecuteIn(connection, transaction,
+                        "UPDATE dbo.Bus SET OdometerReading = @odometer WHERE BusID = @busId AND OdometerReading < @odometer;",
+                        Db.P("@odometer", odometerAtService.Value), Db.P("@busId", record.BusId));
+                }
 
-            if (returnBusToService)
-            {
-                // Only safe if nothing else critical is still open on this bus.
-                var stillCritical = Db.ScalarInt(@"
+                if (!returnBusToService) return false;
+
+                var stillCritical = Db.ScalarIntIn(connection, transaction, @"
 SELECT COUNT(*) FROM dbo.MaintenanceLog
 WHERE BusID = @busId AND Status IN ('Reported','InProgress')
   AND Severity = 'Critical' AND MaintenanceLogID <> @id;",
                     Db.P("@busId", record.BusId), Db.P("@id", maintenanceLogId));
 
-                if (stillCritical > 0)
-                {
-                    AuditService.Write("MaintenanceCompleted", "MaintenanceLog",
-                        maintenanceLogId.ToString(), record.BusRegistration + ": " + workPerformed.Trim());
+                if (stillCritical > 0) return false;
 
-                    return OperationResult.Fail(
-                        "The work was saved, but " + record.BusRegistration + " cannot return to " +
-                        "service yet because another critical fault is still open on it.");
-                }
+                Db.ExecuteIn(connection, transaction,
+                    "UPDATE dbo.Bus SET Status = @status WHERE BusID = @busId;",
+                    Db.P("@status", BusStatus.Active), Db.P("@busId", record.BusId));
 
-                FleetService.UpdateBusStatus(record.BusId, BusStatus.Active);
-            }
+                return true;
+            });
 
             AuditService.Write("MaintenanceCompleted", "MaintenanceLog", maintenanceLogId.ToString(),
-                record.BusRegistration + ": " + workPerformed.Trim());
+                record.BusRegistration + ": " + workPerformed.Trim() +
+                (returnedToService ? " (returned to service)" : " (bus stays off the road)"));
 
-            return OperationResult.Ok(maintenanceLogId);
+            // Always a success now. This used to return Fail when the work
+            // had saved but the bus could not go back on the road, which
+            // told the caller the operation failed when it had not - the
+            // page even carried a comment explaining the contradiction.
+            // The work either saved or it did not; whether the bus returned
+            // to service is a separate fact, and it belongs in Message.
+            string message;
+            if (!returnBusToService)
+                message = "Service logged and the fault closed. " + record.BusRegistration +
+                          " was left off the road, as you asked.";
+            else if (returnedToService)
+                message = "Service logged, the fault closed, and " + record.BusRegistration +
+                          " is back in service.";
+            else
+                message = "Service logged and the fault closed, but " + record.BusRegistration +
+                          " cannot return to service yet because another critical fault is still open on it.";
+
+            return new OperationResult { Success = true, NewId = maintenanceLogId, Message = message };
         }
 
         /// <summary>Moves a reported fault to InProgress when work starts.</summary>

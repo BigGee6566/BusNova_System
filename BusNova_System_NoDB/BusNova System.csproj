@@ -85,6 +85,7 @@
     <Content Include="TicketConfirmation.aspx" />
     <Content Include="ValidateTicket.aspx" />
     <Content Include="Notifications.aspx" />
+    <Content Include="DriverWorkspace.aspx" />
     <Content Include="MyTickets.aspx" />
     <Content Include="LogFuel.aspx" />
     <Content Include="ReportIssue.aspx" />
@@ -98,6 +99,7 @@
     <Content Include="SetPassword.aspx" />
     <Content Include="RequestPasswordLink.aspx" />
     <Content Include="Styles\Home.css" />
+    <Content Include="Styles\DriverWorkspace.css" />
     <Content Include="Styles\busnova-design-system.css" />
     <Content Include="Styles\busnova-components.css" />
     <Content Include="Scripts\site.js" />
@@ -143,6 +145,9 @@
     <Compile Include="Services\NotificationService.cs" />
     <Compile Include="Services\AnalyticsService.cs" />
     <Compile Include="Services\RefundPolicyService.cs" />
+    <Compile Include="Services\DriverService.cs" />
+    <Compile Include="Services\MaintenanceScheduleService.cs" />
+    <Compile Include="Services\MaintenancePartsService.cs" />
     <Compile Include="Services\TicketService.cs" />
     <Compile Include="Services\ReportingService.cs" />
     <!-- Application-level events -->
@@ -252,6 +257,13 @@
     </Compile>
     <Compile Include="Notifications.aspx.designer.cs">
       <DependentUpon>Notifications.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="DriverWorkspace.aspx.cs">
+      <DependentUpon>DriverWorkspace.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="DriverWorkspace.aspx.designer.cs">
+      <DependentUpon>DriverWorkspace.aspx</DependentUpon>
     </Compile>
     <Compile Include="MyTickets.aspx.cs">
       <DependentUpon>MyTickets.aspx</DependentUpon>
