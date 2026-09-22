@@ -71,7 +71,9 @@
                                     CommandArgument='<%# Eval("TicketId") %>'
                                     CssClass="btn-ops-secondary"
                                     CausesValidation="false"
-                                    OnClientClick='<%# "return confirm(\"Cancel ticket " + Server.HtmlEncode(Convert.ToString(Eval("TicketNumber"))) + "? This cannot be undone.\");" %>'
+                                    data-bn-confirm-title="Cancel this ticket?"
+                                    data-bn-confirm='<%# "Ticket " + Server.HtmlEncode(Convert.ToString(Eval("TicketNumber"))) + " will be cancelled and the seat released. This cannot be undone." %>'
+                                    data-bn-confirm-ok="Cancel ticket" 
                                     Visible='<%# CanCancel(Eval("TicketStatus"), Eval("AssignmentDate")) %>'
                                     Text="Cancel" />
                                 <asp:Label

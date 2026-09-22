@@ -97,7 +97,9 @@
     <Content Include="RequestPasswordLink.aspx" />
     <Content Include="Styles\Home.css" />
     <Content Include="Styles\busnova-design-system.css" />
+    <Content Include="Styles\busnova-components.css" />
     <Content Include="Scripts\site.js" />
+    <Content Include="Scripts\busnova-ui.js" />
     <Content Include="Styles\style.css" />
     <Content Include="Styles\Ops.css" />
     <Content Include="Styles\SeatMap.css" />

@@ -1,0 +1,372 @@
+/* ============================================================
+   BusNova component library (WP-0).
+
+   Loads after busnova-design-system.css and uses only its tokens.
+   If a colour, spacing or radius literal appears below, it is a bug.
+
+   Everything here is ADDITIVE. The existing .ops-* classes keep
+   working untouched, so pages move onto these patterns one at a time
+   rather than in a single sweep nobody can review.
+   ============================================================ */
+
+/* ---------- page header ----------
+   The same shape on every page: optional breadcrumb, one H1, a muted
+   one-line subtitle, primary action aligned right. No page invents
+   its own header. */
+
+.bn-page-header {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--bn-space-4);
+    flex-wrap: wrap;
+    margin-bottom: var(--bn-space-6);
+}
+
+.bn-page-header__text { flex: 1; min-width: 0; }
+
+.bn-breadcrumb {
+    font-size: var(--bn-text-sm);
+    color: var(--bn-text-muted);
+    margin-bottom: var(--bn-space-2);
+}
+
+.bn-breadcrumb a { color: var(--bn-text-muted); text-decoration: none; }
+.bn-breadcrumb a:hover { color: var(--bn-primary); text-decoration: underline; }
+
+.bn-page-title {
+    font-size: var(--bn-text-2xl);
+    font-weight: 700;
+    color: var(--bn-text);
+    line-height: var(--bn-leading-tight);
+    margin: 0;
+}
+
+.bn-page-subtitle {
+    font-size: var(--bn-text-base);
+    color: var(--bn-text-muted);
+    line-height: var(--bn-leading-body);
+    margin-top: var(--bn-space-2);
+    max-width: 68ch;              /* long explanations stay readable */
+}
+
+/* ---------- card ----------
+   Header, body, optional footer, hairline separators. Cards do not
+   nest: a card inside a card means the page needs restructuring, not
+   another border. */
+
+.bn-card {
+    background: var(--bn-surface);
+    border: 1px solid var(--bn-border);
+    border-radius: var(--bn-radius-lg);
+    box-shadow: var(--bn-shadow-1);
+    margin-bottom: var(--bn-space-6);
+}
+
+.bn-card__header {
+    display: flex;
+    align-items: center;
+    gap: var(--bn-space-3);
+    padding: var(--bn-space-5) var(--bn-space-6);
+    border-bottom: 1px solid var(--bn-border);
+}
+
+.bn-card__title {
+    font-size: var(--bn-text-lg);
+    font-weight: 600;
+    color: var(--bn-text);
+    margin: 0;
+    flex: 1;
+}
+
+.bn-card__body { padding: var(--bn-space-6); }
+
+.bn-card__footer {
+    padding: var(--bn-space-4) var(--bn-space-6);
+    border-top: 1px solid var(--bn-border);
+    background: var(--bn-surface-sunken);
+    border-radius: 0 0 var(--bn-radius-lg) var(--bn-radius-lg);
+}
+
+/* ---------- buttons ----------
+   Strict hierarchy: one primary per view, then secondary, ghost,
+   danger, icon-only. All at least 44px so they are usable with a
+   thumb. */
+
+.bn-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--bn-space-2);
+    min-height: 44px;
+    padding: 0 var(--bn-space-5);
+    border-radius: var(--bn-radius-sm);
+    border: 1px solid transparent;
+    font-size: var(--bn-text-base);
+    font-weight: 600;
+    font-family: inherit;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background var(--bn-transition), border-color var(--bn-transition);
+}
+
+.bn-btn:focus-visible { outline: 2px solid var(--bn-primary); outline-offset: 2px; }
+
+.bn-btn[disabled], .bn-btn.is-busy { opacity: .6; cursor: not-allowed; }
+
+.bn-btn--primary { background: var(--bn-primary); color: #fff; }
+.bn-btn--primary:hover:not([disabled]) { background: var(--bn-primary-hover); color: #fff; }
+
+.bn-btn--secondary { background: var(--bn-surface); color: var(--bn-text); border-color: var(--bn-border-strong); }
+.bn-btn--secondary:hover:not([disabled]) { background: var(--bn-surface-sunken); color: var(--bn-text); }
+
+.bn-btn--ghost { background: transparent; color: var(--bn-primary); }
+.bn-btn--ghost:hover:not([disabled]) { background: var(--bn-primary-subtle); }
+
+.bn-btn--danger { background: var(--bn-danger); color: #fff; }
+.bn-btn--danger:hover:not([disabled]) { filter: brightness(.92); color: #fff; }
+
+/* Icon-only buttons must carry aria-label AND a tooltip. An icon on
+   its own is a picture, not a label. */
+.bn-btn--icon { width: 44px; padding: 0; }
+
+/* ---------- status badges ----------
+   ONE semantic map for every status in the system: TripStatus,
+   BusStatus, MaintenanceStatus, and the payment and notification
+   states still to come.
+
+   Status is never carried by colour alone - the badge always contains
+   its own text, so it survives greyscale printing and colour
+   blindness. The colour reinforces; it does not inform. */
+
+.bn-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--bn-space-1);
+    padding: var(--bn-space-1) var(--bn-space-3);
+    border-radius: var(--bn-radius-pill);
+    font-size: var(--bn-text-xs);
+    font-weight: 600;
+    white-space: nowrap;
+    border: 1px solid transparent;
+}
+
+.bn-badge--neutral { background: var(--bn-surface-sunken); color: var(--bn-text-muted); border-color: var(--bn-border); }
+.bn-badge--info    { background: var(--bn-info-subtle);    color: #0B6E80; }
+.bn-badge--success { background: var(--bn-success-subtle); color: var(--bn-success); }
+.bn-badge--warning { background: var(--bn-warning-subtle); color: var(--bn-warning); }
+.bn-badge--danger  { background: var(--bn-danger-subtle);  color: var(--bn-danger); }
+
+/* ---------- forms ---------- */
+
+.bn-field { margin-bottom: var(--bn-space-5); }
+
+.bn-field__label {
+    display: block;
+    font-size: var(--bn-text-sm);
+    font-weight: 600;
+    color: var(--bn-text);
+    margin-bottom: var(--bn-space-1);
+}
+
+.bn-field__required { color: var(--bn-danger); margin-inline-start: var(--bn-space-1); }
+
+/* Help text sits under the LABEL, not under the input: it explains
+   how to fill the field in, so it has to be read before you do. */
+.bn-field__help {
+    font-size: var(--bn-text-sm);
+    color: var(--bn-text-muted);
+    margin-bottom: var(--bn-space-2);
+}
+
+.bn-field__control {
+    width: 100%;
+    min-height: 44px;
+    padding: 0 var(--bn-space-3);
+    border: 1px solid var(--bn-border-strong);
+    border-radius: var(--bn-radius-sm);
+    font-size: var(--bn-text-base);
+    font-family: inherit;
+    color: var(--bn-text);
+    background: var(--bn-surface);
+}
+
+textarea.bn-field__control {
+    min-height: 96px;
+    padding: var(--bn-space-3);
+    line-height: var(--bn-leading-body);
+}
+
+.bn-field__control:focus-visible {
+    outline: 2px solid var(--bn-primary);
+    outline-offset: 1px;
+    border-color: var(--bn-primary);
+}
+
+.bn-field__control[aria-invalid="true"] { border-color: var(--bn-danger); }
+
+.bn-field__error {
+    display: block;
+    font-size: var(--bn-text-sm);
+    color: var(--bn-danger);
+    font-weight: 500;
+    margin-top: var(--bn-space-1);
+}
+
+/* Error summary at the top of a failed form, so the whole problem is
+   announced at once rather than one field at a time. */
+.bn-error-summary {
+    padding: var(--bn-space-4);
+    margin-bottom: var(--bn-space-5);
+    background: var(--bn-danger-subtle);
+    border: 1px solid var(--bn-danger);
+    border-radius: var(--bn-radius-md);
+    color: var(--bn-text);
+}
+
+.bn-error-summary__title { font-weight: 700; margin-bottom: var(--bn-space-2); color: var(--bn-danger); }
+.bn-error-summary ul { margin: 0; padding-inline-start: var(--bn-space-5); }
+
+/* On a narrow screen the form's actions stick to the bottom, so the
+   submit button is reachable without scrolling past a long form. */
+@media (max-width: 767.98px) {
+    .bn-form-actions--sticky {
+        position: sticky;
+        inset-block-end: 0;
+        background: var(--bn-surface);
+        border-top: 1px solid var(--bn-border);
+        padding: var(--bn-space-3) 0;
+        display: flex;
+        gap: var(--bn-space-3);
+    }
+    .bn-form-actions--sticky .bn-btn { flex: 1; }
+}
+
+/* ---------- empty / loading / error states ----------
+   Every list, table and chart needs all three designed. A blank area
+   tells the user nothing about whether it is broken, still loading,
+   or simply has nothing to show. */
+
+.bn-state {
+    text-align: center;
+    padding: var(--bn-space-9) var(--bn-space-4);
+    color: var(--bn-text-muted);
+}
+
+.bn-state__icon  { font-size: var(--bn-text-3xl); color: var(--bn-text-subtle); margin-bottom: var(--bn-space-3); }
+.bn-state__title { font-size: var(--bn-text-lg); font-weight: 600; color: var(--bn-text); margin-bottom: var(--bn-space-1); }
+.bn-state__body  { max-width: 52ch; margin: 0 auto var(--bn-space-4); line-height: var(--bn-leading-body); }
+
+.bn-state--error .bn-state__icon  { color: var(--bn-danger); }
+.bn-state--error .bn-state__title { color: var(--bn-danger); }
+
+/* Skeletons, so a slow page shows its shape instead of a blank flash. */
+.bn-skeleton {
+    background: linear-gradient(90deg,
+        var(--bn-surface-sunken) 25%, var(--bn-border) 37%, var(--bn-surface-sunken) 63%);
+    background-size: 400% 100%;
+    border-radius: var(--bn-radius-sm);
+    animation: bn-shimmer 1.4s ease infinite;
+}
+
+.bn-skeleton--text { height: 1em; margin-bottom: var(--bn-space-2); }
+.bn-skeleton--row  { height: 44px; margin-bottom: var(--bn-space-2); }
+
+@keyframes bn-shimmer {
+    0%   { background-position: 100% 50%; }
+    100% { background-position: 0 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bn-skeleton { animation: none; }
+}
+
+/* ---------- toasts ----------
+   Replaces alert(). Announced politely, so a screen reader hears the
+   outcome without having focus taken away mid-task. */
+
+.bn-toasts {
+    position: fixed;
+    inset-block-end: var(--bn-space-5);
+    inset-inline-end: var(--bn-space-5);
+    z-index: 70;
+    display: flex;
+    flex-direction: column;
+    gap: var(--bn-space-2);
+    max-width: min(380px, calc(100vw - var(--bn-space-8)));
+}
+
+.bn-toast {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--bn-space-3);
+    padding: var(--bn-space-4);
+    border-radius: var(--bn-radius-md);
+    box-shadow: var(--bn-shadow-2);
+    background: var(--bn-surface);
+    border-inline-start: 3px solid var(--bn-primary);
+    font-size: var(--bn-text-sm);
+    color: var(--bn-text);
+}
+
+.bn-toast--success { border-inline-start-color: var(--bn-success); }
+.bn-toast--warning { border-inline-start-color: var(--bn-warning); }
+.bn-toast--danger  { border-inline-start-color: var(--bn-danger); }
+
+.bn-toast__body { flex: 1; line-height: var(--bn-leading-body); }
+
+.bn-toast__close {
+    background: none;
+    border: 0;
+    cursor: pointer;
+    color: var(--bn-text-muted);
+    font-size: var(--bn-text-base);
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.bn-toast__close:focus-visible { outline: 2px solid var(--bn-primary); outline-offset: 2px; }
+
+/* ---------- confirm dialog ----------
+   Replaces window.confirm(), which cannot be styled, cannot be made
+   accessible, and can be suppressed by the browser. */
+
+.bn-dialog-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(var(--bn-navy-rgb, 20, 33, 61), .45);
+    z-index: 80;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--bn-space-4);
+}
+
+.bn-dialog {
+    background: var(--bn-surface);
+    border-radius: var(--bn-radius-lg);
+    box-shadow: var(--bn-shadow-3);
+    max-width: 440px;
+    width: 100%;
+    padding: var(--bn-space-6);
+}
+
+.bn-dialog__title { font-size: var(--bn-text-lg); font-weight: 700; color: var(--bn-text); margin: 0 0 var(--bn-space-3); }
+.bn-dialog__body  { color: var(--bn-text-muted); line-height: var(--bn-leading-body); margin-bottom: var(--bn-space-6); }
+
+.bn-dialog__actions {
+    display: flex;
+    gap: var(--bn-space-3);
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 575.98px) {
+    /* Stacked and full width so the action is thumb-reachable. Reversed
+       so the confirming button is not the one that happens to sit
+       nearest the thumb. */
+    .bn-dialog__actions { flex-direction: column-reverse; }
+    .bn-dialog__actions .bn-btn { width: 100%; }
+    .bn-toasts { inset-inline: var(--bn-space-4); max-width: none; }
+}

@@ -1,4 +1,4 @@
-<%@ Page Title="Manage Users" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ManageUsers.aspx.cs" Inherits="BusNova_System.ManageUsers" %>
+﻿<%@ Page Title="Manage Users" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ManageUsers.aspx.cs" Inherits="BusNova_System.ManageUsers" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="Styles/style.css?v=6" rel="stylesheet" />
     <link href="Styles/Ops.css?v=6" rel="stylesheet" />
@@ -159,7 +159,9 @@
                                     CommandArgument='<%# Eval("EmployeeId") %>'
                                     CssClass="btn-ops-secondary"
                                     CausesValidation="false"
-                                    OnClientClick='<%# "return confirm(\"" + (Convert.ToBoolean(Eval("IsActive")) ? "Deactivate" : "Reactivate") + " this account?\");" %>'
+                                    data-bn-confirm-title='<%# (Convert.ToBoolean(Eval("IsActive")) ? "Deactivate this account?" : "Reactivate this account?") %>'
+                                    data-bn-confirm='<%# (Convert.ToBoolean(Eval("IsActive")) ? "They will not be able to sign in until the account is reactivated." : "They will be able to sign in again immediately.") %>'
+                                    data-bn-confirm-ok='<%# (Convert.ToBoolean(Eval("IsActive")) ? "Deactivate" : "Reactivate") %>' 
                                     Text='<%# Convert.ToBoolean(Eval("IsActive")) ? "Deactivate" : "Reactivate" %>' />
                             </ItemTemplate>
                         </asp:TemplateField>
@@ -202,7 +204,9 @@
                                     CommandArgument='<%# Eval("PassengerId") %>'
                                     CssClass="btn-ops-secondary"
                                     CausesValidation="false"
-                                    OnClientClick='<%# "return confirm(\"" + (Convert.ToBoolean(Eval("IsActive")) ? "Deactivate" : "Reactivate") + " this account?\");" %>'
+                                    data-bn-confirm-title='<%# (Convert.ToBoolean(Eval("IsActive")) ? "Deactivate this account?" : "Reactivate this account?") %>'
+                                    data-bn-confirm='<%# (Convert.ToBoolean(Eval("IsActive")) ? "They will not be able to sign in until the account is reactivated." : "They will be able to sign in again immediately.") %>'
+                                    data-bn-confirm-ok='<%# (Convert.ToBoolean(Eval("IsActive")) ? "Deactivate" : "Reactivate") %>' 
                                     Text='<%# Convert.ToBoolean(Eval("IsActive")) ? "Deactivate" : "Reactivate" %>' />
                             </ItemTemplate>
                         </asp:TemplateField>

@@ -28,6 +28,8 @@
     <%-- Must load after Home.css: its semantic tokens resolve against the
          brand tokens Home.css declares. --%>
     <link href="Styles/busnova-design-system.css?v=1" rel="stylesheet" />
+    <%-- Components load after the tokens they consume. --%>
+    <link href="Styles/busnova-components.css?v=1" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
     <asp:ContentPlaceHolder ID="head" runat="server">
@@ -680,5 +682,6 @@
     </form>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
     <script src="Scripts/site.js?v=1"></script>
+    <script src="Scripts/busnova-ui.js?v=1"></script>
 </body>
 </html>
