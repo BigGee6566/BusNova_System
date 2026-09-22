@@ -84,6 +84,22 @@ namespace BusNova_System
             ShowSuccess("Tickets sent. A copy was emailed to " + SessionHelper.Email + ".");
         }
 
+        /// <summary>
+        /// The value this ticket's QR code carries.
+        ///
+        /// It used to be the ticket number, generated in the browser, in
+        /// plain text. Anyone who could read a ticket number off a photo
+        /// could produce a QR code that scanned identically, because
+        /// nothing was being checked. It is now an opaque signed token
+        /// minted server-side - see Security/TicketToken. The passenger's
+        /// name, email and seat were never in it and still are not.
+        /// </summary>
+        protected string QrToken(object ticketId)
+        {
+            if (ticketId == null || ticketId == DBNull.Value) return string.Empty;
+            return Server.HtmlEncode(TicketToken.Issue(Convert.ToInt32(ticketId)));
+        }
+
         protected string FormatTime(object value)
         {
             if (value == null || value == DBNull.Value) return "&mdash;";

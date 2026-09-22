@@ -162,6 +162,13 @@
                                             <span class="bn-sidebar__nav-text">Issue Ticket</span>
                                         </a>
                                     </li>
+                                    <li>
+                                        <a class="<%= GetSidebarNavClass("ValidateTicket.aspx") %>" href="ValidateTicket.aspx"
+                                           data-label="Validate Ticket" aria-label="Validate Ticket"<%= GetAriaCurrent("ValidateTicket.aspx") %>>
+                                            <i class="fas fa-qrcode bn-sidebar__nav-icon" aria-hidden="true"></i>
+                                            <span class="bn-sidebar__nav-text">Validate Ticket</span>
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
 
@@ -229,6 +236,13 @@
                                        data-label="My Schedule" aria-label="My Schedule"<%= GetAriaCurrent("ViewAssignedRoutes.aspx") %>>
                                         <i class="fas fa-calendar-days bn-sidebar__nav-icon" aria-hidden="true"></i>
                                         <span class="bn-sidebar__nav-text">My Schedule</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="<%= GetSidebarNavClass("ValidateTicket.aspx") %>" href="ValidateTicket.aspx"
+                                       data-label="Validate Ticket" aria-label="Validate Ticket"<%= GetAriaCurrent("ValidateTicket.aspx") %>>
+                                        <i class="fas fa-qrcode bn-sidebar__nav-icon" aria-hidden="true"></i>
+                                        <span class="bn-sidebar__nav-text">Validate Ticket</span>
                                     </a>
                                 </li>
                                 <li>

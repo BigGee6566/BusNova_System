@@ -82,7 +82,7 @@
                                     <div><span>Booking reference</span><strong><%# Server.HtmlEncode(BookingReference) %></strong></div>
                                     <p class="e-ticket-note">Present this ticket when boarding.</p>
                                 </div>
-                                <div class="e-ticket-qr" data-role="ticket-qr" data-ticket-number='<%# Server.HtmlEncode(Convert.ToString(Eval("TicketNumber"))) %>'></div>
+                                <div class="e-ticket-qr" data-role="ticket-qr" data-token='<%# QrToken(Eval("TicketId")) %>'></div>
                             </div>
                         </div>
                     </div>

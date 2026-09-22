@@ -83,6 +83,7 @@
     <Content Include="BookTrip.aspx" />
     <Content Include="PaymentSimulation.aspx" />
     <Content Include="TicketConfirmation.aspx" />
+    <Content Include="ValidateTicket.aspx" />
     <Content Include="MyTickets.aspx" />
     <Content Include="LogFuel.aspx" />
     <Content Include="ReportIssue.aspx" />
@@ -128,6 +129,7 @@
     <Compile Include="Security\PasswordSetupToken.cs" />
     <Compile Include="Security\BookingDraftSession.cs" />
     <Compile Include="Security\AntiForgery.cs" />
+    <Compile Include="Security\TicketToken.cs" />
     <Compile Include="Security\SessionHelper.cs" />
     <!-- Application services -->
     <Compile Include="Services\AuditService.cs" />
@@ -136,6 +138,7 @@
     <Compile Include="Services\AssignmentService.cs" />
     <Compile Include="Services\OperationsService.cs" />
     <Compile Include="Services\PaymentService.cs" />
+    <Compile Include="Services\TicketValidationService.cs" />
     <Compile Include="Services\TicketService.cs" />
     <Compile Include="Services\ReportingService.cs" />
     <!-- Application-level events -->
@@ -231,6 +234,13 @@
     </Compile>
     <Compile Include="TicketConfirmation.aspx.designer.cs">
       <DependentUpon>TicketConfirmation.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ValidateTicket.aspx.cs">
+      <DependentUpon>ValidateTicket.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ValidateTicket.aspx.designer.cs">
+      <DependentUpon>ValidateTicket.aspx</DependentUpon>
     </Compile>
     <Compile Include="MyTickets.aspx.cs">
       <DependentUpon>MyTickets.aspx</DependentUpon>

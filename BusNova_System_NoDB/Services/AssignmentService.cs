@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using BusNova_System.DataAccess;
@@ -132,6 +132,32 @@ ORDER BY ra.AssignmentDate, ra.DepartureTime;";
 WHERE ra.AssignmentDate = @date
 ORDER BY ra.DepartureTime;";
             return Db.Query(sql, Map, Db.P("@date", date.Date));
+        }
+
+        /// <summary>
+        /// The trips a conductor might plausibly be boarding right now, for
+        /// the trip selector on ValidateTicket.aspx.
+        ///
+        /// Not "today". A door screen scoped to today shows nothing to a
+        /// driver boarding at 23:50 for a departure at 00:10, and shows
+        /// nothing at all on a day with no departures - which is how this
+        /// method came to exist, because the first version of that page did
+        /// exactly that. The window runs from yesterday (a delayed or
+        /// overnight departure is still being boarded) to two days out
+        /// (early boarding, and so the list is not empty on a quiet day).
+        ///
+        /// Cancelled trips are excluded: nobody boards one.
+        /// </summary>
+        public static List<RouteAssignment> GetBoardableTrips()
+        {
+            var sql = SelectColumns + @"
+WHERE ra.AssignmentDate BETWEEN @from AND @to
+  AND ra.TripStatus <> 'Cancelled'
+ORDER BY ra.AssignmentDate, ra.DepartureTime;";
+
+            return Db.Query(sql, Map,
+                Db.P("@from", BusNova_System.Helpers.AppClock.Today().AddDays(-1)),
+                Db.P("@to", BusNova_System.Helpers.AppClock.Today().AddDays(2)));
         }
 
         // ---------------------------------------------------------------

@@ -147,7 +147,39 @@ timestamps would have been worse than leaving them consistent.
 - Ticket and booking number allocation no longer serialises every sale behind a `TABLOCKX` table lock, and the lock is not retaken once per traveller inside the booking loop. Two concurrent bookings on the same trip both complete. *(AUD-018 — builds directly on FIX-004.)*
 - The "Simulate a declined payment" checkbox is removed from the passenger-facing page and replaced by a sandbox-only mechanism. *(AUD-045, pulled forward from HK-1.)*
 
-### WP-2 QR e-tickets
+### WP-2 QR e-tickets — **COMPLETE** (2026-09-22)
+
+Delivered: `Security/TicketToken.cs`, `Services/TicketValidationService.cs`, `ValidateTicket.aspx`, migration 010
+(`TicketValidationLog`), and a QR code that now carries a token instead of a ticket number. 15 new unit tests
+(suite 83 → 98). Recorded as AUD-055, which this package also closes.
+
+**The token.** `MachineKey.Protect` — encrypt *and* authenticate, using the key ASP.NET already manages. No new
+secret, none in source control, no hand-rolled cryptography. The payload is a version, the ticket’s integer id and
+an issue time. No passenger name, email or seat goes in, so none can come out, and being encrypted nothing is
+readable regardless. Altering one character makes it fail to open rather than decode to something else.
+
+Deliberately **no** explicit `<machineKey>`: ASP.NET’s auto-generated key is stable across restarts on one machine,
+which is this deployment, and pinning a key in Web.config would put a signing secret in git to solve a problem that
+does not exist here. The consequence is stated in `TicketToken`’s summary rather than left to be discovered — tokens
+are machine-bound, and on a move or a farm they fail *closed*, with the manual fallback carrying passengers
+meanwhile.
+
+**The door screen.** `ValidateTicket.aspx`, open to Driver and Manager. Driver because the driver is who stands at
+the door; Manager because migration 003 folded the conductor role into Manager. A trip selector scopes validation so
+that a valid ticket for a *different* departure is refused as `WrongTrip` — a different conversation from "your
+ticket is no good" — rather than boarded onto the wrong bus.
+
+**The manual fallback** is not a concession, it is the point. Scanners fail and screens crack; a validation screen
+with no manual path just moves the argument to the roadside.
+
+**Every attempt is logged**, refusals included. A log of only successful boardings cannot answer the questions a
+depot actually asks. The raw token is never stored — it is a bearer credential, and a table of working tokens would
+be worth stealing — so `TokenFingerprint` holds a truncated SHA-256 instead: enough to tell one bad token tried
+nine times from nine different bad tokens.
+
+The `Used` transition itself is still `TicketService.MarkTicketUsed` from FIX-007; this package calls it rather than
+reimplementing the atomic check.
+
 Signed opaque token carrying no PII, `TicketValidationLog`, conductor/driver validation page, manual-entry fallback.
 
 **Depends on FIX-007**, which introduces the `Used` transition this package's validation flow builds on. Added acceptance criterion:
