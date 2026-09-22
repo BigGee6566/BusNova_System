@@ -115,6 +115,7 @@
     <!-- Domain model -->
     <Compile Include="Models\Entities.cs" />
     <!-- Helpers -->
+    <Compile Include="Helpers\AppClock.cs" />
     <Compile Include="Helpers\GridViewHelpers.cs" />
     <Compile Include="Helpers\SeatMapRenderer.cs" />
     <Compile Include="Helpers\UiColors.cs" />
@@ -134,6 +135,7 @@
     <Compile Include="Services\FleetService.cs" />
     <Compile Include="Services\AssignmentService.cs" />
     <Compile Include="Services\OperationsService.cs" />
+    <Compile Include="Services\PaymentService.cs" />
     <Compile Include="Services\TicketService.cs" />
     <Compile Include="Services\ReportingService.cs" />
     <!-- Application-level events -->

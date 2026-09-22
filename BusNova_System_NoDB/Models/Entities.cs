@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace BusNova_System.Models
 {
@@ -56,6 +56,44 @@ namespace BusNova_System.Models
         public const string InProgress = "InProgress";
         public const string Completed = "Completed";
         public const string Cancelled = "Cancelled";
+    }
+
+    /// <summary>
+    /// The states a dbo.PaymentTransaction moves through. Mirrors the
+    /// CK_PaymentTransaction_Status check in migration 009 - if you add one
+    /// here, add it there too or the insert fails at runtime.
+    /// </summary>
+    public static class PaymentStatuses
+    {
+        /// <summary>Row written, gateway not yet asked.</summary>
+        public const string Pending = "Pending";
+        /// <summary>Gateway approved. Money is held, not taken. Seats not written yet.</summary>
+        public const string Authorised = "Authorised";
+        /// <summary>Taken, and tied to a booking that exists.</summary>
+        public const string Captured = "Captured";
+        /// <summary>Gateway said no. The passenger can retry.</summary>
+        public const string Declined = "Declined";
+        /// <summary>The gateway itself broke. Distinct from Declined because the passenger did nothing wrong.</summary>
+        public const string Failed = "Failed";
+        /// <summary>Authorised, then released because the booking could not be created.</summary>
+        public const string Voided = "Voided";
+        public const string Refunded = "Refunded";
+        public const string PartiallyRefunded = "PartiallyRefunded";
+    }
+
+    /// <summary>Entries in the append-only dbo.PaymentEvent log. Mirrors CK_PaymentEvent_EventType.</summary>
+    public static class PaymentEventTypes
+    {
+        public const string Created = "Created";
+        public const string AuthorisationRequested = "AuthorisationRequested";
+        public const string Authorised = "Authorised";
+        public const string Declined = "Declined";
+        public const string Captured = "Captured";
+        public const string BookingLinked = "BookingLinked";
+        public const string Voided = "Voided";
+        public const string Failed = "Failed";
+        public const string RefundRequested = "RefundRequested";
+        public const string Refunded = "Refunded";
     }
 
     /// <summary>The simulated payment methods offered on PaymentSimulation.aspx.</summary>

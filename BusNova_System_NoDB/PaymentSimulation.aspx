@@ -138,13 +138,6 @@
                 </p>
             </asp:Panel>
 
-            <div class="payment-test-toggle">
-                <label>
-                    <asp:CheckBox ID="chkSimulateFailure" runat="server" />
-                    Simulate a declined payment <span class="empty-note">(for testing this demo)</span>
-                </label>
-            </div>
-
             <div class="ops-actions">
                 <asp:Button ID="btnConfirmPayment" runat="server" Text="Confirm payment"
                             CssClass="btn-ops-primary" ValidationGroup="Payment"

@@ -1,4 +1,4 @@
-# BusNova — Remediation and Enhancement Roadmap
+﻿# BusNova — Remediation and Enhancement Roadmap
 
 **Date:** 2026-09-21
 **Source of truth for defects:** [AUDIT_FINDINGS.md](AUDIT_FINDINGS.md)
@@ -111,7 +111,35 @@ Tokens, app shell, page-header/card/table/form patterns, accessibility baseline,
 - The overflow found by VER-002 is fixed and re-checked at 360 / 768 / 1280 / 1920. *(AUD-027)*
 - `Dashboard.StatusCss` distinguishes `UnderMaintenance` from `Retired`. *(AUD-038, pulled forward from HK-3 because the token set is defined here.)*
 
-### WP-1 Payment gateway
+### WP-1 Payment gateway — **COMPLETE** (2026-09-22)
+
+Delivered: migration 009 (`PaymentTransaction`, `PaymentEvent`, `PaymentRefund`, two `NO CACHE` sequences),
+`Services/PaymentService.cs`, `Helpers/AppClock.cs`, and a rewired `PaymentSimulation.aspx`. 26 new unit tests
+(suite 57 → 83).
+
+Order of operations is the substance of this package: **authorise, then write the seats, then capture.** A
+decline never reaches `CreateBooking`, so it cannot leave seats held for a payment that did not happen; and a
+booking that fails after authorisation voids the authorisation, so money is never captured for seats the
+passenger did not get. Both halves were proven at runtime, not reasoned about — see the evidence below.
+
+Runtime evidence, all against the live database:
+- **End-to-end booking completes** (AUD-020). `BNB-000001`, audit row 1166, ticket with non-null `BookingID`,
+  payment `BNPAY-000001` Captured and linked. This path had never completed before.
+- **Declined card** (`…0002`) → status `Declined`, no booking row, no ticket. **Gateway failure** (`…0119`)
+  → status `Failed`, distinct from a decline because the passenger did nothing wrong.
+- **Seat stolen mid-payment** → authorisation `Voided`, no booking, message "No charge was made", and the
+  event log carries the whole sequence Created → AuthorisationRequested → Authorised → Voided.
+- **Double submit** → exactly one booking, one ticket, one captured payment. Caught by the cleared-draft
+  check; the idempotency key is the second line of defence behind it, not the one that fired here.
+- **Two concurrent bookings** both completed, with interleaved payment references (AUD-018).
+- **No card data stored**: `CardLast4` is `CHAR(4)`, there is no CVV column, and a search for the test PAN
+  across `PaymentTransaction` and `PaymentEvent.Detail` returns zero rows.
+- **AUD-045**: the passenger-facing "Simulate a declined payment" checkbox is gone from the served HTML;
+  forcing a decline via `BusNova:PaymentSandboxForceOutcome` was verified and the setting then removed.
+
+Deliberately **not** done here: AUD-053. See the header of `009_PaymentGateway.sql` for why half-migrating the
+timestamps would have been worse than leaving them consistent.
+
 `PaymentTransaction`, `PaymentRefund`, `PaymentEvent`; deterministic sandbox; server-side verification; no raw card data stored.
 
 **Absorbs AUD-018, AUD-020.** Added acceptance criteria:

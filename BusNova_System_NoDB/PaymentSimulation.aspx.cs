@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using BusNova_System.Models;
@@ -18,12 +19,22 @@ namespace BusNova_System
     /// TicketService.CreateBooking (success) or shows a decline message
     /// and leaves the draft alone so the passenger can retry (failure).
     ///
-    /// There is no real payment processor here, by design - "Confirm
-    /// payment" either always succeeds, or is forced to fail by the
-    /// "Simulate a declined payment" test checkbox on the form. That is
-    /// deliberately explicit rather than random: a demo/prototype gains
-    /// nothing from unpredictable pass/fail behaviour, and an explicit
-    /// toggle makes both paths reliably demonstrable.
+    /// There is no real payment processor here, by design. PaymentService
+    /// provides a deterministic sandbox: the outcome follows from the test
+    /// card used, or from a Web.config setting. Deterministic rather than
+    /// random because a demo gains nothing from unpredictable pass/fail.
+    ///
+    /// The "Simulate a declined payment" checkbox that used to sit on this
+    /// form is gone (AUD-045). It was passenger-facing - visible and
+    /// tickable by anyone booking a trip. The same two paths are still
+    /// reachable, through test cards and BusNova:PaymentSandboxForceOutcome.
+    ///
+    /// ORDER OF OPERATIONS, which is the whole point of this handler:
+    /// authorise first, write the seats second, capture third. A decline
+    /// never reaches CreateBooking, so it cannot leave seats held for a
+    /// payment that did not happen; and a booking that fails after
+    /// authorisation voids the authorisation, so money is never captured
+    /// for seats the passenger did not get.
     /// </summary>
     public partial class PaymentSimulation : Page
     {
@@ -126,27 +137,75 @@ namespace BusNova_System
             if (!Page.IsValid) return;
 
             var method = SelectedPaymentMethod();
-
-            if (chkSimulateFailure.Checked)
-            {
-                ShowError("Payment declined. No charge was made - please try again, or choose a different payment method.");
-                return;
-            }
-
+            var passengerId = SessionHelper.UserId;
             var assignmentId = BookingDraftSession.AssignmentId.Value;
             var travellers = BookingDraftSession.Travellers;
 
-            var result = TicketService.CreateBooking(SessionHelper.UserId, assignmentId, travellers, method);
+            // The amount is computed on the server from the seat count and
+            // the configured fare. Nothing the browser posts influences what
+            // is charged - this page has no amount field at all.
+            var amount = PaymentService.AmountFor(travellers.Count);
+
+            var idempotencyKey = PaymentService.BuildIdempotencyKey(
+                passengerId, assignmentId,
+                travellers.Select(t => t.SeatNumber),
+                BookingDraftSession.AttemptId);
+
+            // Card details are read here, handed to the service, and go out
+            // of scope. Nothing puts them in Session, ViewState or a log.
+            var card = method == PaymentMethods.Card
+                ? new CardDetails
+                {
+                    NameOnCard = txtCardName.Text,
+                    Number = txtCardNumber.Text,
+                    Expiry = txtCardExpiry.Text,
+                    Cvv = txtCardCvv.Text
+                }
+                : null;
+
+            var payment = PaymentService.Authorise(
+                passengerId, assignmentId, amount, method, card, idempotencyKey);
+
+            // A replay of an attempt that already produced a booking - a
+            // double-click, or the browser re-posting on refresh. Send the
+            // passenger to the ticket they already have rather than charging
+            // again or showing an error for something that worked.
+            if (payment.WasReplay && payment.ExistingBookingId > 0)
+            {
+                BookingDraftSession.Clear();
+                Response.Redirect("~/TicketConfirmation.aspx?bookingId=" + payment.ExistingBookingId);
+                return;
+            }
+
+            if (!payment.Success)
+            {
+                // The draft survives a decline - the passenger keeps their
+                // seats and can try another card. A new attempt id means the
+                // retry reaches the gateway instead of replaying this result.
+                BookingDraftSession.NewAttempt();
+                ShowError(payment.ErrorMessage);
+                return;
+            }
+
+            var result = TicketService.CreateBooking(passengerId, assignmentId, travellers, method);
 
             if (!result.Success)
             {
                 // Something changed since BookTrip.aspx (a seat was taken,
-                // the trip was cancelled) - the draft is no longer good, so
-                // there is nothing useful left to retry here.
+                // the trip was cancelled). The money is authorised but not
+                // taken, so release it before telling the passenger - never
+                // leave a held authorisation behind for seats they did not
+                // get.
+                PaymentService.Void(payment.PaymentTransactionId,
+                    "Booking could not be created: " + result.ErrorMessage);
+
                 BookingDraftSession.Clear();
-                ShowError(result.ErrorMessage + " Please search again.");
+                ShowError(result.ErrorMessage + " No charge was made. Please search again.");
                 return;
             }
+
+            // Seats are committed, so the money can be taken.
+            PaymentService.Capture(payment.PaymentTransactionId, result.BookingId);
 
             BookingDraftSession.Clear();
             Response.Redirect("~/TicketConfirmation.aspx?bookingId=" + result.BookingId);

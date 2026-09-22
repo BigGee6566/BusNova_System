@@ -25,8 +25,8 @@ See [SYSTEM_OVERVIEW.md](SYSTEM_OVERVIEW.md) for architecture, pages, services, 
 
 1. Open `BusNova System.sln` in Visual Studio.
 2. Create the database by running [App_Data/BusNova_Database_Script.sql](App_Data/BusNova_Database_Script.sql) against your SQL Server instance. This creates the `BusNovaDB` database, its tables, and seed/demo data.
-   - If you're upgrading an existing database instead of recreating it, apply the incremental scripts in `App_Data/Migrations/` in order (`002_PasswordSetup.sql`, `003_RoleConsolidation.sql`, `004_BookingSchema.sql`, `005_TicketSeatIndexFilter.sql`, `006_SeatNumberNormalisation.sql`, `007_TicketNumberSequence.sql`, `008_UnicodeTextColumns.sql`).
-   - **`006_SeatNumberNormalisation.sql`, `007_TicketNumberSequence.sql` and `008_UnicodeTextColumns.sql` must also be run after a *fresh* create.** `007` creates the sequences ticket numbering now depends on, and `008` converts text columns to `nvarchar` so non-ASCII names are not silently corrupted; neither exists in the creation script.
+   - If you're upgrading an existing database instead of recreating it, apply the incremental scripts in `App_Data/Migrations/` in order (`002_PasswordSetup.sql`, `003_RoleConsolidation.sql`, `004_BookingSchema.sql`, `005_TicketSeatIndexFilter.sql`, `006_SeatNumberNormalisation.sql`, `007_TicketNumberSequence.sql`, `008_UnicodeTextColumns.sql`, `009_PaymentGateway.sql`).
+   - **`006_SeatNumberNormalisation.sql`, `007_TicketNumberSequence.sql`, `008_UnicodeTextColumns.sql` and `009_PaymentGateway.sql` must also be run after a *fresh* create.** `007` creates the sequences ticket numbering now depends on, and `008` converts text columns to `nvarchar` so non-ASCII names are not silently corrupted; neither exists in the creation script. `009` adds the payment tables, which the booking flow writes to on every purchase - without it, confirming a payment fails at the first insert. None of the four is in the creation script.
    - *(`006` specifically:)* Unlike the others it is not purely an upgrade step: the creation script still seeds two tickets with lettered seat labels (`12A`, `03B`), while the seat map issues plain integers. Until those rows are normalised the map treats seat `3` as free when `03B` is already sold. Correcting the seed itself is pending a separate decision.
    - Run migrations with `sqlcmd -I` (or `SET QUOTED_IDENTIFIER ON`). `dbo.Ticket` carries a filtered index, and SQL Server rejects inserts from a session where that option is off — `sqlcmd` defaults it off.
 3. Update the `BusNovaDb` connection string in [Web.config](Web.config) to point at your SQL Server instance.
@@ -49,6 +49,8 @@ Key `appSettings` in Web.config:
 | `BusNova:ServiceIntervalMonths` | Interval used to compute a bus's next service due date |
 | `BusNova:LoginMaxAttempts` | Consecutive failed sign-ins before an address is refused (default 5) |
 | `BusNova:LoginLockoutMinutes` | How long that refusal lasts, and how far back failures are counted (default 15) |
+| `BusNova:PaymentSandbox` | Marks payment rows as sandbox rows (default `true`). There is no real gateway in this build. |
+| `BusNova:PaymentSandboxForceOutcome` | Forces every payment to `decline` or `fail`, for demonstrating those paths. Empty or absent means normal behaviour. Server-side only - it replaced a checkbox that passengers could see and tick (AUD-045). |
 
 `Web.Release.config` swaps in placeholder connection-string credentials and enforces HTTPS-only cookies — replace the placeholders before deploying a release build.
 

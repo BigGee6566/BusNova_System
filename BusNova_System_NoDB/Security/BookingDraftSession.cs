@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Web;
 using BusNova_System.Models;
 
@@ -23,6 +23,7 @@ namespace BusNova_System.Security
     {
         private const string KeyAssignmentId = "BusNova.BookingDraft.AssignmentId";
         private const string KeyTravellers = "BusNova.BookingDraft.Travellers";
+        private const string KeyAttemptId = "BusNova.BookingDraft.AttemptId";
 
         public static void Save(int assignmentId, List<BookingTraveller> travellers)
         {
@@ -31,6 +32,42 @@ namespace BusNova_System.Security
 
             session[KeyAssignmentId] = assignmentId;
             session[KeyTravellers] = travellers;
+
+            // A fresh attempt id per draft. It is what makes the payment
+            // idempotency key change between two genuinely separate booking
+            // attempts for the same seats, while staying constant across a
+            // double-click or a refresh of the same attempt. Server-side, so
+            // the browser cannot vary it to force a second charge.
+            session[KeyAttemptId] = System.Guid.NewGuid().ToString("N");
+        }
+
+        /// <summary>
+        /// Identifies this booking attempt for payment idempotency. Rotated
+        /// by NewAttempt() after a decline, so that a passenger who fixes
+        /// their card details is making a new attempt rather than replaying
+        /// the declined one.
+        /// </summary>
+        public static string AttemptId
+        {
+            get
+            {
+                var session = HttpContext.Current.Session;
+                if (session == null) return null;
+                return session[KeyAttemptId] as string;
+            }
+        }
+
+        /// <summary>
+        /// Starts a new payment attempt against the same draft. Called after
+        /// a decline: the seats and travellers are unchanged, but the next
+        /// "Confirm payment" must reach the gateway rather than being
+        /// recognised as a replay of the attempt that just failed.
+        /// </summary>
+        public static void NewAttempt()
+        {
+            var session = HttpContext.Current.Session;
+            if (session == null) return;
+            session[KeyAttemptId] = System.Guid.NewGuid().ToString("N");
         }
 
         public static int? AssignmentId
@@ -67,6 +104,7 @@ namespace BusNova_System.Security
 
             session.Remove(KeyAssignmentId);
             session.Remove(KeyTravellers);
+            session.Remove(KeyAttemptId);
         }
     }
 }
