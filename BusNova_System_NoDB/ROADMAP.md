@@ -348,7 +348,35 @@ a small addition to this page.
 - `LogFuel`'s insert-plus-odometer-update is transactional. *(AUD-017, shared with WP-6.)*
 - Verified at 360px as the primary target, per the WP-0 baseline.
 
-### WP-8 Passenger search, account and manifests
+### WP-8 Passenger search, account and manifests — **COMPLETE** (2026-09-23)
+
+Delivered: booking history and reference lookup on `MyTickets.aspx`, and `Manifest.aspx` — a printable passenger
+list. Closes AUD-035 and half of AUD-040.
+
+**Origin/destination/date search already existed** on `BookTrip.aspx` (`TicketService.GetBookableTrips`), so this
+package did not rebuild it. Saying so matters: the acceptance criterion was met by code that was already there,
+and re-implementing it would have been motion rather than progress.
+
+**Tickets and bookings are two lists, not one.** A counter sale produces a ticket with no booking, so a merged
+view would have to explain why half its rows have no reference.
+
+**The reference lookup re-checks ownership.** Booking references are sequential, so without that check a passenger
+could read someone else’s booking by guessing the next number. An unknown reference and someone else’s give the
+identical message, so a guess cannot tell them apart. Verified.
+
+**The manifest is a document, not a screen.** It exists for the case where the technology has failed — scanner
+dead, phone flat, network gone — so it is a sheet of paper with a box to tick beside each name, and most of the
+work is in the print stylesheet: the application chrome is hidden, the shell’s sidebar offset is undone, it prints
+black on white, and the column headings repeat on every page (which works because `GridViewHelpers` puts them in a
+real `thead`). Seats sort numerically, because a conductor reads the list top to bottom and seat 10 before seat 2
+is worse than useless.
+
+A driver may print only their own trip’s manifest; a manager may print any. Verified, including that a passenger
+is refused the page entirely.
+
+**Not built:** waitlists and loyalty, which the roadmap lists under WP-11; return-trip booking and booking
+modification, which need a change-of-seat flow and a re-pricing rule that WP-5’s refund tiers do not cover.
+
 Origin/destination/date search, filters, return-trip booking, modification, waitlist; profile, multiple travellers, accessibility, receipts, favourites, loyalty, feedback; printable manifest.
 
 **Added acceptance criterion:**

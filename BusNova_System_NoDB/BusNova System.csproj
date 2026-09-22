@@ -86,6 +86,7 @@
     <Content Include="ValidateTicket.aspx" />
     <Content Include="Notifications.aspx" />
     <Content Include="DriverWorkspace.aspx" />
+    <Content Include="Manifest.aspx" />
     <Content Include="ReportTicketSales.aspx" />
     <Content Include="ReportRouteList.aspx" />
     <Content Include="ReportDriverSchedule.aspx" />
@@ -104,6 +105,7 @@
     <Content Include="RequestPasswordLink.aspx" />
     <Content Include="Styles\Home.css" />
     <Content Include="Styles\DriverWorkspace.css" />
+    <Content Include="Styles\Manifest.css" />
     <Content Include="Styles\busnova-design-system.css" />
     <Content Include="Styles\busnova-components.css" />
     <Content Include="Scripts\site.js" />
@@ -270,6 +272,13 @@
     </Compile>
     <Compile Include="DriverWorkspace.aspx.designer.cs">
       <DependentUpon>DriverWorkspace.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Manifest.aspx.cs">
+      <DependentUpon>Manifest.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Manifest.aspx.designer.cs">
+      <DependentUpon>Manifest.aspx</DependentUpon>
     </Compile>
     <Compile Include="ReportTicketSales.aspx.cs">
       <DependentUpon>ReportTicketSales.aspx</DependentUpon>

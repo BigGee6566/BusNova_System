@@ -14,8 +14,9 @@
 
             <h3 class="ops-title">My Tickets</h3>
             <div class="ops-subtitle">
-                Every ticket you've booked. Cancel a valid ticket any time before the trip departs
-                — paid tickets are automatically marked refunded.
+                Every ticket you&rsquo;ve booked. You can cancel a valid ticket up until the trip
+                departs; what you get back depends on how close to departure you cancel, and the
+                exact amount is shown to you when you do.
             </div>
 
             <asp:Label ID="lblMessage" runat="server" CssClass="ops-message" />
@@ -81,6 +82,60 @@
                                     runat="server"
                                     Text="&mdash;"
                                     Visible='<%# !CanCancel(Eval("TicketStatus"), Eval("AssignmentDate"), Eval("DepartureTime")) %>' />
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                    </Columns>
+                </asp:GridView>
+            </div>
+
+        </div>
+
+        <div class="ops-box bn-mt-3">
+
+            <h3 class="ops-title">My bookings</h3>
+            <div class="ops-subtitle">
+                A booking is one payment covering one or more travellers on the same trip.
+                Tickets bought one at a time at a counter do not have one.
+            </div>
+
+            <div class="bn-field">
+                <label for="<%= txtReference.ClientID %>">Find a booking by reference</label>
+                <asp:TextBox ID="txtReference" runat="server" CssClass="form-control"
+                             placeholder="BNB-000001" MaxLength="20" />
+                <asp:Button ID="btnFindBooking" runat="server" Text="Find booking"
+                            CssClass="bn-btn bn-btn--secondary" OnClick="btnFindBooking_Click" />
+            </div>
+
+            <asp:Label ID="lblBookingMessage" runat="server" />
+
+            <div class="ops-grid-wrap">
+                <asp:GridView ID="gvBookings" runat="server" AutoGenerateColumns="false"
+                              CssClass="ops-grid" GridLines="None" UseAccessibleHeader="true"
+                              OnRowDataBound="gvBookings_RowDataBound"
+                              EmptyDataText="You have no bookings yet. Tickets bought at a counter appear above instead.">
+                    <Columns>
+                        <asp:BoundField DataField="BookingReference" HeaderText="Reference" />
+                        <asp:BoundField DataField="RouteName" HeaderText="Route" />
+                        <asp:BoundField DataField="AssignmentDate" HeaderText="Travel date" DataFormatString="{0:dd MMM yyyy}" />
+                        <asp:TemplateField HeaderText="Departs">
+                            <ItemTemplate><%# FormatTime(Eval("DepartureTime")) %></ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Total">
+                            <ItemTemplate><%# FormatPrice(Eval("TotalAmount")) %></ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Payment">
+                            <ItemTemplate>
+                                <span class='<%# "status-badge " + PaymentCss(Eval("PaymentStatus")) %>'>
+                                    <%# Server.HtmlEncode(Convert.ToString(Eval("PaymentStatus"))) %>
+                                </span>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="">
+                            <ItemTemplate>
+                                <a class="bn-btn bn-btn--secondary"
+                                   href='<%# "TicketConfirmation.aspx?bookingId=" + Eval("BookingId") %>'>
+                                    View tickets
+                                </a>
                             </ItemTemplate>
                         </asp:TemplateField>
                     </Columns>

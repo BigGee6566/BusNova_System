@@ -31,6 +31,78 @@ namespace BusNova_System
         {
             gvTickets.DataSource = TicketService.GetTicketsForPassenger(SessionHelper.UserId);
             gvTickets.DataBind();
+
+            BindBookings();
+        }
+
+        /// <summary>
+        /// The booking half of this page.
+        ///
+        /// SYSTEM_OVERVIEW described this screen as showing "ticket/booking
+        /// history" and it only ever bound tickets;
+        /// TicketService.GetBookingsForPassenger existed and was called from
+        /// nowhere. (AUD-035, and two of the four dead methods in AUD-040.)
+        ///
+        /// Tickets and bookings are genuinely different things here - a
+        /// counter sale produces a ticket with no booking - so they are two
+        /// lists rather than one merged view that would have to explain why
+        /// half its rows have no reference.
+        /// </summary>
+        private void BindBookings()
+        {
+            gvBookings.DataSource = TicketService.GetBookingsForPassenger(SessionHelper.UserId);
+            gvBookings.DataBind();
+        }
+
+        protected void btnFindBooking_Click(object sender, EventArgs e)
+        {
+            var reference = (txtReference.Text ?? string.Empty).Trim();
+
+            if (reference.Length == 0)
+            {
+                ShowBookingError("Enter a booking reference, such as BNB-000001.");
+                BindBookings();
+                return;
+            }
+
+            var booking = TicketService.GetBookingByReference(reference);
+
+            // Ownership is re-checked here, not assumed from the reference.
+            // References are sequential, so without this check a passenger
+            // could read someone else's booking by guessing the next number.
+            // Same message either way, so a guess cannot distinguish
+            // "no such booking" from "not yours".
+            if (booking == null || booking.PassengerId != SessionHelper.UserId)
+            {
+                ShowBookingError("We couldn't find that booking on your account.");
+                BindBookings();
+                return;
+            }
+
+            Response.Redirect("~/TicketConfirmation.aspx?bookingId=" + booking.BookingId);
+        }
+
+        private void ShowBookingError(string message)
+        {
+            lblBookingMessage.CssClass = "ops-message ops-message--danger";
+            lblBookingMessage.Text = Server.HtmlEncode(message);
+        }
+
+        protected void gvBookings_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            GridViewHelpers.ApplyResponsiveLabels(e, gvBookings);
+        }
+
+        protected string PaymentCss(object status)
+        {
+            switch (Convert.ToString(status))
+            {
+                case "Paid": return "status-completed";
+                case "Refunded": return "status-muted";
+                case "Pending": return "status-warning";
+                case "Failed": return "status-danger";
+                default: return "status-muted";
+            }
         }
 
         protected void gvTickets_RowCommand(object sender, GridViewCommandEventArgs e)

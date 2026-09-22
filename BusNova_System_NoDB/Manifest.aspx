@@ -1,0 +1,84 @@
+<%@ Page Title="Passenger Manifest" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Manifest.aspx.cs" Inherits="BusNova_System.Manifest" %>
+<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+    <link href="Styles/Ops.css?v=6" rel="stylesheet" />
+    <link href="Styles/Manifest.css?v=1" rel="stylesheet" />
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+
+    <div class="ops-wrap ops-wrap--wide">
+
+        <%-- Everything in this block is hidden when printing. What comes
+             out of the printer is the manifest, not the application. --%>
+        <div class="mf-screen-only">
+            <div class="bn-page-header">
+                <h1 class="bn-page-header__title">Passenger manifest</h1>
+                <p class="bn-page-header__subtitle">
+                    The list to carry on the bus. Print it, or export it if it has to go into
+                    another system.
+                </p>
+            </div>
+
+            <div class="bn-card">
+                <div class="rpt-filters">
+                    <div class="bn-field">
+                        <label for="<%= ddlTrip.ClientID %>">Trip</label>
+                        <asp:DropDownList ID="ddlTrip" runat="server" CssClass="form-control"
+                                          AutoPostBack="true" OnSelectedIndexChanged="ddlTrip_SelectedIndexChanged" />
+                    </div>
+                    <div class="bn-field bn-align-end">
+                        <asp:Button ID="btnPrint" runat="server" Text="Print" CssClass="bn-btn bn-btn--primary"
+                                    OnClientClick="window.print(); return false;" />
+                        <asp:Button ID="btnCsv" runat="server" Text="Export CSV"
+                                    CssClass="bn-btn bn-btn--secondary" OnClick="btnCsv_Click" />
+                    </div>
+                </div>
+                <asp:Label ID="lblMessage" runat="server" />
+            </div>
+        </div>
+
+        <%-- The manifest itself. This is what prints. --%>
+        <asp:Panel ID="pnlManifest" runat="server" Visible="false" CssClass="mf-sheet">
+
+            <div class="mf-head">
+                <div class="mf-title">BusNova &mdash; Passenger Manifest</div>
+                <div class="mf-meta">
+                    <div><span>Route</span><strong><asp:Literal ID="litRoute" runat="server" /></strong></div>
+                    <div><span>Date</span><strong><asp:Literal ID="litDate" runat="server" /></strong></div>
+                    <div><span>Departs</span><strong><asp:Literal ID="litDeparts" runat="server" /></strong></div>
+                    <div><span>Bus</span><strong><asp:Literal ID="litBus" runat="server" /></strong></div>
+                    <div><span>Driver</span><strong><asp:Literal ID="litDriver" runat="server" /></strong></div>
+                    <div><span>Booked</span><strong><asp:Literal ID="litBooked" runat="server" /></strong></div>
+                </div>
+            </div>
+
+            <asp:GridView ID="gvManifest" runat="server" AutoGenerateColumns="false"
+                          CssClass="ops-grid mf-grid" GridLines="None" UseAccessibleHeader="true"
+                          EmptyDataText="No passengers are booked on this trip.">
+                <Columns>
+                    <asp:BoundField DataField="SeatNumber" HeaderText="Seat" />
+                    <asp:BoundField DataField="PassengerName" HeaderText="Passenger" />
+                    <asp:BoundField DataField="TicketNumber" HeaderText="Ticket" />
+                    <asp:BoundField DataField="TicketStatus" HeaderText="Status" />
+                    <asp:TemplateField HeaderText="Boarded">
+                        <ItemTemplate><span class="mf-tick">&#9633;</span></ItemTemplate>
+                    </asp:TemplateField>
+                </Columns>
+            </asp:GridView>
+
+            <div class="mf-foot">
+                <div class="mf-sign">
+                    <span class="mf-sign__line"></span>
+                    <span class="mf-sign__label">Driver signature</span>
+                </div>
+                <div class="mf-sign">
+                    <span class="mf-sign__line"></span>
+                    <span class="mf-sign__label">Date</span>
+                </div>
+                <div class="mf-printed">Printed <asp:Literal ID="litPrinted" runat="server" /></div>
+            </div>
+
+        </asp:Panel>
+
+    </div>
+
+</asp:Content>
