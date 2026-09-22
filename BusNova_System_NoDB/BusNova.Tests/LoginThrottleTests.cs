@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using BusNova_System.Security;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -18,7 +18,9 @@ namespace BusNova.Tests
     {
         private const int Max = 5;
         private const int Minutes = 15;
-        private static readonly DateTime Now = new DateTime(2026, 9, 22, 12, 0, 0, DateTimeKind.Utc);
+        // Server local time, matching dbo.AuditLog.OccurredAt, which is
+        // defaulted with GETDATE() rather than GETUTCDATE().
+        private static readonly DateTime Now = new DateTime(2026, 9, 22, 12, 0, 0, DateTimeKind.Local);
 
         private static LockoutState Evaluate(int attempts, DateTime? firstFailure)
         {

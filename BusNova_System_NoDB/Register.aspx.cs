@@ -1,5 +1,6 @@
 using System;
 using System.Web.UI;
+using BusNova_System.Helpers;
 using BusNova_System.Security;
 using BusNova_System.Services;
 
@@ -14,7 +15,7 @@ namespace BusNova_System
     /// Staff accounts are deliberately not created here. The Sprint 2 system
     /// matrix moves that to UC21 "Register employees", which is the right
     /// call: a public form with a role dropdown would let anyone sign
-    /// themselves up as a Fleet Manager.
+    /// themselves up as a Manager.
     /// </summary>
     public partial class Register : Page
     {
@@ -28,6 +29,12 @@ namespace BusNova_System
 
         protected void btnRegister_Click(object sender, EventArgs e)
         {
+            if (!AntiForgery.IsValid(((Site)Master).CsrfToken))
+            {
+                ShowError("Your session has expired. Please refresh the page and try again.");
+                return;
+            }
+
             // Page.IsValid re-runs every validator on the server. The client
             // script is only a convenience - anyone can disable JavaScript,
             // so this check is the one that actually protects the database.
@@ -48,9 +55,11 @@ namespace BusNova_System
                 return;
             }
 
-            if (password.Length < 8)
+            // Same policy and the same wording as the staff and walk-up
+            // paths - the message now comes from one place. (AUD-011)
+            if (!PasswordPolicy.IsValid(password))
             {
-                ShowError("Password must be at least 8 characters.");
+                ShowError(PasswordPolicy.RequirementsMessage);
                 return;
             }
 
@@ -90,7 +99,7 @@ namespace BusNova_System
 
         private void ShowError(string message)
         {
-            lblRegMessage.ForeColor = System.Drawing.ColorTranslator.FromHtml("#C0392B");
+            lblRegMessage.ForeColor = UiColors.Danger;
             lblRegMessage.Text = Server.HtmlEncode(message);
         }
     }

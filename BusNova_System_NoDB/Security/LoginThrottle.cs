@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Configuration;
 using BusNova_System.DataAccess;
 
@@ -72,13 +72,16 @@ namespace BusNova_System.Security
         /// without a database. Given how many failures there have been and
         /// how long ago the oldest counted one was, decide whether to
         /// refuse and for how much longer.
+        ///
+        /// All times are SERVER LOCAL, matching dbo.AuditLog.OccurredAt.
+        /// See the note in Check().
         /// </summary>
-        internal static LockoutState Evaluate(int failedAttempts, DateTime? firstFailureUtc,
-                                              DateTime nowUtc, int maxAttempts, int lockoutMinutes)
+        internal static LockoutState Evaluate(int failedAttempts, DateTime? firstFailure,
+                                              DateTime now, int maxAttempts, int lockoutMinutes)
         {
             var state = new LockoutState { FailedAttempts = failedAttempts };
 
-            if (failedAttempts < maxAttempts || !firstFailureUtc.HasValue)
+            if (failedAttempts < maxAttempts || !firstFailure.HasValue)
                 return state;
 
             // The window runs from the first counted failure, so the lockout
@@ -86,11 +89,11 @@ namespace BusNova_System.Security
             // Otherwise a bot hammering a locked account would keep it
             // locked forever and turn this into a denial of service against
             // the real owner.
-            var expiresAt = firstFailureUtc.Value.AddMinutes(lockoutMinutes);
-            if (nowUtc >= expiresAt) return state;
+            var expiresAt = firstFailure.Value.AddMinutes(lockoutMinutes);
+            if (now >= expiresAt) return state;
 
             state.IsLockedOut = true;
-            state.MinutesRemaining = Math.Max(1, (int)Math.Ceiling((expiresAt - nowUtc).TotalMinutes));
+            state.MinutesRemaining = Math.Max(1, (int)Math.Ceiling((expiresAt - now).TotalMinutes));
             return state;
         }
 
@@ -107,8 +110,23 @@ namespace BusNova_System.Security
             var address = (email ?? string.Empty).Trim();
             if (address.Length == 0) return new LockoutState();
 
+            // NOTE ON THE CLOCK. dbo.AuditLog.OccurredAt is defaulted with
+            // GETDATE(), i.e. SERVER LOCAL time, and AuditService does not
+            // supply the column, so every audit row carries local time. This
+            // query and Evaluate below must therefore use local time too.
+            //
+            // The first version of this used GETUTCDATE() and DateTime.UtcNow.
+            // In SAST (UTC+2) that made recorded failures look two hours in
+            // the future, so a 15-minute lockout reported "131 minutes
+            // remaining" and actually lasted 2h15m. West of Greenwich the same
+            // mistake would have expired lockouts early instead.
+            //
+            // Worth flagging: the project convention says timestamps are
+            // stored in UTC and rendered in SAST, but this table does not
+            // follow it. Matching the data as it actually is beats being
+            // consistent with a convention the schema does not implement.
             const string sql = @"
-DECLARE @windowStart DATETIME = DATEADD(MINUTE, -@minutes, GETUTCDATE());
+DECLARE @windowStart DATETIME = DATEADD(MINUTE, -@minutes, GETDATE());
 
 DECLARE @lastSuccess DATETIME =
     (SELECT MAX(OccurredAt) FROM dbo.AuditLog
@@ -140,7 +158,7 @@ WHERE Action = 'LoginFailed'
 
                 if (row == null) return new LockoutState();
 
-                return Evaluate(row.Count, row.First, DateTime.UtcNow, MaxAttempts, LockoutMinutes);
+                return Evaluate(row.Count, row.First, DateTime.Now, MaxAttempts, LockoutMinutes);
             }
             catch
             {
