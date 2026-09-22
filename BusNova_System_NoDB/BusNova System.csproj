@@ -121,6 +121,7 @@
     <!-- Security -->
     <Compile Include="Security\PasswordHasher.cs" />
     <Compile Include="Security\PasswordPolicy.cs" />
+    <Compile Include="Security\LoginThrottle.cs" />
     <Compile Include="Security\PasswordSetupToken.cs" />
     <Compile Include="Security\BookingDraftSession.cs" />
     <Compile Include="Security\AntiForgery.cs" />

@@ -62,6 +62,7 @@
     <Compile Include="RolesTests.cs" />
     <Compile Include="TicketPricingTests.cs" />
     <Compile Include="SeatValidationTests.cs" />
+    <Compile Include="LoginThrottleTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
