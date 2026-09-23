@@ -93,6 +93,11 @@ One commit per item. Each commit updates the corresponding finding in `AUDIT_FIN
 
 Bracketed rows are conditional — FIX-012 on your decision in §2.2, FIX-013 on the outcome of VER-001.
 
+> **Name clash, for anyone searching:** a later brief (2026-09-23, Manager user management and Error page
+> navigation) was *also* labelled FIX-014. FIX-014 was already taken by the encoding fix in the table above, so
+> that work shipped as **FIX-016** — see §7b. If you are looking for user management or the Error page, it is
+> FIX-016, not this row.
+
 **Gate:** no work package in Phases 1–3 begins until FIX-002 through FIX-011 are complete and verified, with FIX-001 exempted per §2.1.
 
 ---
@@ -481,9 +486,14 @@ Waitlists, multiple boarding points, dynamic pricing with documented and testabl
 ## 7b. FIX-016 — Manager user management and Error page navigation — **COMPLETE** (commit `1f4aa4c`, 2026-09-23)
 
 Requested as "FIX-014". That identifier was already taken by the completed encoding fix (AUD-048), so this work
-is FIX-016. The brief also mandated `SessionHelper.RequireRole(Roles.Manager);` as a bare call; the helper is
-`RequireRole(Page, params string[])` because it needs the page to issue its redirect, and the existing form was
-already in place on every guarded page, so it stays.
+is FIX-016.
+
+The brief also mandated `SessionHelper.RequireRole(Roles.Manager);` as a bare call, and the helper is
+`RequireRole(Page, params string[])`. **Correction (FIX-017):** the original note here said that overload "cannot
+exist". That was wrong. It can — it would resolve the page from `HttpContext.Current.CurrentHandler` — so it was
+**declined, not impossible**. The reasons for declining it: a security guard should name the page it acts on
+rather than reach into ambient state for it, and a second spelling of the same guard means every reviewer has to
+know both and check which one a page used. The existing form stays on all guarded pages.
 
 **Most of the brief was already satisfied**, and where an acceptance test passed against existing code, nothing
 was changed. Verified rather than rebuilt: the role gate is the first statement of `Page_Load`
@@ -520,6 +530,51 @@ because `existingResponse="Replace"` overrides `Response.TrySkipIisCustomErrors`
 be a measurement artefact: PowerShell's `Invoke-WebRequest` disposes the response stream on a 4xx/5xx before the
 body can be read. Measured with a raw `HttpWebRequest`, the page had been rendering correctly all along. The
 block was removed and the existing configuration left alone.
+
+---
+
+## 7c. FIX-017 — verification discipline — **COMPLETE** (commit `c9b78ab` and the docs commit that follows it, 2026-09-23)
+
+Follow-up to FIX-016, and not a feature. At the end of that brief I reported three things I had got wrong. Asked
+to fix them, I found the symptoms were already gone in every case — so this closes the **gaps that let them
+happen**, and corrects two claims that measurement contradicted.
+
+The first two mistakes turned out to share one root cause: **this repo had no executable definition of
+"verified"**. `git ls-files` found zero build or verification scripts, and the README had no verification
+section. Every check in the project had run from a working session. That is how a false measurement could drive a
+config change, and how a page that returns 500 could reach a commit.
+
+**What changed:**
+
+- **`Verify.ps1`** (new) — build → `aspnet_compiler` → tests, non-zero exit on any failure. The middle stage is
+  the point: Web Forms compiles markup on *first request*, so MSBuild passes a page that will throw. It now has a
+  home, a name, and a README section, instead of being discipline someone has to remember.
+- **`BusNova.Tests/MarkupGuardTests.cs`** (new, 4 tests) — because `aspnet_compiler` is necessary and **not
+  sufficient**. A misspelt `data-` attribute compiles perfectly; that is the bug that left the emergency button
+  with no confirmation. Three rules: no `<% %>` inside a server tag (`<%#` and `<%$` stay legal), only the
+  `data-bn-confirm*` names `busnova-ui.js` actually reads, and no `-title`/`-ok` without a `data-bn-confirm` body.
+  A fourth test asserts the guards are really scanning the pages, so they cannot pass by finding nothing.
+- **`Web.config`** — comment only, again; the diff against `2af5679` is still purely a comment. It now records
+  *how* the `<httpErrors>` question was settled, because the measurement was the trap: `Invoke-WebRequest`
+  disposes the response stream on a 4xx/5xx, so every error page reads back empty.
+- **`README.md`** — a **Verifying a change** section, and the stale "57 tests" corrected to 255.
+- **§7b above** — the `RequireRole` claim corrected from "cannot exist" to "declined, and here is why".
+
+**Verification — the guards were proven to fail before being trusted.** Both original defects were reintroduced
+and the results recorded:
+
+| Reintroduced defect | `aspnet_compiler` | `MarkupGuardTests` |
+|---|---|---|
+| `<%-- --%>` inside `<asp:Button>` | **FAILS** — `ASPPARSE` at line 154 | **FAILS** — same file, same line 154 |
+| `data-bn-confirm-body` / `-accept` | **PASSES** — "Markup compiles clean" | **FAILS** — 2 tests, naming both attributes |
+
+That second row is the whole argument for writing the tests: the compiler cannot see the fault that grounded a
+bus. Both defects were then reverted and `Verify.ps1` re-run green.
+
+**Dev data:** the leftover test employee `test022116` (EmployeeID 7) was deleted. My earlier reason for keeping it
+— "risks foreign-key references" — was asserted without checking; all eight FK columns referencing `dbo.Employee`
+held zero rows pointing at it. Its `AuditLog` rows were kept, since audit is append-only and those rows are the
+record that the account existed.
 
 ## 8. Housekeeping
 
