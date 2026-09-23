@@ -478,7 +478,7 @@ Waitlists, multiple boarding points, dynamic pricing with documented and testabl
 
 ---
 
-## 7b. FIX-016 — Manager user management and Error page navigation — **COMPLETE** (2026-09-23)
+## 7b. FIX-016 — Manager user management and Error page navigation — **COMPLETE** (commit `1f4aa4c`, 2026-09-23)
 
 Requested as "FIX-014". That identifier was already taken by the completed encoding fix (AUD-048), so this work
 is FIX-016. The brief also mandated `SessionHelper.RequireRole(Roles.Manager);` as a bare call; the helper is
@@ -507,6 +507,8 @@ which once made this page fail to compile, was resolved in an earlier pass.
 - **`ManageUsers.aspx.cs`** — the one real functional defect. `SetEmployeeActive` / `SetPassengerActive` return
   whether the UPDATE matched a row and both call sites discarded it, so a stale row reported success and wrote no
   audit entry. A success message that can be untrue is worse than an error.
+
+**Also committed separately (`04a27d1`):** the WP-7 emergency button carried `data-bn-confirm-body` / `-accept` while `busnova-ui.js` reads `data-bn-confirm` / `-ok`, so its confirmation dialog never fired and a single press grounded a bus. Found by an exploration agent while reading the codebase for this brief.
 
 **Verification:** 20/20 on the HTTP acceptance matrix, 10/10 on the user-management path with audit-row evidence
 (one row per successful change, **zero** on every rejection), and 15/15 of the required manual steps in a real
