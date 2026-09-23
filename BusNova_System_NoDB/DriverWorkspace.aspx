@@ -145,11 +145,17 @@
                     Raises a critical fault against this bus immediately and takes it off the road.
                     Use it when the bus is not safe to continue.
                 </p>
+                <%-- The attributes below must be data-bn-confirm and
+                     data-bn-confirm-ok. Scripts/busnova-ui.js finds its
+                     triggers with closest('[data-bn-confirm]'), so the
+                     -body / -accept names this used to carry meant the
+                     button had no confirmation at all and a single press
+                     grounded a bus immediately. --%>
                 <asp:Button ID="btnEmergency" runat="server" Text="Raise emergency"
                             CssClass="bn-btn bn-btn--danger dw-btn"
                             data-bn-confirm-title="Raise an emergency?"
-                            data-bn-confirm-body="This takes the bus off the road straight away and alerts the depot. Only do this if the bus is not safe to continue."
-                            data-bn-confirm-accept="Raise emergency"
+                            data-bn-confirm="This takes the bus off the road straight away and alerts the depot. Only do this if the bus is not safe to continue."
+                            data-bn-confirm-ok="Raise emergency"
                             OnClick="btnEmergency_Click" />
             </div>
 
