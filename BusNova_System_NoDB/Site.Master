@@ -27,7 +27,7 @@
     <link href="Styles/Home.css?v=6" rel="stylesheet" />
     <%-- Must load after Home.css: its semantic tokens resolve against the
          brand tokens Home.css declares. --%>
-    <link href="Styles/busnova-design-system.css?v=2" rel="stylesheet" />
+    <link href="Styles/busnova-design-system.css?v=3" rel="stylesheet" />
     <%-- Components load after the tokens they consume. --%>
     <link href="Styles/busnova-components.css?v=2" rel="stylesheet" />
     <%-- Dashboard and shared page furniture (stat cards, tiles, panels).
@@ -108,7 +108,17 @@
                                 aria-label="Toggle navigation"
                                 aria-controls="bnSidebarNav"
                                 aria-expanded="true">
-                            <i class="fas fa-bars" aria-hidden="true"></i>
+                            <%-- Both icons ship in the markup and CSS shows
+                                 exactly one, keyed off the same
+                                 bn-sidebar-collapsed class that the inline
+                                 script in <head> applies before first paint.
+                                 Swapping them in JavaScript instead would
+                                 show the wrong icon until site.js runs at the
+                                 end of <body> - a visible flicker on every
+                                 navigation, which is the whole reason that
+                                 class is applied early. --%>
+                            <i class="fas fa-chevron-left bn-sidebar__icon bn-sidebar__icon--open" aria-hidden="true"></i>
+                            <i class="fas fa-bars bn-sidebar__icon bn-sidebar__icon--closed" aria-hidden="true"></i>
                         </button>
                     </div>
 
@@ -763,7 +773,7 @@
         </div><%-- /divAppRoot --%>
     </form>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="Scripts/site.js?v=1"></script>
+    <script src="Scripts/site.js?v=2"></script>
     <script src="Scripts/busnova-ui.js?v=1"></script>
 </body>
 </html>

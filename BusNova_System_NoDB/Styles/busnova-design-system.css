@@ -371,6 +371,23 @@
     flex-shrink: 0;
 }
 
+/* WP-12. The control shows what it will DO, not what it is.
+   Open      -> a chevron pointing left, meaning "collapse this".
+   Collapsed -> the hamburger, the conventional "open the menu".
+   Exactly one is ever displayed, and the rule is driven by the same
+   bn-sidebar-collapsed class as the width, so the icon cannot disagree
+   with the panel it belongs to.
+
+   Each selector carries two classes on purpose. Font Awesome declares
+   .fas { display: inline-block } and its stylesheet loads AFTER this one,
+   so a single-class rule here loses the tie on load order and BOTH icons
+   render - which is exactly what the first run of this showed. */
+.bn-sidebar__toggle .bn-sidebar__icon--closed { display: none; }
+.bn-sidebar__toggle .bn-sidebar__icon--open   { display: inline-block; }
+
+html.bn-sidebar-collapsed .bn-sidebar__toggle .bn-sidebar__icon--open   { display: none; }
+html.bn-sidebar-collapsed .bn-sidebar__toggle .bn-sidebar__icon--closed { display: inline-block; }
+
 .bn-sidebar__toggle {
     display: inline-flex;
     align-items: center;

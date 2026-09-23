@@ -144,6 +144,16 @@
 
             if (toggle) toggle.setAttribute('aria-expanded', String(expanded));
             if (drawerBtn) drawerBtn.setAttribute('aria-expanded', String(expanded));
+
+            /* WP-12. The icon swap is CSS, keyed off the same class, so it
+               cannot fall out of step with the panel. The LABEL still has to
+               be updated here: "Toggle navigation" tells a screen-reader user
+               nothing about which way it will go, and aria-expanded alone is
+               announced only on some combinations. */
+            if (toggle) {
+                toggle.setAttribute('aria-label',
+                    expanded ? 'Collapse navigation' : 'Expand navigation');
+            }
         }
 
         function onToggleClick() {
@@ -163,6 +173,29 @@
         sidebar.addEventListener('click', function (e) {
             var link = e.target.closest ? e.target.closest('.bn-sidebar__nav-link') : null;
             if (link && isMobile()) closeDrawer();
+        });
+
+        /* WP-12. Double-clicking the sidebar's own empty space collapses it,
+           as a second way to reach the toggle without aiming at a 44px
+           button.
+
+           Only the panel's empty space. A double click that lands on a link,
+           a button or the logo has already done something - navigated, or
+           toggled - and collapsing as well would be a second, unasked-for
+           action from one gesture. closest() walks up from the actual target,
+           so a click on the icon or the text inside a link still counts as
+           the link.
+
+           Desktop only: on a phone the sidebar is a drawer over the content,
+           where the overlay and the nav links already dismiss it, and
+           double-tap there is the browser's zoom gesture. */
+        sidebar.addEventListener('dblclick', function (e) {
+            if (isMobile()) return;
+            if (root().classList.contains(COLLAPSED_CLASS)) return;
+
+            if (e.target.closest && e.target.closest('a, button, input, select, textarea')) return;
+
+            setCollapsed(true);
         });
 
         /* Optional shortcut from the brief. Ignored while typing, so it
