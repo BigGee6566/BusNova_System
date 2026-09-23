@@ -24,6 +24,10 @@ namespace BusNova_System
 
         protected global::System.Web.UI.WebControls.TextBox txtYearOfManufacture;
 
+        protected global::System.Web.UI.WebControls.TextBox txtFuelCapacity;
+
+        protected global::System.Web.UI.WebControls.TextBox txtOdometerReading;
+
         protected global::System.Web.UI.WebControls.Button btnRegisterBus;
 
         protected global::System.Web.UI.WebControls.Button btnClear;

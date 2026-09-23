@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Web.UI;
 using BusNova_System.Models;
 using BusNova_System.Security;
@@ -67,6 +68,50 @@ namespace BusNova_System
                 return;
             }
 
+            // Fuel capacity is optional - an operator registering a bus may
+            // not have the figure to hand, and dbo.Bus.FuelCapacityLitres is
+            // nullable for exactly that reason.
+            //
+            // NOT NumberStyles.Number: it includes AllowThousands, and under
+            // InvariantCulture the comma is a thousands separator, so "200,00"
+            // parses as 20000 rather than being rejected. That is AUD-057,
+            // which put a hundred-fold error into the ticket price. The same
+            // trap applies to any decimal read from a form.
+            decimal? fuelCapacity = null;
+            var fuelCapacityText = txtFuelCapacity.Text.Trim();
+            if (fuelCapacityText.Length > 0)
+            {
+                decimal parsedCapacity;
+                if (!decimal.TryParse(fuelCapacityText,
+                        NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign |
+                        NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite,
+                        CultureInfo.InvariantCulture, out parsedCapacity) ||
+                    parsedCapacity <= 0m || parsedCapacity > 9999.99m)
+                {
+                    ShowError("Fuel capacity must be a number of litres between 0 and 9999.99.");
+                    txtFuelCapacity.Focus();
+                    return;
+                }
+                fuelCapacity = decimal.Round(parsedCapacity, 2);
+            }
+
+            // dbo.Bus.OdometerReading is NOT NULL DEFAULT 0, so a blank box
+            // means a new vehicle rather than an unknown value.
+            var odometerReading = 0;
+            var odometerText = txtOdometerReading.Text.Trim();
+            if (odometerText.Length > 0)
+            {
+                if (!int.TryParse(odometerText,
+                        NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite,
+                        CultureInfo.InvariantCulture, out odometerReading) ||
+                    odometerReading < 0)
+                {
+                    ShowError("Odometer reading must be a whole number of kilometres, or blank.");
+                    txtOdometerReading.Focus();
+                    return;
+                }
+            }
+
             // UC3 alternative flow 3.1.2.
             if (FleetService.RegistrationExists(registration))
             {
@@ -79,7 +124,8 @@ namespace BusNova_System
             try
             {
                 FleetService.RegisterBus(registration, model, manufacturer,
-                                         seatingCapacity, fuelType, year);
+                                         seatingCapacity, fuelType, year,
+                                         fuelCapacity, odometerReading);
             }
             catch (System.Data.SqlClient.SqlException ex)
             {
@@ -111,6 +157,8 @@ namespace BusNova_System
             txtSeatingCapacity.Text = string.Empty;
             ddlFuelType.SelectedIndex = 0;
             txtYearOfManufacture.Text = string.Empty;
+            txtFuelCapacity.Text = string.Empty;
+            txtOdometerReading.Text = string.Empty;
         }
 
         private void ShowError(string message)

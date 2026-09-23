@@ -123,10 +123,31 @@ Write-Output 'Build OK.'
 
 Write-Stage '2/3  aspnet_compiler  (.aspx markup)'
 
-$precompileOut = Join-Path $env:TEMP ('busnova-precompile-' + [Guid]::NewGuid().ToString('N'))
+# aspnet_compiler walks the WHOLE site directory, including .vs\, which
+# Visual Studio keeps open. Pointed straight at the working tree it fails
+# with "ASPRUNTIME: The process cannot access the file ...vsidx" whenever
+# the solution is open - a lock, reported in the same channel as a real
+# markup error, which is exactly the kind of false negative this script
+# exists to prevent.
+#
+# So: stage a copy without the directories the compiler has no use for,
+# and compile that. bin\ is kept because the markup needs the compiled
+# code-behind assembly to resolve against. Short paths, because Chrome and
+# aspnet_compiler both choke on long ones under this repo's location.
+$stage = Join-Path $env:TEMP ('bnpre-' + [Guid]::NewGuid().ToString('N').Substring(0, 8))
+$precompileOut = Join-Path $env:TEMP ('bnout-' + [Guid]::NewGuid().ToString('N').Substring(0, 8))
 
 try {
-    & $aspnetCompiler -v / -p $repo -f $precompileOut
+    $null = robocopy $repo $stage /MIR /NFL /NDL /NJH /NJS /NP /R:1 /W:1 `
+        /XD '.vs' '.git' 'obj' 'packages' 'App_Data\Logs' 'BusNova.Tests'
+    # robocopy uses exit codes 0-7 for success; 8+ is a real failure.
+    if ($LASTEXITCODE -ge 8) {
+        $failures.Add('Could not stage a copy of the site for precompilation.')
+        Write-Output 'robocopy failed; skipping the markup stage rather than reporting a false result.'
+    }
+    else { $LASTEXITCODE = 0 }
+
+    & $aspnetCompiler -v / -p $stage -f $precompileOut
     if ($LASTEXITCODE -ne 0) {
         $failures.Add('aspnet_compiler failed - a page would throw at first request.')
         Write-Output ''
@@ -138,8 +159,10 @@ try {
     }
 }
 finally {
-    if (Test-Path $precompileOut) {
-        Remove-Item $precompileOut -Recurse -Force -ErrorAction SilentlyContinue
+    foreach ($tmp in @($precompileOut, $stage)) {
+        if ($tmp -and (Test-Path $tmp)) {
+            Remove-Item $tmp -Recurse -Force -ErrorAction SilentlyContinue
+        }
     }
 }
 

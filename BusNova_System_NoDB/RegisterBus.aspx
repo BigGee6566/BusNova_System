@@ -149,6 +149,48 @@
                 </div>
             </div>
 
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="<%= txtFuelCapacity.ClientID %>">Fuel Capacity (litres)</label>
+                    <asp:TextBox
+                        ID="txtFuelCapacity"
+                        runat="server"
+                        CssClass="form-control"
+                        MaxLength="7"
+                        placeholder="e.g. 300">
+                    </asp:TextBox>
+                    <span class="bn-note">How far the bus can run on one tank. Leave blank if you do not know it.</span>
+                    <asp:RegularExpressionValidator
+                        runat="server"
+                        ControlToValidate="txtFuelCapacity"
+                        ErrorMessage="Enter litres as a number, up to 9999.99."
+                        ValidationExpression="^\d{1,4}(\.\d{1,2})?$"
+                        CssClass="field-error"
+                        Display="Dynamic"
+                        ValidationGroup="RegisterBus" />
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="<%= txtOdometerReading.ClientID %>">Odometer Reading (km)</label>
+                    <asp:TextBox
+                        ID="txtOdometerReading"
+                        runat="server"
+                        CssClass="form-control"
+                        MaxLength="7"
+                        placeholder="e.g. 125000">
+                    </asp:TextBox>
+                    <span class="bn-note">Current mileage. Defaults to 0 for a brand-new vehicle.</span>
+                    <asp:RegularExpressionValidator
+                        runat="server"
+                        ControlToValidate="txtOdometerReading"
+                        ErrorMessage="Enter the odometer reading as a whole number of kilometres."
+                        ValidationExpression="^\d{1,7}$"
+                        CssClass="field-error"
+                        Display="Dynamic"
+                        ValidationGroup="RegisterBus" />
+                </div>
+            </div>
+
             <div class="ops-actions">
                 <asp:Button
                     ID="btnRegisterBus"

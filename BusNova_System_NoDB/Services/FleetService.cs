@@ -79,16 +79,29 @@ namespace BusNova_System.Services
         /// The next service date is seeded from the configured interval so
         /// that a brand-new bus still appears on the maintenance schedule.
         /// </summary>
+        /// <param name="fuelCapacityLitres">
+        /// Optional. dbo.Bus.FuelCapacityLitres is decimal(6,2) NULL, so null
+        /// means "not recorded" rather than "zero" - an operator registering a
+        /// bus may simply not have the figure to hand, and a zero would be a
+        /// lie the fuel-efficiency report would then act on.
+        /// </param>
+        /// <param name="odometerReading">
+        /// dbo.Bus.OdometerReading is NOT NULL DEFAULT 0, so zero is the
+        /// honest value for a new vehicle.
+        /// </param>
         public static int RegisterBus(string registrationNumber, string model, string manufacturer,
-                                      int seatingCapacity, string fuelType, int? yearOfManufacture)
+                                      int seatingCapacity, string fuelType, int? yearOfManufacture,
+                                      decimal? fuelCapacityLitres = null, int odometerReading = 0)
         {
             const string sql = @"
 INSERT INTO dbo.Bus
     (RegistrationNumber, Model, Manufacturer, SeatingCapacity, FuelType,
-     YearOfManufacture, Status, NextServiceDueDate, CreatedBy)
+     YearOfManufacture, FuelCapacityLitres, OdometerReading,
+     Status, NextServiceDueDate, CreatedBy)
 VALUES
     (@reg, @model, @manufacturer, @capacity, @fuelType,
-     @year, @status, @nextService, @createdBy);
+     @year, @fuelCapacity, @odometer,
+     @status, @nextService, @createdBy);
 SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
             var interval = ServiceIntervalMonths();
@@ -100,6 +113,8 @@ SELECT CAST(SCOPE_IDENTITY() AS INT);";
                 Db.P("@capacity", seatingCapacity),
                 Db.P("@fuelType", fuelType),
                 Db.P("@year", yearOfManufacture),
+                Db.P("@fuelCapacity", fuelCapacityLitres),
+                Db.P("@odometer", odometerReading),
                 Db.P("@status", BusStatus.Active),
                 Db.P("@nextService", DateTime.Today.AddMonths(interval)),
                 Db.P("@createdBy", SessionHelper.IsSignedIn ? (object)SessionHelper.UserId : null)));

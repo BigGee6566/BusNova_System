@@ -2,7 +2,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="Styles/style.css?v=6" rel="stylesheet" />
     <link href="Styles/Ops.css?v=6" rel="stylesheet" />
-    <script src="Scripts/payment-simulation.js?v=1"></script>
+    <script src="Scripts/payment-simulation.js?v=3"></script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
