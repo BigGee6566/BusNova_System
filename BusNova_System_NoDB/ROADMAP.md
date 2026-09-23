@@ -576,6 +576,53 @@ bus. Both defects were then reverted and `Verify.ps1` re-run green.
 held zero rows pointing at it. Its `AuditLog` rows were kept, since audit is append-only and those rows are the
 record that the account existed.
 
+---
+
+## 7d. WP-12 — UI consistency, fluid layout, sidebar behaviour — **COMPLETE** (2026-09-24)
+
+Requested as a UI/UX overhaul from screenshots: consistent design language, fluid responsive layout, nine named
+pages revamped, two new Register Bus fields, revised sidebar toggle behaviour, and an unresponsive Confirm
+Payment button. Investigation found that most of it traced to four concrete causes, three of them recorded as
+findings rather than fixed quietly.
+
+**Delivered in four commits, verified between each.**
+
+| | Commit | What |
+|---|---|---|
+| 1 | `0e75aae` | AUD-060 + AUD-062 (payment) and the two Register Bus fields |
+| 2 | `aa184aa` | AUD-061 — the nine pages into the app shell |
+| 3 | `27e1b92` | Fluid layout, one gutter token, dashboard styles extracted |
+| 4 | `77858f8` | Sidebar toggle icon, label and double-click-to-close |
+
+**What the causes actually were:**
+
+- **The nine "inconsistent" pages were one stale collection.** `Site.Master` carries two shells and
+  `Site.Master.cs:95` picks between them from a hard-coded `DashboardPages` set. Every screen built from WP-2
+  onwards was added to the sidebar and never to that set. The user named all nine from screenshots, by eye, and
+  all nine were exactly the ones missing.
+- **The dashboard's look was unreachable.** 103 lines of inline `<style>` inside `Dashboard.aspx`, the only such
+  block in the repo. "Make the other pages look like the Manager Dashboard" was a reachability problem.
+- **No payment method worked in a browser at all.** Two independent defects that hid each other — see AUD-060 and
+  AUD-062. Neither is visible from reading the code-behind, which is correct throughout.
+- **Register Bus needed no migration.** `dbo.Bus` already had `FuelCapacityLitres` and `OdometerReading`; only
+  `FleetService.RegisterBus` ignored them.
+
+**Decisions taken with the user before building:** the 50px gutter eases to 16px on narrow screens through one
+`clamp()` token rather than being literal at every width; data fills the available width while entry forms keep a
+readable measure but sit left rather than centred; delivery staged rather than one commit.
+
+**Verification.** 53 layout measurements over CDP at 1920/1280/768/360 and at 50/100/200% zoom — gutter exactly
+50px at 1280 and above, content width equal to column width everywhere, no horizontal scroll anywhere. 13 sidebar
+checks. 16 payment checks across both methods. 12 shell checks including three control pages that must keep the
+public chrome. 8 Register Bus checks including the AUD-057 comma trap. `Verify.ps1` green after every stage.
+
+**Two of my own errors, both caught by measurement rather than reading.** A first shell test used `bn-sidebar` as
+its marker and reported nine passes it had not earned — that string also appears in the always-rendered inline
+script that restores the collapsed state, so it is present on every page including Home. And the first icon-swap
+CSS used single-class selectors, which lose to Font Awesome's `.fas { display: inline-block }` on load order, so
+both icons rendered at once.
+
+
 ## 8. Housekeeping
 
 One item per phase. These run alongside feature work and never block it.
