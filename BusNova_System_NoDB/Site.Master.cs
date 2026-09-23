@@ -27,7 +27,22 @@ namespace BusNova_System
             "MyTickets.aspx", "LogFuel.aspx",
             "ReportIssue.aspx", "MaintenanceWork.aspx", "ManageUsers.aspx", "IssueTicket.aspx",
             "ReportRouteCompletion.aspx", "ReportFuelEfficiency.aspx",
-            "ReportDriverPerformance.aspx", "ReportMaintenanceDue.aspx"
+            "ReportDriverPerformance.aspx", "ReportMaintenanceDue.aspx",
+
+            // AUD-061. Everything from WP-2 onwards was added to the sidebar
+            // but never to this set, so nine operational screens rendered the
+            // public marketing navbar and footer instead of the app shell -
+            // no sidebar, no top bar, no page title. The navigation offered a
+            // page and the page then denied the navigation existed.
+            //
+            // A page belongs here the moment it is reachable from the
+            // sidebar. If you add a screen, add it in both places, and give
+            // it a title below: a page missing from PageTitles renders an
+            // empty top bar rather than failing loudly.
+            "ValidateTicket.aspx", "Notifications.aspx", "Manifest.aspx", "LiveMap.aspx",
+            "DriverWorkspace.aspx",
+            "ReportRouteList.aspx", "ReportTicketSales.aspx",
+            "ReportDriverSchedule.aspx", "ReportMaintenanceSchedule.aspx"
         };
 
         /// <summary>
@@ -54,7 +69,20 @@ namespace BusNova_System
             { "ReportRouteCompletion.aspx", "Route Completion" },
             { "ReportFuelEfficiency.aspx", "Fuel Efficiency" },
             { "ReportDriverPerformance.aspx", "Driver Performance" },
-            { "ReportMaintenanceDue.aspx", "Maintenance Due" }
+            { "ReportMaintenanceDue.aspx", "Maintenance Due" },
+
+            // AUD-061, the same nine. These titles match the wording the
+            // sidebar uses for each link, so the top bar confirms where you
+            // are rather than renaming it.
+            { "ValidateTicket.aspx", "Validate Ticket" },
+            { "Notifications.aspx", "Notifications" },
+            { "Manifest.aspx", "Passenger Manifest" },
+            { "LiveMap.aspx", "Live Map" },
+            { "DriverWorkspace.aspx", "My Trip" },
+            { "ReportRouteList.aspx", "Route List" },
+            { "ReportTicketSales.aspx", "Ticket Sales" },
+            { "ReportDriverSchedule.aspx", "Driver Schedule" },
+            { "ReportMaintenanceSchedule.aspx", "Maintenance Schedule" }
         };
 
         /// <summary>
