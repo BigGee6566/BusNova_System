@@ -29,12 +29,22 @@ INSERT INTO dbo.AuditLog
 VALUES
     (@userType, @userId, @userName, @action, @entityName, @entityKey, @details, @ip);";
 
-                var userId = SessionHelper.IsSignedIn ? (object)SessionHelper.UserId : null;
+                // One decision, used for all three, so they cannot disagree.
+                // UserType and FullName read the session directly while
+                // IsSignedIn additionally checks the binding, so a session
+                // whose binding cookie has gone produces IsSignedIn == false
+                // with UserType still populated. Reading them independently
+                // then wrote (UserType = 'Employee', UserId = NULL): a
+                // reference naming a table but no row in it. CK_AuditLog_UserPair
+                // (migration 016) now rejects that pair, and because the catch
+                // below is deliberately silent, the audit row would have been
+                // lost rather than written wrong - which is worse.
+                var signedIn = SessionHelper.IsSignedIn;
 
                 Db.Execute(sql,
-                    Db.P("@userType", SessionHelper.UserType),
-                    Db.P("@userId", userId),
-                    Db.P("@userName", SessionHelper.FullName),
+                    Db.P("@userType", signedIn ? SessionHelper.UserType : null),
+                    Db.P("@userId", signedIn ? (object)SessionHelper.UserId : null),
+                    Db.P("@userName", signedIn ? SessionHelper.FullName : null),
                     Db.P("@action", action),
                     Db.P("@entityName", entityName),
                     Db.P("@entityKey", entityKey),

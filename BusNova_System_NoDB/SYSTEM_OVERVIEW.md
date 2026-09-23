@@ -100,7 +100,22 @@ SQL Server database `BusNovaDB`:
 | `dbo.MaintenanceLog` | One row spans a fault's life, from driver report through maintenance close-out. |
 | `dbo.Booking` | A multi-traveller booking (reference, total amount, payment status/method). |
 | `dbo.Ticket` | Individual tickets, optionally linked to a booking; filtered unique indexes prevent double-booking a seat or a duplicate traveller name within a booking. |
-| `dbo.AuditLog` | Action/login audit trail. |
+| `dbo.AuditLog` | Action/login audit trail. Append-only, and deliberately carries **no foreign keys** — see below. |
+
+### Polymorphic references — why `AuditLog` and `Notification` have no foreign keys
+
+In a database diagram these two tables appear unconnected to everything else. That is accurate, and it is intended. Both reference a user **polymorphically**:
+
+| Table | Discriminator | Key |
+|---|---|---|
+| `dbo.AuditLog` | `UserType` — `Employee` \| `Passenger` \| `NULL` | `UserId` |
+| `dbo.Notification` | `RecipientUserType` | `RecipientUserID` |
+
+The pair points into `dbo.Employee` **or** `dbo.Passenger`, decided at runtime by the discriminator's own value. A SQL Server foreign key names exactly one referenced table, so no FK can express "points at `Employee` when the column beside it says `Employee`". The absence is a property of the relational model, not an omission to be corrected later. `AuditLog.EntityName` / `EntityKey` are the same pattern applied to the *object* of an action — `('Bus','5')`, `('Ticket','BN-000002')` — which is also why `EntityKey` is text rather than an integer.
+
+For `AuditLog` there is a second and stronger reason: **an audit row must outlive what it describes.** A foreign key to `dbo.Employee` would force one of two behaviours when a staff member is removed — block the deletion permanently, or cascade and destroy the record of what that person did. Both are worse than no FK. The denormalised `UserName` beside it follows from the same principle: it stores the name *as it was at the time*, so renaming an account does not rewrite history. `Notification.Recipient` likewise records the address actually sent to.
+
+What the database **does** enforce, since migration `016_DiscriminatorConstraints.sql`: the discriminators are restricted to `Employee`/`Passenger`, and each `(type, id)` pair must be populated together or not at all. `NULL` remains legal on both — a sign-in failure against an address matching no account has no user type, and a depot alert has a recipient with no account behind it. These catch wrong values, not wrong casing: the collation is `Latin1_General_CI_AS`, so `employee` is accepted, and a join on the column is equally case-insensitive.
 
 Incremental migration scripts in `App_Data/Migrations/` (`002_PasswordSetup.sql`, `003_RoleConsolidation.sql`, `004_BookingSchema.sql`) apply the same schema evolution to an existing database without a full recreate.
 
