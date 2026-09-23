@@ -22,20 +22,22 @@
         </div>
 
         <div class="bn-card bn-mt-3">
-            <asp:GridView ID="gvReport" runat="server" AutoGenerateColumns="false"
-                          CssClass="ops-grid" GridLines="None" UseAccessibleHeader="true"
-                          OnRowDataBound="gvReport_RowDataBound"
-                          EmptyDataText="No preventive schedules have been set up yet.">
-                <Columns>
-                    <asp:BoundField DataField="BusRegistration" HeaderText="Bus" />
-                    <asp:BoundField DataField="ScheduleName" HeaderText="Schedule" />
-                    <asp:BoundField DataField="Interval" HeaderText="Interval" />
-                    <asp:BoundField DataField="CurrentOdometer" HeaderText="Odometer" DataFormatString="{0:N0}" HtmlEncode="false" />
-                    <asp:BoundField DataField="LastServiced" HeaderText="Last serviced" />
-                    <asp:BoundField DataField="Status" HeaderText="Status" />
-                    <asp:BoundField DataField="Detail" HeaderText="Detail" />
-                </Columns>
-            </asp:GridView>
+            <div class="ops-grid-wrap">
+                <asp:GridView ID="gvReport" runat="server" AutoGenerateColumns="false"
+                              CssClass="ops-grid" GridLines="None" UseAccessibleHeader="true"
+                              OnRowDataBound="gvReport_RowDataBound"
+                              EmptyDataText="No preventive schedules have been set up yet.">
+                    <Columns>
+                        <asp:BoundField DataField="BusRegistration" HeaderText="Bus" />
+                        <asp:BoundField DataField="ScheduleName" HeaderText="Schedule" />
+                        <asp:BoundField DataField="Interval" HeaderText="Interval" />
+                        <asp:BoundField DataField="CurrentOdometer" HeaderText="Odometer" DataFormatString="{0:N0}" HtmlEncode="false" />
+                        <asp:BoundField DataField="LastServiced" HeaderText="Last serviced" />
+                        <asp:BoundField DataField="Status" HeaderText="Status" />
+                        <asp:BoundField DataField="Detail" HeaderText="Detail" />
+                    </Columns>
+                </asp:GridView>
+            </div>
         </div>
 
     </div>

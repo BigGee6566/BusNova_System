@@ -22,20 +22,22 @@
         </div>
 
         <div class="bn-card bn-mt-3">
-            <asp:GridView ID="gvReport" runat="server" AutoGenerateColumns="false"
-                          CssClass="ops-grid" GridLines="None" UseAccessibleHeader="true"
-                          OnRowDataBound="gvReport_RowDataBound"
-                          EmptyDataText="No routes have been created yet.">
-                <Columns>
-                    <asp:BoundField DataField="RouteCode" HeaderText="Code" />
-                    <asp:BoundField DataField="RouteName" HeaderText="Route" />
-                    <asp:BoundField DataField="Origin" HeaderText="From" />
-                    <asp:BoundField DataField="Destination" HeaderText="To" />
-                    <asp:BoundField DataField="DistanceKm" HeaderText="Distance (km)" DataFormatString="{0:N1}" HtmlEncode="false" />
-                    <asp:BoundField DataField="EstimatedDurationMinutes" HeaderText="Duration (min)" />
-                    <asp:BoundField DataField="TripsScheduled" HeaderText="Trips" />
-                </Columns>
-            </asp:GridView>
+            <div class="ops-grid-wrap">
+                <asp:GridView ID="gvReport" runat="server" AutoGenerateColumns="false"
+                              CssClass="ops-grid" GridLines="None" UseAccessibleHeader="true"
+                              OnRowDataBound="gvReport_RowDataBound"
+                              EmptyDataText="No routes have been created yet.">
+                    <Columns>
+                        <asp:BoundField DataField="RouteCode" HeaderText="Code" />
+                        <asp:BoundField DataField="RouteName" HeaderText="Route" />
+                        <asp:BoundField DataField="Origin" HeaderText="From" />
+                        <asp:BoundField DataField="Destination" HeaderText="To" />
+                        <asp:BoundField DataField="DistanceKm" HeaderText="Distance (km)" DataFormatString="{0:N1}" HtmlEncode="false" />
+                        <asp:BoundField DataField="EstimatedDurationMinutes" HeaderText="Duration (min)" />
+                        <asp:BoundField DataField="TripsScheduled" HeaderText="Trips" />
+                    </Columns>
+                </asp:GridView>
+            </div>
         </div>
 
     </div>

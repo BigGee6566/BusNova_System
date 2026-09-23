@@ -1,4 +1,4 @@
-<%@ Page Title="Notifications" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Notifications.aspx.cs" Inherits="BusNova_System.Notifications" %>
+﻿<%@ Page Title="Notifications" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Notifications.aspx.cs" Inherits="BusNova_System.Notifications" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="Styles/Ops.css?v=6" rel="stylesheet" />
 </asp:Content>
@@ -31,34 +31,36 @@
         </div>
 
         <div class="bn-card bn-mt-3">
-            <asp:GridView ID="gvNotifications" runat="server" AutoGenerateColumns="false"
-                          CssClass="ops-grid" GridLines="None" UseAccessibleHeader="true"
-                          OnRowDataBound="gvNotifications_RowDataBound"
-                          EmptyDataText="Nothing has been queued yet.">
-                <Columns>
-                    <asp:BoundField DataField="CreatedAt" HeaderText="Queued" DataFormatString="{0:dd MMM yyyy HH:mm}" />
-                    <asp:BoundField DataField="NotificationType" HeaderText="Type" />
-                    <asp:BoundField DataField="Recipient" HeaderText="To" />
-                    <asp:BoundField DataField="Subject" HeaderText="Subject" />
-                    <asp:TemplateField HeaderText="Status">
-                        <ItemTemplate>
-                            <span class='<%# "status-badge " + StatusCss(Eval("Status")) %>'>
-                                <%# StatusText(Eval("Status")) %>
-                            </span>
-                        </ItemTemplate>
-                    </asp:TemplateField>
-                    <asp:TemplateField HeaderText="Attempts">
-                        <ItemTemplate>
-                            <%# Eval("AttemptCount") %> / <%# Eval("MaxAttempts") %>
-                        </ItemTemplate>
-                    </asp:TemplateField>
-                    <asp:TemplateField HeaderText="Last error">
-                        <ItemTemplate>
-                            <%# LastError(Eval("LastError")) %>
-                        </ItemTemplate>
-                    </asp:TemplateField>
-                </Columns>
-            </asp:GridView>
+            <div class="ops-grid-wrap">
+                <asp:GridView ID="gvNotifications" runat="server" AutoGenerateColumns="false"
+                              CssClass="ops-grid" GridLines="None" UseAccessibleHeader="true"
+                              OnRowDataBound="gvNotifications_RowDataBound"
+                              EmptyDataText="Nothing has been queued yet.">
+                    <Columns>
+                        <asp:BoundField DataField="CreatedAt" HeaderText="Queued" DataFormatString="{0:dd MMM yyyy HH:mm}" />
+                        <asp:BoundField DataField="NotificationType" HeaderText="Type" />
+                        <asp:BoundField DataField="Recipient" HeaderText="To" />
+                        <asp:BoundField DataField="Subject" HeaderText="Subject" />
+                        <asp:TemplateField HeaderText="Status">
+                            <ItemTemplate>
+                                <span class='<%# "status-badge " + StatusCss(Eval("Status")) %>'>
+                                    <%# StatusText(Eval("Status")) %>
+                                </span>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Attempts">
+                            <ItemTemplate>
+                                <%# Eval("AttemptCount") %> / <%# Eval("MaxAttempts") %>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Last error">
+                            <ItemTemplate>
+                                <%# LastError(Eval("LastError")) %>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                    </Columns>
+                </asp:GridView>
+            </div>
         </div>
 
     </div>

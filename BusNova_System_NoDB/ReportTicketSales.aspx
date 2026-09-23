@@ -37,20 +37,22 @@
         </div>
 
         <div class="bn-card bn-mt-3">
-            <asp:GridView ID="gvReport" runat="server" AutoGenerateColumns="false"
-                          CssClass="ops-grid" GridLines="None" UseAccessibleHeader="true"
-                          OnRowDataBound="gvReport_RowDataBound"
-                          EmptyDataText="No tickets were sold in that period.">
-                <Columns>
-                    <asp:BoundField DataField="SaleDate" HeaderText="Date" DataFormatString="{0:dd MMM yyyy}" HtmlEncode="false" />
-                    <asp:BoundField DataField="RouteName" HeaderText="Route" />
-                    <asp:BoundField DataField="TicketsSold" HeaderText="Sold" />
-                    <asp:BoundField DataField="TicketsCancelled" HeaderText="Cancelled" />
-                    <asp:BoundField DataField="GrossRevenue" HeaderText="Gross" DataFormatString="{0:C}" HtmlEncode="false" />
-                    <asp:BoundField DataField="Refunded" HeaderText="Refunded" DataFormatString="{0:C}" HtmlEncode="false" />
-                    <asp:BoundField DataField="NetRevenue" HeaderText="Net" DataFormatString="{0:C}" HtmlEncode="false" />
-                </Columns>
-            </asp:GridView>
+            <div class="ops-grid-wrap">
+                <asp:GridView ID="gvReport" runat="server" AutoGenerateColumns="false"
+                              CssClass="ops-grid" GridLines="None" UseAccessibleHeader="true"
+                              OnRowDataBound="gvReport_RowDataBound"
+                              EmptyDataText="No tickets were sold in that period.">
+                    <Columns>
+                        <asp:BoundField DataField="SaleDate" HeaderText="Date" DataFormatString="{0:dd MMM yyyy}" HtmlEncode="false" />
+                        <asp:BoundField DataField="RouteName" HeaderText="Route" />
+                        <asp:BoundField DataField="TicketsSold" HeaderText="Sold" />
+                        <asp:BoundField DataField="TicketsCancelled" HeaderText="Cancelled" />
+                        <asp:BoundField DataField="GrossRevenue" HeaderText="Gross" DataFormatString="{0:C}" HtmlEncode="false" />
+                        <asp:BoundField DataField="Refunded" HeaderText="Refunded" DataFormatString="{0:C}" HtmlEncode="false" />
+                        <asp:BoundField DataField="NetRevenue" HeaderText="Net" DataFormatString="{0:C}" HtmlEncode="false" />
+                    </Columns>
+                </asp:GridView>
+            </div>
         </div>
 
     </div>

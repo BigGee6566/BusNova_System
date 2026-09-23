@@ -57,28 +57,30 @@
         </div>
 
         <div class="bn-card bn-mt-3">
-            <asp:GridView ID="gvTrips" runat="server" AutoGenerateColumns="false"
-                          CssClass="ops-grid" GridLines="None" UseAccessibleHeader="true"
-                          OnRowDataBound="gvTrips_RowDataBound"
-                          EmptyDataText="No trips are under way right now.">
-                <Columns>
-                    <asp:BoundField DataField="RouteName" HeaderText="Route" />
-                    <asp:BoundField DataField="BusRegistration" HeaderText="Bus" />
-                    <asp:BoundField DataField="DriverName" HeaderText="Driver" />
-                    <asp:TemplateField HeaderText="Last fix">
-                        <ItemTemplate><%# FixAge(Eval("FixAgeMinutes"), Eval("HasFix")) %></ItemTemplate>
-                    </asp:TemplateField>
-                    <asp:TemplateField HeaderText="Remaining">
-                        <ItemTemplate><%# Remaining(Eval("RemainingKm")) %></ItemTemplate>
-                    </asp:TemplateField>
-                    <asp:TemplateField HeaderText="Arrives">
-                        <ItemTemplate><%# Eta(Eval("EtaEarliest"), Eval("EtaLatest"), Eval("EtaConfidence")) %></ItemTemplate>
-                    </asp:TemplateField>
-                    <asp:TemplateField HeaderText="Basis">
-                        <ItemTemplate><span class="lm-basis"><%# Server.HtmlEncode(Convert.ToString(Eval("EtaExplanation"))) %></span></ItemTemplate>
-                    </asp:TemplateField>
-                </Columns>
-            </asp:GridView>
+            <div class="ops-grid-wrap">
+                <asp:GridView ID="gvTrips" runat="server" AutoGenerateColumns="false"
+                              CssClass="ops-grid" GridLines="None" UseAccessibleHeader="true"
+                              OnRowDataBound="gvTrips_RowDataBound"
+                              EmptyDataText="No trips are under way right now.">
+                    <Columns>
+                        <asp:BoundField DataField="RouteName" HeaderText="Route" />
+                        <asp:BoundField DataField="BusRegistration" HeaderText="Bus" />
+                        <asp:BoundField DataField="DriverName" HeaderText="Driver" />
+                        <asp:TemplateField HeaderText="Last fix">
+                            <ItemTemplate><%# FixAge(Eval("FixAgeMinutes"), Eval("HasFix")) %></ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Remaining">
+                            <ItemTemplate><%# Remaining(Eval("RemainingKm")) %></ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Arrives">
+                            <ItemTemplate><%# Eta(Eval("EtaEarliest"), Eval("EtaLatest"), Eval("EtaConfidence")) %></ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Basis">
+                            <ItemTemplate><span class="lm-basis"><%# Server.HtmlEncode(Convert.ToString(Eval("EtaExplanation"))) %></span></ItemTemplate>
+                        </asp:TemplateField>
+                    </Columns>
+                </asp:GridView>
+            </div>
         </div>
 
     </div>

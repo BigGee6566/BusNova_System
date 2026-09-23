@@ -93,23 +93,25 @@
             <%-- ---------------- manifest ---------------- --%>
             <div class="bn-card">
                 <h2 class="bn-subheading">Passenger manifest</h2>
-                <asp:GridView ID="gvManifest" runat="server" AutoGenerateColumns="false"
-                              CssClass="ops-grid dw-manifest" GridLines="None" UseAccessibleHeader="true"
-                              OnRowDataBound="gvManifest_RowDataBound"
-                              EmptyDataText="No passengers booked on this trip yet.">
-                    <Columns>
-                        <asp:BoundField DataField="SeatNumber" HeaderText="Seat" />
-                        <asp:BoundField DataField="PassengerName" HeaderText="Passenger" />
-                        <asp:BoundField DataField="TicketNumber" HeaderText="Ticket" />
-                        <asp:TemplateField HeaderText="Status">
-                            <ItemTemplate>
-                                <span class='<%# "status-badge " + TicketCss(Eval("TicketStatus")) %>'>
-                                    <%# Server.HtmlEncode(Convert.ToString(Eval("TicketStatus"))) %>
-                                </span>
-                            </ItemTemplate>
-                        </asp:TemplateField>
-                    </Columns>
-                </asp:GridView>
+                <div class="ops-grid-wrap">
+                    <asp:GridView ID="gvManifest" runat="server" AutoGenerateColumns="false"
+                                  CssClass="ops-grid dw-manifest" GridLines="None" UseAccessibleHeader="true"
+                                  OnRowDataBound="gvManifest_RowDataBound"
+                                  EmptyDataText="No passengers booked on this trip yet.">
+                        <Columns>
+                            <asp:BoundField DataField="SeatNumber" HeaderText="Seat" />
+                            <asp:BoundField DataField="PassengerName" HeaderText="Passenger" />
+                            <asp:BoundField DataField="TicketNumber" HeaderText="Ticket" />
+                            <asp:TemplateField HeaderText="Status">
+                                <ItemTemplate>
+                                    <span class='<%# "status-badge " + TicketCss(Eval("TicketStatus")) %>'>
+                                        <%# Server.HtmlEncode(Convert.ToString(Eval("TicketStatus"))) %>
+                                    </span>
+                                </ItemTemplate>
+                            </asp:TemplateField>
+                        </Columns>
+                    </asp:GridView>
+                </div>
                 <p class="bn-note">
                     Boarding is recorded on the Validate Ticket screen, which is what moves a
                     ticket to Used.

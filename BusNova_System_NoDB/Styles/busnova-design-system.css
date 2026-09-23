@@ -84,6 +84,20 @@
     --bn-header-height: 64px;
     --bn-content-max: 1320px;
 
+    /* WP-12. One gutter, used by the shell, every page wrapper and the card
+       grids, so the space between content and the sidebar, the top bar and
+       the scrollbar is the same everywhere and changes in one place.
+
+       50px on a desk, easing to 16px on a phone. A literal 50px at every
+       width would cost 100px of a 360px screen - a third of it - and push
+       the wider tables into horizontal scrolling. clamp() keeps the intent
+       where there is room to honour it.
+
+            1920px -> 50px      900px -> 36px
+            1280px -> 50px      360px -> 16px  */
+    --bn-gutter: clamp(16px, 4vw, 50px);
+    --bn-gutter-block: clamp(16px, 2.5vw, 32px);
+
     /* Set by the sidebar state. Content margin follows this one value, so
        expanding and collapsing stay in step by construction rather than by
        two rules that have to be kept equal by hand. */
@@ -128,12 +142,74 @@
     flex-direction: column;
 }
 
+/* WP-12. The content area fills the space between the sidebar and the
+   window edge instead of being capped at 1320px and centred. On a wide
+   monitor the old rule left a band of empty background down both sides
+   while the tables inside it scrolled.
+
+   The gutter is padding rather than margin so the background still reaches
+   the edges, and so a table that overflows scrolls inside its own card
+   with the 50px still intact beside the scrollbar. */
 .bn-app-content {
     flex: 1;
     width: 100%;
-    max-width: var(--bn-content-max);
-    margin: 0 auto;
-    padding: var(--bn-space-6) var(--bn-space-6) var(--bn-space-9);
+    max-width: none;
+    margin: 0;
+    padding-inline: var(--bn-gutter);
+    padding-block: var(--bn-gutter-block) calc(var(--bn-gutter-block) * 2);
+}
+
+/* Data fills the width it is given. These wrappers existed to centre a
+   column of content inside the old cap; with the cap gone they only need
+   to stop constraining. */
+.bn-app-content .ops-wrap,
+.bn-app-content .ops-wrap--default,
+.bn-app-content .ops-wrap--wide,
+.bn-app-content .dash-wrap,
+.bn-app-content .ops-page {
+    max-width: none;
+    width: 100%;
+    margin-inline: 0;
+    padding-inline: 0;
+}
+
+/* .ops-page and .rep-page carry padding-top: 90px to clear the fixed
+   marketing navbar, and .ops-wrap adds another 30px. Inside the app shell
+   the top bar is sticky and already holds that space, so those offsets
+   only push the first card down behind a band of empty background - very
+   visible on the nine pages that moved into the shell in WP-12.
+   min-height: calc(100vh - 200px) is dropped for the same reason: the
+   shell's own grid already fills the viewport. */
+.bn-app-content .ops-page,
+.bn-app-content .dash-page {
+    padding-top: 0;
+    min-height: 0;
+    background-color: transparent;
+}
+
+.bn-app-content .ops-wrap,
+.bn-app-content .ops-wrap--narrow,
+.bn-app-content .ops-wrap--default,
+.bn-app-content .ops-wrap--wide {
+    padding-block: 0;
+}
+
+/* An entry form is the exception. A "Registration number" box stretched
+   across a 2560px monitor is worse to use, not better, so single-column
+   forms keep a readable measure - but sit against the left gutter rather
+   than being centred, which is what leaves dead space on both sides. */
+.bn-app-content .ops-wrap--narrow {
+    max-width: 820px;
+    width: 100%;
+    margin-inline: 0 auto;
+    padding-inline: 0;
+}
+
+/* A wide table scrolls inside its card instead of pushing the page
+   sideways, which is what keeps the gutter intact next to the scrollbar. */
+.bn-app-content .ops-grid-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* ---------- top bar ---------- */
@@ -143,7 +219,9 @@
     display: flex;
     align-items: center;
     gap: var(--bn-space-3);
-    padding: 0 var(--bn-space-6);
+    /* Same gutter as the content below it, so the page title sits on the
+       same vertical line as the cards rather than 26px off it. */
+    padding: 0 var(--bn-gutter);
     background: var(--bn-surface);
     border-bottom: 1px solid var(--bn-border);
     position: sticky;
@@ -491,12 +569,14 @@ html.bn-sidebar-collapsed .bn-sidebar__nav-link:focus-visible::after {
         display: inline-flex;
     }
 
-    .bn-app-content {
-        padding: var(--bn-space-4) var(--bn-space-4) var(--bn-space-8);
-    }
+    /* WP-12: no .bn-app-content padding override here any more. The
+       --bn-gutter clamp already resolves to 16px at these widths, and a
+       shorthand `padding` here would silently beat the padding-inline /
+       padding-block above and put the gutter back under two rules that
+       have to be kept in agreement by hand. */
 
     .bn-topbar {
-        padding: 0 var(--bn-space-4);
+        padding: 0 var(--bn-gutter);
     }
 
     /* At 360px the bar cannot hold a drawer button, a page title, a name,

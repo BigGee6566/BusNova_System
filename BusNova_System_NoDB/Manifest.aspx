@@ -1,4 +1,4 @@
-<%@ Page Title="Passenger Manifest" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Manifest.aspx.cs" Inherits="BusNova_System.Manifest" %>
+﻿<%@ Page Title="Passenger Manifest" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Manifest.aspx.cs" Inherits="BusNova_System.Manifest" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="Styles/Ops.css?v=6" rel="stylesheet" />
     <link href="Styles/Manifest.css?v=1" rel="stylesheet" />
@@ -51,19 +51,21 @@
                 </div>
             </div>
 
-            <asp:GridView ID="gvManifest" runat="server" AutoGenerateColumns="false"
-                          CssClass="ops-grid mf-grid" GridLines="None" UseAccessibleHeader="true"
-                          EmptyDataText="No passengers are booked on this trip.">
-                <Columns>
-                    <asp:BoundField DataField="SeatNumber" HeaderText="Seat" />
-                    <asp:BoundField DataField="PassengerName" HeaderText="Passenger" />
-                    <asp:BoundField DataField="TicketNumber" HeaderText="Ticket" />
-                    <asp:BoundField DataField="TicketStatus" HeaderText="Status" />
-                    <asp:TemplateField HeaderText="Boarded">
-                        <ItemTemplate><span class="mf-tick">&#9633;</span></ItemTemplate>
-                    </asp:TemplateField>
-                </Columns>
-            </asp:GridView>
+            <div class="ops-grid-wrap">
+                <asp:GridView ID="gvManifest" runat="server" AutoGenerateColumns="false"
+                              CssClass="ops-grid mf-grid" GridLines="None" UseAccessibleHeader="true"
+                              EmptyDataText="No passengers are booked on this trip.">
+                    <Columns>
+                        <asp:BoundField DataField="SeatNumber" HeaderText="Seat" />
+                        <asp:BoundField DataField="PassengerName" HeaderText="Passenger" />
+                        <asp:BoundField DataField="TicketNumber" HeaderText="Ticket" />
+                        <asp:BoundField DataField="TicketStatus" HeaderText="Status" />
+                        <asp:TemplateField HeaderText="Boarded">
+                            <ItemTemplate><span class="mf-tick">&#9633;</span></ItemTemplate>
+                        </asp:TemplateField>
+                    </Columns>
+                </asp:GridView>
+            </div>
 
             <div class="mf-foot">
                 <div class="mf-sign">

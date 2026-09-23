@@ -110,6 +110,7 @@
     <Content Include="Styles\LiveMap.css" />
     <Content Include="Styles\busnova-design-system.css" />
     <Content Include="Styles\busnova-components.css" />
+    <Content Include="Styles\busnova-dashboard.css" />
     <Content Include="Scripts\site.js" />
     <Content Include="Scripts\live-map.js" />
     <Content Include="Scripts\busnova-ui.js" />

@@ -1,4 +1,4 @@
-<%@ Page Title="Validate Ticket" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ValidateTicket.aspx.cs" Inherits="BusNova_System.ValidateTicket" %>
+﻿<%@ Page Title="Validate Ticket" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ValidateTicket.aspx.cs" Inherits="BusNova_System.ValidateTicket" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="Styles/Ops.css?v=6" rel="stylesheet" />
 </asp:Content>
@@ -68,23 +68,25 @@
             </div>
 
             <h3 class="bn-subheading bn-mt-3">Recent attempts on this ticket</h3>
-            <asp:GridView ID="gvHistory" runat="server" AutoGenerateColumns="false"
-                          CssClass="ops-grid" GridLines="None" UseAccessibleHeader="true"
-                          OnRowDataBound="gvHistory_RowDataBound"
-                          EmptyDataText="No earlier attempts recorded for this ticket.">
-                <Columns>
-                    <asp:BoundField DataField="OccurredAt" HeaderText="When" DataFormatString="{0:dd MMM yyyy HH:mm}" />
-                    <asp:BoundField DataField="Method" HeaderText="Presented as" />
-                    <asp:TemplateField HeaderText="Outcome">
-                        <ItemTemplate>
-                            <span class='<%# "status-badge " + OutcomeCss(Eval("Outcome")) %>'>
-                                <%# OutcomeText(Eval("Outcome")) %>
-                            </span>
-                        </ItemTemplate>
-                    </asp:TemplateField>
-                    <asp:BoundField DataField="ValidatedByRole" HeaderText="By" />
-                </Columns>
-            </asp:GridView>
+            <div class="ops-grid-wrap">
+                <asp:GridView ID="gvHistory" runat="server" AutoGenerateColumns="false"
+                              CssClass="ops-grid" GridLines="None" UseAccessibleHeader="true"
+                              OnRowDataBound="gvHistory_RowDataBound"
+                              EmptyDataText="No earlier attempts recorded for this ticket.">
+                    <Columns>
+                        <asp:BoundField DataField="OccurredAt" HeaderText="When" DataFormatString="{0:dd MMM yyyy HH:mm}" />
+                        <asp:BoundField DataField="Method" HeaderText="Presented as" />
+                        <asp:TemplateField HeaderText="Outcome">
+                            <ItemTemplate>
+                                <span class='<%# "status-badge " + OutcomeCss(Eval("Outcome")) %>'>
+                                    <%# OutcomeText(Eval("Outcome")) %>
+                                </span>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:BoundField DataField="ValidatedByRole" HeaderText="By" />
+                    </Columns>
+                </asp:GridView>
+            </div>
         </asp:Panel>
 
     </div>

@@ -1,0 +1,124 @@
+/* ============================================================
+   BUSNOVA - DASHBOARD AND SHARED PAGE FURNITURE
+   ============================================================
+   WP-12. These rules were an inline <style> block inside
+   Dashboard.aspx - the only one in the repository - so the dashboard
+   was the one screen that could use them. "Make the other pages look
+   like the Manager Dashboard" was therefore not a design problem but
+   a reachability one: nothing else could see these rules.
+
+   Moved here verbatim except where noted, and linked from Site.Master
+   after busnova-components.css so every app-shell page gets them.
+
+   Loaded on public pages too, harmlessly: nothing here applies without
+   the dash-/stat- classes.
+   ============================================================ */
+
+.dash-page {
+    min-height: 100%;
+    /* WP-12: was padding-top:90px, clearing the fixed marketing
+       navbar. The app shell's top bar is sticky and already
+       occupies that space, so the offset only added a band of
+       empty background above every dashboard. */
+    padding-top: 0;
+    background-color: transparent;
+}
+
+.dash-wrap {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 30px 20px 60px;
+    /* WP-12: width is governed by .bn-app-content's gutter now. */
+    max-width: none;
+    margin-inline: 0;
+}
+
+.dash-welcome { margin-bottom: 26px; }
+.dash-welcome h2 { margin: 0 0 6px; color: var(--bn-text); }
+.dash-welcome p { color: var(--bn-text-secondary); margin: 0; }
+
+/* Key operational numbers, shown before the actions. */
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+    margin-bottom: 26px;
+}
+
+.stat-card {
+    background: var(--bn-white);
+    border: 1px solid rgba(var(--bn-navy-rgb),0.16);
+    border-left: 3px solid var(--bn-blue);
+    border-radius: 12px;
+    padding: 18px;
+}
+
+.stat-card .stat-value {
+    display: block;
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: var(--bn-text);
+    line-height: 1.1;
+}
+
+.stat-card .stat-caption {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--bn-text-muted);
+    margin-top: 4px;
+}
+
+.stat-card.warn { border-left-color: var(--bn-red); }
+.stat-card.warn .stat-value { color: var(--bn-red); }
+
+.dash-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 16px;
+}
+
+.dash-tile {
+    display: block;
+    padding: 22px;
+    border-radius: 12px;
+    border: 1px solid rgba(var(--bn-navy-rgb),0.18);
+    background: var(--bn-white);
+    box-shadow: 0 4px 14px rgba(var(--bn-navy-rgb),0.10);
+    text-decoration: none !important;
+    color: var(--bn-text) !important;
+    font-weight: 600;
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+
+.dash-tile:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(var(--bn-navy-rgb),0.12);
+}
+
+.dash-tile .dash-tile-desc {
+    display: block;
+    font-weight: 400;
+    font-size: 0.82rem;
+    color: var(--bn-text-muted);
+    margin-top: 4px;
+}
+
+.dash-section-title {
+    margin: 34px 0 12px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--bn-text);
+}
+
+.dash-panel {
+    background: var(--bn-white);
+    border: 1px solid rgba(var(--bn-navy-rgb),0.16);
+    border-radius: 12px;
+    padding: 18px;
+}
+
+.empty-note {
+    color: var(--bn-text-muted);
+    font-size: 0.85rem;
+    margin: 0;
+}
