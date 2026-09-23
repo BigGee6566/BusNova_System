@@ -66,6 +66,22 @@ Key `appSettings` in Web.config:
 
 `Web.Release.config` swaps in placeholder connection-string credentials and enforces HTTPS-only cookies — replace the placeholders before deploying a release build.
 
+## Verifying a change
+
+```
+.\Verify.ps1
+```
+
+Three stages — build, **markup**, tests — and a non-zero exit if any of them fails.
+
+The middle stage is the one that is easy to skip and the reason the script exists. **Web Forms compiles `.aspx` markup on first request, not at build time**, so MSBuild reports a clean build for a page that will throw `HttpParseException` and return 500 the moment someone opens it. `aspnet_compiler` is the only way to find that before a user does, and it has caught six defects in this repo that MSBuild could not see.
+
+So run it **after** every markup edit, not once per sitting. A `<%-- --%>` comment written inside an `<asp:Button>` tag shipped here exactly because the precompile had been run before that edit rather than after it.
+
+The third stage carries what no compiler can. A misspelt `data-` attribute compiles perfectly and fails silently at runtime — `data-bn-confirm-body` instead of `data-bn-confirm` once left the driver's emergency button with no confirmation dialog at all, so a single press took a bus off the road without a prompt. `BusNova.Tests\MarkupGuardTests.cs` scans every page for that class of fault, because it knows what `Scripts/busnova-ui.js` actually reads.
+
+`.\Verify.ps1 -SkipTests` runs the first two stages only, for a fast loop. It is not a verification.
+
 ## Running tests
 
 Run the `BusNova.Tests` MSTest project from Visual Studio's Test Explorer, or:
@@ -74,7 +90,7 @@ Run the `BusNova.Tests` MSTest project from Visual Studio's Test Explorer, or:
 vstest.console.exe BusNova.Tests\bin\Debug\BusNova.Tests.dll
 ```
 
-Current coverage is unit tests only: password hashing, password policy, setup tokens, roles, ticket pricing, seat validation (`TicketService.ValidateSeat`) and the sign-in lockout decision (`LoginThrottle.Evaluate`). 57 tests. Services that reach the database are still not covered — the two service tests above target logic deliberately written to be callable without one.
+255 tests. Coverage is unit tests plus markup guards: password hashing, password policy, setup tokens, roles, ticket pricing, seat validation (`TicketService.ValidateSeat`), the sign-in lockout decision (`LoginThrottle.Evaluate`), payments, refund policy, notifications and analytics, maintenance scheduling, table export, tracking, dynamic pricing, the local-URL open-redirect guard (`LocalUrl`), and the markup guards described above. Services that reach the database are still not covered — the service tests target logic deliberately written to be callable without one.
 
 ## Project layout
 
@@ -87,6 +103,7 @@ BusNova System/
 ├── DataAccess/        Db.cs — SqlConnection/SqlCommand wrapper
 ├── Styles/, Scripts/   Site CSS and JS
 ├── App_Data/          Database script, migrations, logs
-├── BusNova.Tests/      MSTest unit tests
+├── BusNova.Tests/      MSTest unit tests and markup guards
+├── Verify.ps1          build + markup precompile + tests
 └── *.aspx / *.aspx.cs  Web Forms pages
 ```
