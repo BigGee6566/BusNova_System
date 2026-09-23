@@ -143,6 +143,7 @@
     <Compile Include="Security\BookingDraftSession.cs" />
     <Compile Include="Security\AntiForgery.cs" />
     <Compile Include="Security\TicketToken.cs" />
+    <Compile Include="Security\LocalUrl.cs" />
     <Compile Include="Security\SessionHelper.cs" />
     <!-- Application services -->
     <Compile Include="Services\AuditService.cs" />

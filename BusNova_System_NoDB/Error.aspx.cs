@@ -16,12 +16,25 @@ namespace BusNova_System
     ///
     /// The class is called ErrorPage rather than Error because Error would
     /// collide with members inherited from System.Web.UI.Page.
+    ///
+    /// NAVIGATION (FIX-016)
+    ///
+    /// Both buttons are computed here rather than hardcoded in the markup.
+    /// "Home" means the dashboard for someone signed in and the public
+    /// landing page for someone who is not - a signed-in user sent to the
+    /// marketing page has to navigate back in again.
+    ///
+    /// "Go back" prefers a validated returnUrl, then the referrer, then the
+    /// same fallback as Home. Every candidate goes through
+    /// Security.LocalUrl, which refuses anything that is not a relative
+    /// path inside this application, so neither a crafted query string nor
+    /// a hostile referrer can turn this page into an open redirect.
     /// </summary>
     public partial class ErrorPage : Page
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            var code = Request.QueryString["code"];
+            var code = ResolveCode();
 
             switch (code)
             {
@@ -54,8 +67,88 @@ namespace BusNova_System
             // Stop IIS replacing this page with its own generic error page.
             Response.TrySkipIisCustomErrors = true;
 
-            // Only offer the dashboard link to someone who actually has one.
-            lnkDashboard.Visible = SessionHelper.IsSignedIn;
+            BindNavigation(code);
+        }
+
+        /// <summary>
+        /// Which error this is.
+        ///
+        /// Normally the query string says: customErrors and httpErrors both
+        /// route here with ?code=NNN. But IIS's ExecuteURL does not always
+        /// carry a query string through, and without a fallback a genuine
+        /// 404 would then land in the default branch and be reported as
+        /// "something went wrong" with HTTP 500 - the wrong status and the
+        /// wrong message for a mistyped address.
+        ///
+        /// So when there is no code, the status IIS or ASP.NET has already
+        /// put on the response is believed instead, and only a response
+        /// that is not already an error falls through to 500.
+        /// </summary>
+        private string ResolveCode()
+        {
+            var fromQuery = Request.QueryString["code"];
+            if (!string.IsNullOrEmpty(fromQuery)) return fromQuery;
+
+            var current = Response.StatusCode;
+            if (current == 404 || current == 403) return current.ToString();
+
+            return null;
+        }
+
+        /// <summary>
+        /// Works out where the two buttons point.
+        /// </summary>
+        private void BindNavigation(string code)
+        {
+            // LooksSignedIn, not IsSignedIn. On a 404 the handler is never
+            // resolved, so ASP.NET never acquires session state and
+            // IsSignedIn reports false for everyone - a signed-in manager
+            // who mistypes a URL would be sent to the public landing page.
+            // This choice picks a link, not an access decision; every page
+            // it can point at enforces its own.
+            var signedIn = SessionHelper.LooksSignedIn;
+
+            // Someone signed in has a dashboard; someone anonymous does not.
+            var fallback = signedIn ? "/Dashboard.aspx" : "/Home.aspx";
+
+            lnkHome.NavigateUrl = fallback;
+            lnkHome.Text = signedIn ? "Go to my dashboard" : "Go to Home";
+
+            lnkBack.NavigateUrl = ResolveBackDestination(code, fallback);
+        }
+
+        /// <summary>
+        /// Where "Go back" points.
+        ///
+        /// In order: a returnUrl supplied with the error, then the referrer,
+        /// then the fallback. Nothing reaches the browser without passing
+        /// LocalUrl, which also refuses this page itself - a "go back" that
+        /// returns here is a loop with no way out.
+        /// </summary>
+        private string ResolveBackDestination(string code, string fallback)
+        {
+            // 1. An explicit return URL, validated. Nothing supplies one
+            //    today, but the parameter is honoured so that a caller can,
+            //    and so the rejection of a hostile value is testable.
+            var fromQuery = LocalUrl.ResolveEncoded(Request.QueryString["returnUrl"], null);
+            if (fromQuery != null) return fromQuery;
+
+            // 2. The referrer - but NOT for 403.
+            //
+            //    RequireRole issues a real redirect, so on the 403 path the
+            //    referrer is the forbidden page itself. Sending them back
+            //    there produces another 403, and another, which is a loop
+            //    that looks like the application is broken rather than that
+            //    permission is missing.
+            if (code != "403")
+            {
+                var referrer = Request.UrlReferrer;
+                if (LocalUrl.IsLocalReferrer(referrer, Request.Url))
+                    return referrer.PathAndQuery;
+            }
+
+            // 3. Somewhere that definitely exists and definitely is not here.
+            return fallback;
         }
     }
 }

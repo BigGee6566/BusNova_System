@@ -201,6 +201,42 @@ namespace BusNova_System.Security
             }
         }
 
+        /// <summary>
+        /// A best-effort answer to "does this look like a signed-in user?",
+        /// for CHOOSING A DESTINATION ONLY. Never for deciding access.
+        ///
+        /// IsSignedIn above is authoritative but needs session state, and
+        /// there is one path where session state does not exist: a request
+        /// for a page that is not there. ASP.NET resolves the handler before
+        /// it acquires session, so a 404 throws first and the error page
+        /// runs with Session == null. A signed-in manager who mistypes a URL
+        /// therefore looks anonymous, and Error.aspx would send them to the
+        /// public landing page instead of their dashboard.
+        ///
+        /// When session is unavailable this falls back to the presence of
+        /// the binding cookie. That cookie cannot be VERIFIED without the
+        /// session half of the pair, so this is a hint and nothing more -
+        /// which is why it decides only which link to show. Every page it
+        /// can point at enforces its own access, so the worst a wrong guess
+        /// does is bounce someone to the login page.
+        ///
+        /// Do not use this to gate anything. Use IsSignedIn or RequireRole.
+        /// </summary>
+        public static bool LooksSignedIn
+        {
+            get
+            {
+                var context = HttpContext.Current;
+                if (context == null) return false;
+
+                // Session available: answer properly.
+                if (context.Session != null) return IsSignedIn;
+
+                // Session unavailable: the hint described above.
+                return context.Request.Cookies[BindingCookieName] != null;
+            }
+        }
+
         public static int UserId
         {
             get

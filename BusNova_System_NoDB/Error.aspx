@@ -12,21 +12,24 @@
             <h3 class="ops-title"><asp:Literal ID="litTitle" runat="server" /></h3>
             <div class="ops-subtitle"><asp:Literal ID="litMessage" runat="server" /></div>
 
-            <p class="bn-note bn-mt-5">
+            <%-- bn-mt-4, not bn-mt-5: only bn-mt-2/3/4/6 are defined in
+                 busnova-components.css, so bn-mt-5 matched nothing and this
+                 paragraph had no top margin at all. --%>
+            <p class="bn-note bn-mt-4">
                 If this keeps happening, note what you were doing at the time and
                 report it to a system Manager.
             </p>
 
+            <%-- Both destinations are worked out server-side in Page_Load.
+                 Neither is a fixed href, and neither is taken from the
+                 request without being validated first - see
+                 Security/LocalUrl and the notes in the code-behind. --%>
             <div class="ops-actions">
+                <asp:HyperLink ID="lnkBack" runat="server"
+                               CssClass="btn-ops-secondary"
+                               Text="&larr; Go back" />
                 <asp:HyperLink ID="lnkHome" runat="server"
-                               NavigateUrl="~/Home.aspx"
-                               CssClass="btn-ops-secondary"
-                               Text="Back to Home" />
-                <asp:HyperLink ID="lnkDashboard" runat="server"
-                               NavigateUrl="~/Dashboard.aspx"
-                               CssClass="btn-ops-secondary"
-                               Text="Back to my dashboard"
-                               Visible="false" />
+                               CssClass="btn-ops-secondary" />
             </div>
 
         </div>

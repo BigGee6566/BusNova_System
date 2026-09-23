@@ -84,24 +84,19 @@ namespace BusNova_System
         /// page into an open redirect - an attacker could send someone a
         /// link to our own login page that bounces them to a copycat site
         /// after they sign in.
+        ///
+        /// The rule itself now lives in Security.LocalUrl (FIX-016). It used
+        /// to be written out here, and it had a gap: "/\evil.com" passed all
+        /// three of its checks, and several user agents normalise the
+        /// backslash to a forward slash, which turns it into "//evil.com"
+        /// and leaves the site. Sharing one tested predicate with Error.aspx
+        /// closes that and stops the two pages drifting apart.
         /// </summary>
         private string ResolveDestination(string role)
         {
-            var returnUrl = Request.QueryString["returnUrl"];
-
-            if (!string.IsNullOrWhiteSpace(returnUrl))
-            {
-                var decoded = HttpUtility.UrlDecode(returnUrl);
-
-                if (decoded.StartsWith("/", StringComparison.Ordinal) &&
-                    !decoded.StartsWith("//", StringComparison.Ordinal) &&
-                    decoded.IndexOf(':') < 0)
-                {
-                    return decoded;
-                }
-            }
-
-            return SessionHelper.DashboardFor(role);
+            return LocalUrl.ResolveEncoded(
+                Request.QueryString["returnUrl"],
+                SessionHelper.DashboardFor(role));
         }
 
         private void ShowError(string message)

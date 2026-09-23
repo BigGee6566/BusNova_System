@@ -68,6 +68,7 @@
     <Compile Include="TableExportTests.cs" />
     <Compile Include="TrackingTests.cs" />
     <Compile Include="PricingTests.cs" />
+    <Compile Include="LocalUrlTests.cs" />
     <Compile Include="RolesTests.cs" />
     <Compile Include="TicketPricingTests.cs" />
     <Compile Include="SeatValidationTests.cs" />

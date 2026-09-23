@@ -32,7 +32,7 @@ Every protected page enforces its own role check server-side via `SessionHelper.
 - **Register.aspx** — public passenger self-registration.
 - **RequestPasswordLink.aspx** — request/re-issue a one-time password-setup link for a walk-up passenger.
 - **SetPassword.aspx** — consume that link and set a real password (no login required).
-- **Error.aspx** — friendly error page for 404/403/500.
+- **Error.aspx** — friendly error page for 404/403/500. Offers **Home** (the dashboard when signed in, the public landing page when not) and **Go back** (a validated `returnUrl`, else a same-origin referrer, else the same fallback). Every destination is checked by `Security/LocalUrl`, so neither a crafted query string nor a hostile referrer can redirect off-site, and the page will not link to itself.
 
 ### Shared
 - **Dashboard.aspx** — one page for all roles, content branches by role.

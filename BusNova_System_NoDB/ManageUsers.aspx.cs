@@ -119,8 +119,22 @@ namespace BusNova_System
                 return;
             }
 
+            // The service reports whether the UPDATE actually matched a row,
+            // and that return value used to be discarded. If the account was
+            // removed between this page rendering and the click, the update
+            // affected nothing, no audit row was written, and the screen
+            // still said it had worked. A success message that can be untrue
+            // is worse than an error message. (FIX-016)
             var newState = !target.IsActive;
-            AdminService.SetEmployeeActive(employeeId, newState);
+
+            if (!AdminService.SetEmployeeActive(employeeId, newState))
+            {
+                ShowError("That account could not be updated. It may have been changed by " +
+                          "someone else - the list below has been refreshed.");
+                BindEmployees();
+                return;
+            }
+
             ShowSuccess(target.FullName + " has been " + (newState ? "reactivated." : "deactivated."));
             BindEmployees();
         }
@@ -146,8 +160,17 @@ namespace BusNova_System
                 return;
             }
 
+            // Same reasoning as the employee toggle above.
             var newState = !target.IsActive;
-            AdminService.SetPassengerActive(passengerId, newState);
+
+            if (!AdminService.SetPassengerActive(passengerId, newState))
+            {
+                ShowError("That account could not be updated. It may have been changed by " +
+                          "someone else - the list below has been refreshed.");
+                BindPassengers();
+                return;
+            }
+
             ShowSuccess(target.FullName + " has been " + (newState ? "reactivated." : "deactivated."));
             BindPassengers();
         }

@@ -478,6 +478,47 @@ Waitlists, multiple boarding points, dynamic pricing with documented and testabl
 
 ---
 
+## 7b. FIX-016 — Manager user management and Error page navigation — **COMPLETE** (2026-09-23)
+
+Requested as "FIX-014". That identifier was already taken by the completed encoding fix (AUD-048), so this work
+is FIX-016. The brief also mandated `SessionHelper.RequireRole(Roles.Manager);` as a bare call; the helper is
+`RequireRole(Page, params string[])` because it needs the page to issue its redirect, and the existing form was
+already in place on every guarded page, so it stays.
+
+**Most of the brief was already satisfied**, and where an acceptance test passed against existing code, nothing
+was changed. Verified rather than rebuilt: the role gate is the first statement of `Page_Load`
+(`ManageUsers.aspx.cs:20`), wrong-role already redirected to `Error.aspx?code=403`
+(`SessionHelper.cs:264`), anti-forgery was validated in all three write handlers, every state change was already
+audited in `AdminService`, and the Manager tile and both nav links already existed and were role-gated. AUD-052,
+which once made this page fail to compile, was resolved in an earlier pass.
+
+**What actually changed:**
+
+- **`Security/LocalUrl.cs`** (new). The open-redirect guard was private to `Login.aspx.cs` and accepted
+  `/\evil.example`. Extracted, hardened, tested, and now shared by Login and Error so the two cannot drift.
+  Recorded as AUD-058.
+- **`Error.aspx`** — Home is computed from authentication state instead of always pointing at `Home.aspx`, and a
+  **Go back** action was added: validated `returnUrl`, then a same-origin referrer, then the fallback. It refuses
+  to link to itself, and on a 403 it ignores the referrer, because the referrer there *is* the forbidden page and
+  going back would re-trigger the denial.
+- **`SessionHelper.LooksSignedIn`** — on a 404 the handler is never resolved, so ASP.NET never acquires session
+  state and a signed-in manager looked anonymous. This picks a link only; every page it can point at enforces its
+  own access.
+- **`ManageUsers.aspx.cs`** — the one real functional defect. `SetEmployeeActive` / `SetPassengerActive` return
+  whether the UPDATE matched a row and both call sites discarded it, so a stale row reported success and wrote no
+  audit entry. A success message that can be untrue is worse than an error.
+
+**Verification:** 20/20 on the HTTP acceptance matrix, 10/10 on the user-management path with audit-row evidence
+(one row per successful change, **zero** on every rejection), and 15/15 of the required manual steps in a real
+browser over CDP.
+
+**`Web.config` was left unchanged in the end**, and the route there is worth recording. `/NoSuchPage.aspx`
+appeared to return an empty body, so an `<httpErrors>` block was added — which then broke every error page,
+because `existingResponse="Replace"` overrides `Response.TrySkipIisCustomErrors`. The "empty body" turned out to
+be a measurement artefact: PowerShell's `Invoke-WebRequest` disposes the response stream on a 4xx/5xx before the
+body can be read. Measured with a raw `HttpWebRequest`, the page had been rendering correctly all along. The
+block was removed and the existing configuration left alone.
+
 ## 8. Housekeeping
 
 One item per phase. These run alongside feature work and never block it.
