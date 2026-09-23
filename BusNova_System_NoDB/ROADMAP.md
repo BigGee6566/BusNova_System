@@ -533,7 +533,7 @@ block was removed and the existing configuration left alone.
 
 ---
 
-## 7c. FIX-017 — verification discipline — **COMPLETE** (commit `c9b78ab` and the docs commit that follows it, 2026-09-23)
+## 7c. FIX-017 — verification discipline — **COMPLETE** (commits `c9b78ab`, `a307eed`, 2026-09-23)
 
 Follow-up to FIX-016, and not a feature. At the end of that brief I reported three things I had got wrong. Asked
 to fix them, I found the symptoms were already gone in every case — so this closes the **gaps that let them
