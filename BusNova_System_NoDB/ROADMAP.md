@@ -623,6 +623,54 @@ CSS used single-class selectors, which lose to Font Awesome's `.fas { display: i
 both icons rendered at once.
 
 
+---
+
+## 7e. WP-13 — system-wide UI consistency — **COMPLETE** (commit `7be1acd`, 2026-09-24)
+
+Eight pages reported from screenshots as squished, unstyled and inconsistent, plus a request to audit the rest.
+**Almost all of it was one cause**, and it is the third time the same shape of defect has appeared: shared
+styling that was not actually shared.
+
+`Styles/Ops.css` is linked by individual pages rather than by `Site.Master`, and it was the only definition of
+`.ops-grid`, `.ops-box`, `.ops-title`, `.ops-actions`, `.btn-ops-*` and `.status-badge`. Four report pages use
+those class names and linked none of it. **AUD-063.**
+
+The diagnosis and the fix are the same two numbers:
+
+| | `.ops-grid td` padding | `th` white-space | cell border |
+|---|---|---|---|
+| Before | `1px 1px` (browser default) | `normal` — hence "LicenseRoute" | `0px` |
+| After | `10px 12px` | `nowrap` | `0.8px` |
+
+`10px 12px` is what `ManageUsers` had throughout.
+
+**Also delivered:** zebra striping, header contrast, hover rows, a `.num` class applied to 18 numeric and
+currency columns, `:focus-visible` on buttons that had none, a `.bn-empty` state, printed checkboxes, and a 78ch
+measure on prose — which had been running to ~200 characters a line since WP-12 made the content full-width.
+Status pills via new `Helpers/StatusTone.cs` (**AUD-064**), which is one method per vocabulary rather than one
+lookup, because `Completed` and `Cancelled` mean different things to a trip, a ticket and a maintenance job.
+
+**Live Map.** The 403 was never an API key — there is none. Leaflet requested `{s}.tile.openstreetmap.org`, and
+OSM has deprecated those subdomains; using them is itself outside the tile usage policy. Pointed at the single
+documented host, **tiles now return HTTP 200**, measured over CDP. The `tileerror` fallback was kept and proven
+by blocking the host outright, since a guard that has never fired is not known to work.
+
+**Verification.** 100 page/width combinations across 25 operational pages at 1920/1280/768/360, all passing;
+regressions green (layout 53, sidebar 13, shell 12, error pages 20, Register Bus 8); 255 unit tests; clean
+checkout from a fresh worktree.
+
+**A prediction I withdrew.** Alongside AUD-063 I expected a symmetrical defect — `.form-control` is also
+page-level, and five pages use it without linking `style.css`, so their inputs should have had no padding and
+**no focus ring**, a WCAG 2.4.7 failure. Measured before building on it: all five report `6px` radius, `12px`
+padding, `0.8px` border. **Bootstrap is loaded globally and already styles them.** It would have entered
+`AUDIT_FINDINGS.md` as a High-severity accessibility finding that did not exist.
+
+**Two measurement errors of my own**, both caught before they reached the user: the first sweep counted 28
+failures that were all tables legitimately scrolling inside `overflow-x: auto` wrappers — the intended design
+reported as a fault — and the Leaflet zoom-control CSS lost a specificity tie to `.leaflet-touch`, the same trap
+as the Font Awesome icons in WP-12.
+
+
 ## 8. Housekeeping
 
 One item per phase. These run alongside feature work and never block it.
