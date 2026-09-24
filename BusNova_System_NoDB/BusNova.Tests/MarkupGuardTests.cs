@@ -249,6 +249,68 @@ namespace BusNova.Tests
         }
 
         /// <summary>
+        /// WP-15 / AUD-074. One asset, one cache-busting version.
+        ///
+        /// Scripts and stylesheets are served with a `?v=N` query string so
+        /// a browser holding an old copy is made to fetch the new one. That
+        /// only works if every page agrees on N. `Scripts/seat-map.js` was
+        /// referenced as `?v=2` on BookTrip.aspx and `?v=1` on
+        /// IssueTicket.aspx - two cache entries for one file, so the next
+        /// edit to it would have reached one page and not the other.
+        ///
+        /// This does not, and cannot, check that N was bumped when the file
+        /// changed - that needs git history, not markup. It checks the half
+        /// that is checkable, which is the half that fails silently.
+        /// </summary>
+        [TestMethod]
+        public void EachVersionedAssetIsReferencedAtOneVersion()
+        {
+            var versions = new Dictionary<string, Dictionary<string, List<string>>>(
+                StringComparer.OrdinalIgnoreCase);
+
+            foreach (var file in MarkupFiles())
+            {
+                var text = WithoutServerComments(File.ReadAllText(file.FullName));
+
+                foreach (Match m in Regex.Matches(
+                    text, @"(?<path>(?:Scripts|Styles)/[A-Za-z0-9._-]+\.(?:js|css))\?v=(?<ver>\d+)",
+                    RegexOptions.IgnoreCase))
+                {
+                    var asset = m.Groups["path"].Value.Replace('\\', '/');
+                    var ver = m.Groups["ver"].Value;
+
+                    if (!versions.ContainsKey(asset))
+                        versions[asset] = new Dictionary<string, List<string>>(StringComparer.Ordinal);
+                    if (!versions[asset].ContainsKey(ver))
+                        versions[asset][ver] = new List<string>();
+                    if (!versions[asset][ver].Contains(file.Name))
+                        versions[asset][ver].Add(file.Name);
+                }
+            }
+
+            Assert.IsTrue(versions.Count >= 8,
+                "Only " + versions.Count + " versioned assets found; expected at least 8. " +
+                "The scan is not reading the pages.");
+
+            var problems = new List<string>();
+            foreach (var asset in versions.Keys)
+            {
+                if (versions[asset].Count <= 1) continue;
+
+                var detail = new List<string>();
+                foreach (var ver in versions[asset].Keys)
+                    detail.Add("?v=" + ver + " on " + string.Join(", ", versions[asset][ver].ToArray()));
+
+                problems.Add(asset + " is referenced at " + versions[asset].Count +
+                             " different versions - " + string.Join("; ", detail.ToArray()) +
+                             ". One file must have one cache key, or an edit to it reaches " +
+                             "some pages and not others.");
+            }
+
+            AssertNone(problems);
+        }
+
+        /// <summary>
         /// The guards above are only worth anything if they are actually
         /// looking at the pages. A wrong root, a moved test assembly or an
         /// empty glob would make all three pass by finding nothing.

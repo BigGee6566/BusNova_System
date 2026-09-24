@@ -1,7 +1,7 @@
 ﻿<%@ Page Title="Live Map" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="LiveMap.aspx.cs" Inherits="BusNova_System.LiveMap" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="Styles/Ops.css?v=8" rel="stylesheet" />
-    <link href="Styles/LiveMap.css?v=3" rel="stylesheet" />
+    <link href="Styles/LiveMap.css?v=4" rel="stylesheet" />
 
     <%-- Leaflet and OpenStreetMap, from cdnjs, with subresource integrity.
          Approved as an exception to the no-new-dependency rule; see the
@@ -15,7 +15,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"
             integrity="sha512-puJW3E/qXDqYp9IfhAI54BJEaWIfloJ7JWs7OeD5i6ruC9JZL1gERT1wjtwXFlh7CjE7ZJ+/vcRZRkIYIb6p4g=="
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="Scripts/live-map.js?v=1" defer></script>
+    <script src="Scripts/live-map.js?v=2" defer></script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
@@ -49,6 +49,24 @@
             <div id="bn-map" class="lm-map" data-role="live-map"
                  data-positions='<%= PositionsJson %>'
                  role="img" aria-label="Map of buses currently under way"></div>
+
+            <%-- Shown only when the tile provider refuses. Real markup
+                 rather than a CSS ::after message, because it has to hold
+                 a button: the other map states are captions, this one is
+                 something the user can act on. Hidden by default so it
+                 never appears when the map is working, and announced
+                 politely when it does. --%>
+            <div class="lm-fallback" data-role="map-fallback" role="status" aria-live="polite" hidden>
+                <i class="bi bi-map lm-fallback__icon" aria-hidden="true"></i>
+                <p class="lm-fallback__text">
+                    Map tiles are unavailable. The positions, arrival estimates and trip list
+                    below are still live.
+                </p>
+                <button type="button" class="bn-btn bn-btn--secondary" data-role="map-retry">
+                    Retry map
+                </button>
+            </div>
+
             <noscript>
                 <p class="bn-note">The map needs JavaScript. The table below has the same information.</p>
             </noscript>

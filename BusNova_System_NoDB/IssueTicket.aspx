@@ -3,7 +3,7 @@
     <link href="Styles/style.css?v=7" rel="stylesheet" />
     <link href="Styles/Ops.css?v=8" rel="stylesheet" />
     <link href="Styles/SeatMap.css?v=2" rel="stylesheet" />
-    <script src="Scripts/seat-map.js?v=1"></script>
+    <script src="Scripts/seat-map.js?v=2"></script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 

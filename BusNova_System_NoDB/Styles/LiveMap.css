@@ -16,8 +16,7 @@
    rather than leaving a grey rectangle that looks broken. */
 .lm-map[data-map-state="unavailable"]::after,
 .lm-map[data-map-state="no-positions"]::after,
-.lm-map[data-map-state="bad-data"]::after,
-.lm-map[data-map-state="no-tiles"]::after {
+.lm-map[data-map-state="bad-data"]::after {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -36,13 +35,48 @@
     content: "No positions have been reported yet.";
 }
 
-/* WP-13. The basemap is refused by OpenStreetMap under its tile usage
-   policy, which used to fill the panel with a grid of yellow-and-black
-   "403 Access blocked" images. Only the basemap is missing: the positions,
-   the arrival windows and the trip list are all still correct, and the
-   message says so rather than leaving the page looking broken. */
-.lm-map[data-map-state="no-tiles"]::after {
-    content: "Map tiles are unavailable. Positions and arrival times below are still live.";
+/* WP-13 / WP-15. The basemap is refused by the tile provider, which used
+   to fill the panel with a grid of yellow-and-black "403 Access blocked"
+   images. Only the basemap is missing: the positions, the arrival windows
+   and the trip list are all still correct.
+
+   The map is hidden rather than left as a grey rectangle. Circle markers
+   floating on a blank background communicate almost nothing without a
+   basemap under them, and the table below carries every field they would
+   have shown. The .lm-fallback panel takes its place, and unlike the
+   captions above it holds a button, so it has to be real markup. */
+.lm-map[data-map-state="no-tiles"] {
+    display: none;
+}
+
+.lm-fallback {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--bn-space-3, 12px);
+    min-height: 260px;
+    padding: var(--bn-space-6, 24px);
+    text-align: center;
+    border: 1px dashed var(--bn-border-strong);
+    border-radius: var(--bn-radius-md, 8px);
+    background: var(--bn-surface-sunken);
+}
+
+.lm-fallback[hidden] {
+    display: none;
+}
+
+.lm-fallback__icon {
+    font-size: 1.75rem;
+    color: var(--bn-text-muted);
+}
+
+.lm-fallback__text {
+    margin: 0;
+    max-width: 52ch;
+    color: var(--bn-text-muted);
+    font-size: 0.9rem;
 }
 
 /* Leaflet's zoom buttons sit directly on the tiles with no surface of
@@ -93,4 +127,9 @@
 
 @media (max-width: 480px) {
     .lm-map { height: 300px; }
+
+    .lm-fallback {
+        min-height: 200px;
+        padding: var(--bn-space-4, 16px);
+    }
 }
