@@ -671,6 +671,63 @@ reported as a fault — and the Leaflet zoom-control CSS lost a specificity tie 
 as the Font Awesome icons in WP-12.
 
 
+## 7f. WP-14 — the system-wide audit — **COMPLETE** (2026-09-24)
+
+A sweep of all 33 pages at four widths, checking what the brief named: dead space, squished columns, modern
+badges and buttons, visual hierarchy, and whether text and buttons are properly spaced inside their containers.
+Squished columns, horizontal overflow and browser-default buttons came back **zero** — WP-13 holds. What the
+numbers found instead was consistency drift of a different kind, and the same root shape for the fourth time.
+
+**The two that mattered most.**
+
+`Styles/style.css` is linked per page and was the only place styling the `body` element. Ten of the 33 pages
+never linked it and fell through to Bootstrap: a **white** page in **`system-ui`** against `#f5f7fb` in
+`-apple-system` everywhere else. The application changed colour and typeface as you navigated. **AUD-065.**
+Nothing that applies to `body` can live in a page-level sheet.
+
+`Manifest.aspx` declared no `OnRowDataBound`, so it never ran `GridViewHelpers.ApplyResponsiveLabels` — the one
+`.ops-grid` in the application that did not. At 360px it rendered 35 cells with **no field names**, under a
+header row that was still displayed and clipped mid-word. It is also the page most likely to be read on a
+phone, at the door of a bus. **AUD-066.** The helper's own comment asserted "every one of them already routes
+through this method", which is exactly what stopped anyone checking.
+
+| | before | after |
+|---|---|---|
+| `body` background / font | 2 groups: `#fff`/`system-ui` (10 pages), `#f5f7fb`/`-apple-system` (23) | **1 group, all 33** |
+| Primary button | 3 geometries: `r6 padX20` flat · `r8 padX10` gradient · heights 42/44/46/52 | **`r6 padX20` flat, 79 of 83 at exactly 44px** |
+| `.ops-grid` at 360px | CARDS on 18 pages, SCROLL-TABLE on 4 | **CARDS everywhere, all labelled** |
+| Content `<h1>` | 8 pages rendered a second one duplicating the top bar's | **none** |
+
+**Also fixed:** the primary button that stretched to 772px beside a 75px secondary (**AUD-069**); eleven
+underlined `LinkButton`s (**AUD-071**); `.rpt-filters` unstyled on Manifest, the third page found using a class
+defined only in a sheet it does not load (**AUD-070**); the mobile card-stack promoted out of `Ops.css`
+(**AUD-067**); and a heading outline that jumped from `h1` straight to `h3` on 18 pages (**AUD-072**).
+
+**The verifier could not fail.** `Verify.ps1` printed `RESULT: PASSED — build, markup and tests all clean`
+directly underneath `Failed: 1`, and exited 0. One line in the robocopy staging — `else { $LASTEXITCODE = 0 }` —
+created a **script-scoped** variable shadowing the global automatic one, so every later read returned 0 while
+native commands updated the global. Both the markup check and the test check read it. **AUD-073**, and the most
+serious thing in this work package: it is the script that decides what "verified" means here. Fixed, then proven
+in both directions — failing test gives `FAILED` and exit 1, passing gives `PASSED` and exit 0.
+
+**Two guards added**, because both faults were invisible to every compiler:
+`EveryOpsGridIsWiredForResponsiveLabels` and `ShellPagesDoNotRenderASecondH1`. The first immediately found a
+**second** unwired grid — `PaymentSimulation.aspx` — that no browser sweep could have reached, since that page
+redirects unless a booking is pending.
+
+**Left alone deliberately.** `.dw-btn` on `DriverWorkspace.aspx` measures 52px against the 44px standard. Its
+comment reads "full width and tall enough to hit without looking", for a driver at a bus in the dark. Uniformity
+does not justify overriding a considered accessibility decision.
+
+**Withdrawn.** The sidebar appeared to stop half way down long pages, leaving a dead column. It is
+`position: fixed` at viewport height; `captureBeyondViewport` renders the full page while a fixed element paints
+only its own box. A viewport screenshot taken while scrolled shows it fully painted. My capture method, not a
+defect.
+
+**Verification.** `Verify.ps1` clean (build, markup, **257** tests); layout 53/53; sidebar 13/13; sweep 100/100
+across 25 pages × 4 widths; all 33 pages measured before and after; clean checkout from a fresh worktree.
+
+
 ## 8. Housekeeping
 
 One item per phase. These run alongside feature work and never block it.
