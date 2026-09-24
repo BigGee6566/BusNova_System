@@ -1,6 +1,6 @@
 ﻿<%@ Page Title="Live Map" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="LiveMap.aspx.cs" Inherits="BusNova_System.LiveMap" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/Ops.css?v=7" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=8" rel="stylesheet" />
     <link href="Styles/LiveMap.css?v=3" rel="stylesheet" />
 
     <%-- Leaflet and OpenStreetMap, from cdnjs, with subresource integrity.
@@ -21,12 +21,10 @@
 
     <div class="ops-wrap ops-wrap--wide">
 
-        <div class="bn-page-header">
-            <h1 class="bn-page-header__title">Live map</h1>
-            <p class="bn-page-header__subtitle">
-                Every trip currently under way, with its last reported position.
-            </p>
-        </div>
+        <%-- The page title is rendered once, by Site.Master's top bar. --%>
+        <p class="bn-page-intro">
+            Every trip currently under way, with its last reported position.
+        </p>
 
         <div class="bn-card">
             <p class="bn-note">

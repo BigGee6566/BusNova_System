@@ -1,8 +1,8 @@
 ﻿<%@ Page Title="Maintenance Due" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ReportMaintenanceDue.aspx.cs" Inherits="BusNova_System.ReportMaintenanceDue" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=6" rel="stylesheet" />
-    <link href="Styles/Ops.css?v=7" rel="stylesheet" />
-    <link href="Styles/Reports.css?v=1" rel="stylesheet" />
+    <link href="Styles/style.css?v=7" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=8" rel="stylesheet" />
+    <link href="Styles/Reports.css?v=2" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
@@ -11,7 +11,7 @@
 
         <div class="ops-box">
 
-            <h3 class="ops-title">Maintenance due and overdue</h3>
+            <h2 class="ops-title">Maintenance due and overdue</h2>
             <div class="ops-subtitle">
                 Every bus in the fleet, most urgent first. A vehicle with an open critical
                 fault comes above an overdue service, because one is unsafe to run and the

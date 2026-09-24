@@ -1,7 +1,7 @@
 ﻿<%@ Page Title="Report Issue" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ReportIssue.aspx.cs" Inherits="BusNova_System.ReportIssue" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=6" rel="stylesheet" />
-    <link href="Styles/Ops.css?v=7" rel="stylesheet" />
+    <link href="Styles/style.css?v=7" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=8" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
@@ -12,7 +12,7 @@
 
         <div class="ops-box">
 
-            <h3 class="ops-title">Report Issue</h3>
+            <h2 class="ops-title">Report Issue</h2>
             <div class="ops-subtitle">
                 Tell maintenance about a problem with a bus. A Critical report takes the
                 bus out of service immediately, so choose severity carefully.
@@ -117,7 +117,7 @@
         </div>
 
         <div class="ops-box bn-mt-6">
-            <h3 class="ops-title bn-subheading">Issues you've reported</h3>
+            <h2 class="ops-title bn-subheading">Issues you've reported</h2>
             <div class="ops-grid-wrap">
                 <asp:GridView ID="gvMyReports" runat="server" CssClass="ops-grid"
                               AutoGenerateColumns="false" GridLines="None"

@@ -1,7 +1,7 @@
 ﻿<%@ Page Title="Manage Users" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ManageUsers.aspx.cs" Inherits="BusNova_System.ManageUsers" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=6" rel="stylesheet" />
-    <link href="Styles/Ops.css?v=7" rel="stylesheet" />
+    <link href="Styles/style.css?v=7" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=8" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
@@ -12,7 +12,7 @@
 
         <div class="ops-box">
 
-            <h3 class="ops-title">Create Staff Account</h3>
+            <h2 class="ops-title">Create Staff Account</h2>
             <div class="ops-subtitle">
                 Staff accounts (Manager, Driver, Maintenance Staff) can
                 only be created here - never from the public Register page.
@@ -119,7 +119,7 @@
         </div>
 
         <div class="ops-box bn-mt-6">
-            <h3 class="ops-title bn-subheading">Staff accounts</h3>
+            <h2 class="ops-title bn-subheading">Staff accounts</h2>
             <div class="ops-grid-wrap">
                 <asp:GridView
                     ID="gvEmployees"
@@ -171,7 +171,7 @@
         </div>
 
         <div class="ops-box bn-mt-6">
-            <h3 class="ops-title bn-subheading">Passenger accounts</h3>
+            <h2 class="ops-title bn-subheading">Passenger accounts</h2>
             <div class="ops-grid-wrap">
                 <asp:GridView
                     ID="gvPassengers"

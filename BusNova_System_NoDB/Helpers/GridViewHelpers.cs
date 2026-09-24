@@ -27,9 +27,20 @@ namespace BusNova_System.Helpers
             // The heading row stayed visible above the cards and was clipped
             // at narrow widths (AUD-051).
             //
-            // Setting it here fixes every .ops-grid in the application at
-            // once, because every one of them already routes through this
-            // method. It also makes the markup correct for a screen reader:
+            // Setting it here fixes every .ops-grid that routes through this
+            // method.
+            //
+            // An earlier version of this comment said "every one of them
+            // already routes through this method". That was not true, and
+            // saying so is what kept it from being checked: Manifest.aspx
+            // declared no OnRowDataBound at all and was the one grid in the
+            // application collapsing into unlabelled cards under a visible,
+            // clipped header row (AUD-066, WP-14). A comment asserting a
+            // whole-codebase invariant needs a test, not a sentence -
+            // MarkupGuardTests.EveryOpsGridIsWiredForResponsiveLabels is now
+            // that test.
+            //
+            // It also makes the markup correct for a screen reader:
             // a table whose headings sit in <thead> announces column context
             // with each cell, where a plain first row does not.
             if (e.Row.RowType == DataControlRowType.Header)

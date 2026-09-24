@@ -112,6 +112,26 @@ namespace BusNova_System
             pnlManifest.Visible = true;
         }
 
+        /// <summary>
+        /// AUD-066. Moves the header row into a real &lt;thead&gt; and copies
+        /// each column's HeaderText onto its cell as data-label.
+        ///
+        /// Styles/busnova-components.css needs both to collapse an .ops-grid
+        /// into cards below 700px: "thead { display: none }" to drop the
+        /// column headings, and "td::before { content: attr(data-label) }" to
+        /// put the field name in front of each value. This page was the only
+        /// .ops-grid in the application that declared no OnRowDataBound at
+        /// all, so at 360px the manifest was a column of bare seat numbers,
+        /// names and ticket codes with nothing to say which was which -
+        /// underneath a header row that was still displayed and cut off
+        /// mid-word. The manifest is the one screen meant to be read on a
+        /// phone, standing at the door of a bus.
+        /// </summary>
+        protected void gvManifest_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            GridViewHelpers.ApplyResponsiveLabels(e, gvManifest);
+        }
+
         protected void ddlTrip_SelectedIndexChanged(object sender, EventArgs e)
         {
             lblMessage.Text = string.Empty;

@@ -7,56 +7,11 @@
    change reaches these pages without touching this file.
    ============================================================ */
 
-/* ---------- filter bar ---------- */
-
-.rpt-filters {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    gap: var(--bn-space-4);
-    padding: var(--bn-space-4);
-    background: var(--bn-surface-sunken);
-    border: 1px solid var(--bn-border);
-    border-radius: var(--bn-radius-md);
-    margin-bottom: var(--bn-space-6);
-}
-
-.rpt-field {
-    display: flex;
-    flex-direction: column;
-    gap: var(--bn-space-1);
-    min-width: 0;
-}
-
-.rpt-field label {
-    font-size: var(--bn-text-xs);
-    font-weight: 600;
-    color: var(--bn-text-muted);
-    text-transform: uppercase;
-    letter-spacing: .04em;
-}
-
-.rpt-field input[type="text"],
-.rpt-field input[type="date"] {
-    min-height: 44px;
-    padding: 0 var(--bn-space-3);
-    border: 1px solid var(--bn-border-strong);
-    border-radius: var(--bn-radius-sm);
-    font-size: var(--bn-text-base);
-    color: var(--bn-text);
-    background: var(--bn-surface);
-}
-
-.rpt-field input:focus-visible {
-    outline: 2px solid var(--bn-primary);
-    outline-offset: 1px;
-}
-
-.rpt-filters .btn-ops-primary,
-.rpt-filters .btn-ops-secondary {
-    min-height: 44px;
-}
-
+/* The filter bar moved to Styles/busnova-components.css in WP-14
+   (AUD-070). Manifest.aspx uses .rpt-filters and has never linked this
+   sheet, so its trip selector rendered as an unstyled block - the third
+   page found using a class whose only definition lived somewhere it did
+   not load. */
 /* ---------- KPI row ----------
    Four across, then two, then one. Grid rather than floats so the
    cards stay equal height without a clearfix. */

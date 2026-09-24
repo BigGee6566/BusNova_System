@@ -1,16 +1,14 @@
 ﻿<%@ Page Title="Driver Schedule" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ReportDriverSchedule.aspx.cs" Inherits="BusNova_System.ReportDriverSchedule" %>
 <%@ Import Namespace="BusNova_System.Helpers" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/Reports.css?v=2" rel="stylesheet" />
+    <link href="Styles/Reports.css?v=3" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
     <div class="ops-wrap ops-wrap--wide">
 
-        <div class="bn-page-header">
-            <h1 class="bn-page-header__title">Driver Schedule</h1>
-            <p class="bn-page-header__subtitle">Who is driving what, and when.</p>
-        </div>
+        <%-- The page title is rendered once, by Site.Master's top bar. --%>
+        <p class="bn-page-intro">Who is driving what, and when.</p>
 
         <div class="bn-card">
             <div class="rpt-filters">

@@ -140,12 +140,30 @@ $precompileOut = Join-Path $env:TEMP ('bnout-' + [Guid]::NewGuid().ToString('N')
 try {
     $null = robocopy $repo $stage /MIR /NFL /NDL /NJH /NJS /NP /R:1 /W:1 `
         /XD '.vs' '.git' 'obj' 'packages' 'App_Data\Logs' 'BusNova.Tests'
+
     # robocopy uses exit codes 0-7 for success; 8+ is a real failure.
-    if ($LASTEXITCODE -ge 8) {
+    #
+    # Read it into an ordinary variable and leave $LASTEXITCODE alone.
+    #
+    # This line used to normalise robocopy's result with
+    # "else { $LASTEXITCODE = 0 }", and that one assignment silently
+    # disabled the two checks below it. $LASTEXITCODE is an automatic
+    # variable living in the GLOBAL scope; assigning to it from inside a
+    # script creates a new SCRIPT-scoped variable that shadows it. Native
+    # commands go on updating the global one, while every later read in
+    # this file returns the shadowing copy - stuck at 0 forever.
+    #
+    # The effect was that stage 2 could not fail on a markup error and
+    # stage 3 could not fail on a failing test: the script printed
+    # "RESULT: PASSED - build, markup and tests all clean" directly
+    # underneath "Failed: 1". Only the MSBuild check still worked, because
+    # it runs before the assignment. A verifier that cannot fail is worse
+    # than no verifier, because it is trusted. (WP-14)
+    $robocopyCode = $LASTEXITCODE
+    if ($robocopyCode -ge 8) {
         $failures.Add('Could not stage a copy of the site for precompilation.')
         Write-Output 'robocopy failed; skipping the markup stage rather than reporting a false result.'
     }
-    else { $LASTEXITCODE = 0 }
 
     & $aspnetCompiler -v / -p $stage -f $precompileOut
     if ($LASTEXITCODE -ne 0) {

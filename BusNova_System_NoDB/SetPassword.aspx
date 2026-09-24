@@ -1,6 +1,6 @@
 ﻿<%@ Page Title="Set Password" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="SetPassword.aspx.cs" Inherits="BusNova_System.SetPassword" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=6" rel="stylesheet" />
+    <link href="Styles/style.css?v=7" rel="stylesheet" />
     <%-- Reads the one-time token out of the URL fragment. See the file
          header and AUD-022 - the token is deliberately not in the query
          string, because query strings reach IIS logs and Referer headers. --%>

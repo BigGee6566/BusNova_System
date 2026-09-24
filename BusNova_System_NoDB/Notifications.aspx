@@ -1,17 +1,15 @@
 ﻿<%@ Page Title="Notifications" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Notifications.aspx.cs" Inherits="BusNova_System.Notifications" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/Ops.css?v=7" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=8" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
     <div class="ops-wrap ops-wrap--wide">
 
-        <div class="bn-page-header">
-            <h1 class="bn-page-header__title">Notifications</h1>
-            <p class="bn-page-header__subtitle">
-                Everything the system has queued to send, and what became of it.
-            </p>
-        </div>
+        <%-- The page title is rendered once, by Site.Master's top bar. --%>
+        <p class="bn-page-intro">
+            Everything the system has queued to send, and what became of it.
+        </p>
 
         <div class="bn-card">
             <p class="bn-note">

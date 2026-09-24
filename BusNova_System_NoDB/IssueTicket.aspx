@@ -1,7 +1,7 @@
 ﻿<%@ Page Title="Issue Ticket" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="IssueTicket.aspx.cs" Inherits="BusNova_System.IssueTicket" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=6" rel="stylesheet" />
-    <link href="Styles/Ops.css?v=7" rel="stylesheet" />
+    <link href="Styles/style.css?v=7" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=8" rel="stylesheet" />
     <link href="Styles/SeatMap.css?v=2" rel="stylesheet" />
     <script src="Scripts/seat-map.js?v=1"></script>
 </asp:Content>
@@ -14,7 +14,7 @@
 
         <div class="ops-box">
 
-            <h3 class="ops-title">Issue Ticket</h3>
+            <h2 class="ops-title">Issue Ticket</h2>
             <div class="ops-subtitle">
                 Pick the trip you're working, find (or register) the passenger, then issue their ticket.
             </div>
@@ -173,7 +173,7 @@
         </div>
 
         <div class="ops-box bn-mt-6">
-            <h3 class="ops-title bn-subheading">Validate a ticket</h3>
+            <h2 class="ops-title bn-subheading">Validate a ticket</h2>
             <div class="row">
                 <div class="col-md-8 mb-3">
                     <label for="<%= txtValidateNumber.ClientID %>">Ticket number</label>

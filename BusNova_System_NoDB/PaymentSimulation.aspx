@@ -1,7 +1,7 @@
 ﻿<%@ Page Title="Payment" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="PaymentSimulation.aspx.cs" Inherits="BusNova_System.PaymentSimulation" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=6" rel="stylesheet" />
-    <link href="Styles/Ops.css?v=7" rel="stylesheet" />
+    <link href="Styles/style.css?v=7" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=8" rel="stylesheet" />
     <script src="Scripts/payment-simulation.js?v=3"></script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
@@ -15,7 +15,7 @@
 
             <span class="demo-payment-badge">Demo Payment &mdash; no real charge is made</span>
 
-            <h3 class="ops-title bn-mt-3">Payment</h3>
+            <h2 class="ops-title bn-mt-3">Payment</h2>
             <div class="ops-subtitle">
                 Review your booking, choose a payment method, and confirm. This is a
                 simulation for the purposes of this project - no real payment gateway is involved.
@@ -36,8 +36,14 @@
                 </div>
 
                 <div class="ops-grid-wrap bn-mt-4 bn-mb-4">
+                    <%-- OnRowDataBound puts the header into a real <thead> and
+                         writes the data-label each cell needs to stay readable
+                         once the table collapses into cards below 700px.
+                         AUD-066: this grid and Manifest's were the only two in
+                         the application missing it. --%>
                     <asp:GridView ID="gvTravellers" runat="server" CssClass="ops-grid"
-                                  AutoGenerateColumns="false" GridLines="None">
+                                  AutoGenerateColumns="false" GridLines="None"
+                                  OnRowDataBound="gvTravellers_RowDataBound">
                         <Columns>
                             <asp:BoundField DataField="SeatNumber" HeaderText="Seat" />
                             <asp:BoundField DataField="FullName" HeaderText="Traveller" />

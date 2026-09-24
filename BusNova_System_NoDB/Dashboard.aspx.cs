@@ -34,7 +34,9 @@ namespace BusNova_System
 
             var role = SessionHelper.Role;
 
-            litHeading.Text = Server.HtmlEncode(Roles.Display(role) + " Dashboard");
+            // The page heading this used to set was removed in WP-14: the
+            // top bar already renders "Dashboard" as the page's one <h1>,
+            // and the role it named is shown next to the user's name there.
             litSubheading.Text = "Signed in as " + Server.HtmlEncode(SessionHelper.FullName ?? string.Empty) + ".";
 
             switch (role)

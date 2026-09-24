@@ -1,7 +1,7 @@
 ﻿<%@ Page Title="Your Tickets" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="TicketConfirmation.aspx.cs" Inherits="BusNova_System.TicketConfirmation" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=6" rel="stylesheet" />
-    <link href="Styles/Ops.css?v=7" rel="stylesheet" />
+    <link href="Styles/style.css?v=7" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=8" rel="stylesheet" />
     <link href="Styles/Ticket.css?v=1" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="Scripts/ticket-confirmation.js?v=1"></script>
@@ -19,7 +19,7 @@
                 <span class="bn-badge bn-badge--success">
                     <i class="fas fa-circle-check" aria-hidden="true"></i> Payment successful
                 </span>
-                <h3 class="ops-title bn-mt-3">Booking <asp:Literal ID="litBookingReference" runat="server" /></h3>
+                <h2 class="ops-title bn-mt-3">Booking <asp:Literal ID="litBookingReference" runat="server" /></h2>
                 <div class="ops-subtitle">
                     <asp:Literal ID="litBookingSummary" runat="server" />
                 </div>
@@ -92,7 +92,7 @@
         </asp:Panel>
 
         <asp:Panel ID="pnlNotFound" runat="server" Visible="false" CssClass="ops-box">
-            <h3 class="ops-title">Booking not found</h3>
+            <h2 class="ops-title">Booking not found</h2>
             <div class="ops-subtitle">
                 <asp:Literal ID="litNotFoundMessage" runat="server" />
             </div>

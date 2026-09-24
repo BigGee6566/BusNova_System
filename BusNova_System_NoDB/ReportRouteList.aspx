@@ -1,15 +1,13 @@
 ﻿<%@ Page Title="Route List" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ReportRouteList.aspx.cs" Inherits="BusNova_System.ReportRouteList" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/Reports.css?v=2" rel="stylesheet" />
+    <link href="Styles/Reports.css?v=3" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
     <div class="ops-wrap ops-wrap--wide">
 
-        <div class="bn-page-header">
-            <h1 class="bn-page-header__title">Route List</h1>
-            <p class="bn-page-header__subtitle">Every route on file, with how many trips have actually been scheduled on it.</p>
-        </div>
+        <%-- The page title is rendered once, by Site.Master's top bar. --%>
+        <p class="bn-page-intro">Every route on file, with how many trips have actually been scheduled on it.</p>
 
         <div class="bn-card">
             <div class="ops-actions ops-actions--start">

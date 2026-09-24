@@ -1,16 +1,14 @@
 ﻿<%@ Page Title="Maintenance Schedule" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ReportMaintenanceSchedule.aspx.cs" Inherits="BusNova_System.ReportMaintenanceSchedule" %>
 <%@ Import Namespace="BusNova_System.Helpers" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/Reports.css?v=2" rel="stylesheet" />
+    <link href="Styles/Reports.css?v=3" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
     <div class="ops-wrap ops-wrap--wide">
 
-        <div class="bn-page-header">
-            <h1 class="bn-page-header__title">Maintenance Schedule</h1>
-            <p class="bn-page-header__subtitle">Preventive service schedules, overdue first. Due-ness is worked out in one place - see MaintenanceScheduleService.</p>
-        </div>
+        <%-- The page title is rendered once, by Site.Master's top bar. --%>
+        <p class="bn-page-intro">Preventive service schedules, overdue first. Due-ness is worked out in one place - see MaintenanceScheduleService.</p>
 
         <div class="bn-card">
             <div class="ops-actions ops-actions--start">

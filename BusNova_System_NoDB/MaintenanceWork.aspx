@@ -1,7 +1,7 @@
 ﻿<%@ Page Title="Maintenance" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="MaintenanceWork.aspx.cs" Inherits="BusNova_System.MaintenanceWork" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=6" rel="stylesheet" />
-    <link href="Styles/Ops.css?v=7" rel="stylesheet" />
+    <link href="Styles/style.css?v=7" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=8" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
@@ -12,7 +12,7 @@
 
         <div class="ops-box">
 
-            <h3 class="ops-title">Maintenance</h3>
+            <h2 class="ops-title">Maintenance</h2>
             <div class="ops-subtitle">
                 Faults reported by drivers and fleet managers, ordered by severity.
                 Start work to mark a fault as being looked at, then log the completed
@@ -191,7 +191,7 @@
         </div>
 
         <div class="ops-box bn-mt-6">
-            <h3 class="ops-title bn-subheading">Recently completed</h3>
+            <h2 class="ops-title bn-subheading">Recently completed</h2>
             <div class="ops-grid-wrap">
                 <asp:GridView ID="gvCompleted" runat="server" CssClass="ops-grid"
                               AutoGenerateColumns="false" GridLines="None"

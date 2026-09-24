@@ -1,8 +1,8 @@
 ﻿<%@ Page Title="Driver Performance" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ReportDriverPerformance.aspx.cs" Inherits="BusNova_System.ReportDriverPerformance" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=6" rel="stylesheet" />
-    <link href="Styles/Ops.css?v=7" rel="stylesheet" />
-    <link href="Styles/Reports.css?v=1" rel="stylesheet" />
+    <link href="Styles/style.css?v=7" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=8" rel="stylesheet" />
+    <link href="Styles/Reports.css?v=2" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
@@ -11,7 +11,7 @@
 
         <div class="ops-box">
 
-            <h3 class="ops-title">Driver performance</h3>
+            <h2 class="ops-title">Driver performance</h2>
             <div class="ops-subtitle">
                 Trips run, punctuality, passengers carried and faults reported, per driver,
                 over a chosen period. Licence expiry is shown alongside, because a driver

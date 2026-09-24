@@ -1,15 +1,13 @@
 ﻿<%@ Page Title="Ticket Sales" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ReportTicketSales.aspx.cs" Inherits="BusNova_System.ReportTicketSales" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/Reports.css?v=2" rel="stylesheet" />
+    <link href="Styles/Reports.css?v=3" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
     <div class="ops-wrap ops-wrap--wide">
 
-        <div class="bn-page-header">
-            <h1 class="bn-page-header__title">Ticket Sales</h1>
-            <p class="bn-page-header__subtitle">Tickets sold and revenue by day and route. Cancellations and refunds are shown separately rather than netted away.</p>
-        </div>
+        <%-- The page title is rendered once, by Site.Master's top bar. --%>
+        <p class="bn-page-intro">Tickets sold and revenue by day and route. Cancellations and refunds are shown separately rather than netted away.</p>
 
         <div class="bn-card">
             <div class="rpt-filters">

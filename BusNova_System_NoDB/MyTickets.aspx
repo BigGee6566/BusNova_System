@@ -1,7 +1,7 @@
 ﻿<%@ Page Title="My Tickets" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="MyTickets.aspx.cs" Inherits="BusNova_System.MyTickets" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=6" rel="stylesheet" />
-    <link href="Styles/Ops.css?v=7" rel="stylesheet" />
+    <link href="Styles/style.css?v=7" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=8" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
@@ -12,7 +12,7 @@
 
         <div class="ops-box">
 
-            <h3 class="ops-title">My Tickets</h3>
+            <h2 class="ops-title">My Tickets</h2>
             <div class="ops-subtitle">
                 Every ticket you&rsquo;ve booked. You can cancel a valid ticket up until the trip
                 departs; what you get back depends on how close to departure you cancel, and the
@@ -92,7 +92,7 @@
 
         <div class="ops-box bn-mt-3">
 
-            <h3 class="ops-title">My bookings</h3>
+            <h2 class="ops-title">My bookings</h2>
             <div class="ops-subtitle">
                 A booking is one payment covering one or more travellers on the same trip.
                 Tickets bought one at a time at a counter do not have one.

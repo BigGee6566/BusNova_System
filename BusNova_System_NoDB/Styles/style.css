@@ -1,21 +1,9 @@
-﻿body {
-}
-html, body {
-    margin: 0;
-    height: 100%;
-}
-
-body {
-    background-color: var(--bn-bg);
-    color: var(--bn-text);
-    font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-}
-
-#form1 {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
+﻿/* The page-level styling for the public login / register / password pages.
+   Everything global that used to live at the top of this file - the `body`
+   background, text colour and font stack, and the `#form1` column - moved to
+   Styles/busnova-design-system.css in WP-14 (AUD-065). It was only ever
+   reaching the pages that happened to link this sheet, which is 23 of 33, so
+   the other ten rendered white and in a different typeface. */
 
 /* Consistent required-field marker, used on every form's <label> so a
    mandatory field is flagged before a person submits and hits a
@@ -94,20 +82,24 @@ label {
         color: var(--bn-text);
     }
 
+/* Full width is right here - it is the one action on a narrow card - but
+   the fill, radius and height now match every other primary button in the
+   system rather than being a third set of values (AUD-068). */
 .btn-register {
     width: 100%;
     margin-top: 14px;
-    padding: 10px;
-    background: linear-gradient(90deg, var(--bn-blue), var(--bn-blue-deep));
-    border: none;
-    color: var(--bn-white);
+    min-height: 44px;
+    padding: 0 var(--bn-space-5);
+    background: var(--bn-primary);
+    border: 1px solid transparent;
+    color: #fff;
     font-weight: 600;
-    border-radius: 8px;
+    border-radius: var(--bn-radius-sm);
 }
 
     .btn-register:hover {
-        filter: brightness(1.08);
-        color: white;
+        background: var(--bn-primary-hover);
+        color: #fff;
     }
 
 /* ---------- Password strength meter (Register.aspx) ---------- */
@@ -264,15 +256,16 @@ label {
 .btn-login {
     width: 100%;
     margin-top: 14px;
-    padding: 10px;
-    background: linear-gradient(90deg, var(--bn-blue), var(--bn-blue-deep));
-    border: none;
-    color: var(--bn-white);
+    min-height: 44px;
+    padding: 0 var(--bn-space-5);
+    background: var(--bn-primary);
+    border: 1px solid transparent;
+    color: #fff;
     font-weight: 600;
-    border-radius: 8px;
+    border-radius: var(--bn-radius-sm);
 }
 
     .btn-login:hover {
-        filter: brightness(1.08);
-        color: white;
+        background: var(--bn-primary-hover);
+        color: #fff;
     }

@@ -1,8 +1,8 @@
 ﻿<%@ Page Title="Route Completion" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ReportRouteCompletion.aspx.cs" Inherits="BusNova_System.ReportRouteCompletion" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=6" rel="stylesheet" />
-    <link href="Styles/Ops.css?v=7" rel="stylesheet" />
-    <link href="Styles/Reports.css?v=1" rel="stylesheet" />
+    <link href="Styles/style.css?v=7" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=8" rel="stylesheet" />
+    <link href="Styles/Reports.css?v=2" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
@@ -11,7 +11,7 @@
 
         <div class="ops-box">
 
-            <h3 class="ops-title">Daily route completion</h3>
+            <h2 class="ops-title">Daily route completion</h2>
             <div class="ops-subtitle">
                 Every trip scheduled for one day and how it actually ran &mdash; whether it
                 was completed, how late it left, and how full the bus was.

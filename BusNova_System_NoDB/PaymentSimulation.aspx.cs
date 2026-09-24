@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using BusNova_System.Helpers;
 using BusNova_System.Models;
 using BusNova_System.Security;
 using BusNova_System.Services;
@@ -118,6 +119,21 @@ namespace BusNova_System
             gvTravellers.DataBind();
 
             litTotal.Text = (price * travellers.Count).ToString("C", CultureInfo.GetCultureInfo("en-ZA"));
+        }
+
+        /// <summary>
+        /// AUD-066. Gives the traveller table a real &lt;thead&gt; and a
+        /// data-label on every cell, which is what lets it collapse into
+        /// readable cards below 700px instead of a column of bare seat
+        /// numbers, names and fares.
+        ///
+        /// Found by MarkupGuardTests.EveryOpsGridIsWiredForResponsiveLabels
+        /// rather than by measurement: this page redirects to BookTrip
+        /// unless a booking is pending, so no browser sweep ever reached it.
+        /// </summary>
+        protected void gvTravellers_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            GridViewHelpers.ApplyResponsiveLabels(e, gvTravellers);
         }
 
         protected void btnConfirmPayment_Click(object sender, EventArgs e)

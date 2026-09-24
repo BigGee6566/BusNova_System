@@ -1,7 +1,7 @@
 ﻿<%@ Page Title="Log Fuel" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="LogFuel.aspx.cs" Inherits="BusNova_System.LogFuel" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=6" rel="stylesheet" />
-    <link href="Styles/Ops.css?v=7" rel="stylesheet" />
+    <link href="Styles/style.css?v=7" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=8" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
@@ -12,7 +12,7 @@
 
         <div class="ops-box">
 
-            <h3 class="ops-title">Log Fuel</h3>
+            <h2 class="ops-title">Log Fuel</h2>
             <div class="ops-subtitle">
                 Record a refuelling against a trip you're driving, or against a bus directly
                 if you're not on a scheduled trip right now.
@@ -144,7 +144,7 @@
         </div>
 
         <div class="ops-box bn-mt-6">
-            <h3 class="ops-title bn-subheading">Your recent fuel logs</h3>
+            <h2 class="ops-title bn-subheading">Your recent fuel logs</h2>
             <div class="ops-grid-wrap">
                 <asp:GridView ID="gvFuelLogs" runat="server" CssClass="ops-grid"
                               AutoGenerateColumns="false" GridLines="None"

@@ -1,7 +1,7 @@
 ﻿<%@ Page Title="Dashboard" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Dashboard.aspx.cs" Inherits="BusNova_System.Dashboard" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=6" rel="stylesheet" />
-    <link href="Styles/Ops.css?v=7" rel="stylesheet" />
+    <link href="Styles/style.css?v=7" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=8" rel="stylesheet" />
     <%-- busnova-dashboard.css is loaded by Site.Master for every page. --%>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
@@ -9,8 +9,12 @@
     <div class="dash-page">
     <div class="dash-wrap">
 
+        <%-- No page heading here. Site.Master's top bar already renders
+             "Dashboard" as the page's one <h1>, and the role this heading
+             used to spell out ("Manager Dashboard") is shown beside the
+             user's name in that same bar. Every other shell page now takes
+             its title from the top bar alone - AUD-072. --%>
         <div class="dash-welcome">
-            <h2><asp:Literal ID="litHeading" runat="server" /></h2>
             <p><asp:Literal ID="litSubheading" runat="server" /></p>
         </div>
 

@@ -1,7 +1,7 @@
 ﻿<%@ Page Title="Assign Route" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="AssignRoute.aspx.cs" Inherits="BusNova_System.AssignRoute" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=6" rel="stylesheet" />
-    <link href="Styles/Ops.css?v=7" rel="stylesheet" />
+    <link href="Styles/style.css?v=7" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=8" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
@@ -12,7 +12,7 @@
 
         <div class="ops-box">
 
-            <h3 class="ops-title">Assign Route</h3>
+            <h2 class="ops-title">Assign Route</h2>
             <div class="ops-subtitle">Assign an available bus and driver to a route and schedule.</div>
 
             <div class="row">

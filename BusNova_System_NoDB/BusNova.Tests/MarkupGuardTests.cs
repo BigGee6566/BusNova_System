@@ -148,6 +148,107 @@ namespace BusNova.Tests
         }
 
         /// <summary>
+        /// WP-14 / AUD-066. Every GridView carrying the shared .ops-grid
+        /// class must declare an OnRowDataBound handler.
+        ///
+        /// That handler is where GridViewHelpers.ApplyResponsiveLabels puts
+        /// the header row into a real &lt;thead&gt; and copies each column's
+        /// HeaderText onto its cell as data-label. The stylesheet needs both
+        /// to turn a wide table into readable cards below 700px. A grid that
+        /// forgets compiles, renders and looks perfect on a desktop - and
+        /// becomes a column of unlabelled values on a phone. Manifest.aspx
+        /// was that grid, and nothing in the build had any opinion about it.
+        ///
+        /// The comment inside ApplyResponsiveLabels used to assert this
+        /// invariant in prose while it was false. This is the version that
+        /// can fail.
+        /// </summary>
+        [TestMethod]
+        public void EveryOpsGridIsWiredForResponsiveLabels()
+        {
+            var problems = new List<string>();
+            var scanned = 0;
+
+            foreach (var file in MarkupFiles())
+            {
+                var text = WithoutServerComments(File.ReadAllText(file.FullName));
+
+                foreach (var tag in AllTagsIn(text))
+                {
+                    if (tag.Text.IndexOf("<asp:GridView", StringComparison.OrdinalIgnoreCase) < 0) continue;
+                    if (tag.Text.IndexOf("ops-grid", StringComparison.OrdinalIgnoreCase) < 0) continue;
+
+                    scanned++;
+
+                    if (tag.Text.IndexOf("OnRowDataBound", StringComparison.OrdinalIgnoreCase) >= 0) continue;
+
+                    problems.Add(file.Name + ":" + tag.Line +
+                                 " - GridView has CssClass ops-grid but no OnRowDataBound, so its " +
+                                 "cells get no data-label and its header never becomes a <thead>. " +
+                                 "It will collapse into unlabelled cards below 700px. " + Excerpt(tag.Text));
+                }
+            }
+
+            // The same trap as everywhere else: a guard that matches nothing
+            // passes for free.
+            Assert.IsTrue(scanned >= 20,
+                "Only " + scanned + " .ops-grid GridViews found; expected at least 20. " +
+                "The scan is not reading the pages.");
+
+            AssertNone(problems);
+        }
+
+        /// <summary>
+        /// WP-14 / AUD-072. A page inside the application shell must not
+        /// render its own &lt;h1&gt;.
+        ///
+        /// Site.Master already emits one - &lt;h1 class="bn-topbar__title"&gt;
+        /// carrying the page title from PageTitles. Eight pages printed a
+        /// second &lt;h1&gt; with the same words in the content area, so those
+        /// documents had two top-level headings that said the same thing,
+        /// which is a broken outline for anyone navigating by heading as
+        /// well as a visible duplication.
+        ///
+        /// Public pages are exempt: they render the marketing chrome, which
+        /// has no top bar, so their &lt;h1&gt; is the only one on the page.
+        /// </summary>
+        [TestMethod]
+        public void ShellPagesDoNotRenderASecondH1()
+        {
+            var publicPages = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Home.aspx", "Login.aspx", "Register.aspx", "Error.aspx",
+                "RequestPasswordLink.aspx", "SetPassword.aspx", "Logout.aspx"
+            };
+
+            var problems = new List<string>();
+            var scanned = 0;
+
+            foreach (var file in MarkupFiles())
+            {
+                if (!file.Name.EndsWith(".aspx", StringComparison.OrdinalIgnoreCase)) continue;
+                if (publicPages.Contains(file.Name)) continue;
+
+                scanned++;
+
+                var text = WithoutServerComments(File.ReadAllText(file.FullName));
+                var match = Regex.Match(text, "<h1[\\s>]", RegexOptions.IgnoreCase);
+                if (!match.Success) continue;
+
+                problems.Add(file.Name + ":" + LineOf(text, match.Index) +
+                             " - renders its own <h1>, but Site.Master already emits " +
+                             "<h1 class=\"bn-topbar__title\"> for shell pages. Two <h1> " +
+                             "elements with the same text is a broken document outline. " +
+                             "Use .ops-title for a section heading inside a card.");
+            }
+
+            Assert.IsTrue(scanned >= 20,
+                "Only " + scanned + " shell pages scanned; expected at least 20.");
+
+            AssertNone(problems);
+        }
+
+        /// <summary>
         /// The guards above are only worth anything if they are actually
         /// looking at the pages. A wrong root, a moved test assembly or an
         /// empty glob would make all three pass by finding nothing.
@@ -301,6 +402,26 @@ namespace BusNova.Tests
             throw new InvalidOperationException(
                 "Could not find the project root (no Site.Master above " +
                 AppDomain.CurrentDomain.BaseDirectory + ").");
+        }
+
+        /// <summary>
+        /// Blanks out &lt;%-- --%&gt; server comments, keeping every newline so
+        /// reported line numbers still point at the right line.
+        ///
+        /// Without this a guard reads the prose explaining it as though it
+        /// were markup: the comment on Dashboard.aspx saying the top bar
+        /// "renders the page's one &lt;h1&gt;" was itself reported as a second
+        /// &lt;h1&gt;. A page that documents its own markup should not fail for
+        /// saying so.
+        /// </summary>
+        private static string WithoutServerComments(string text)
+        {
+            return Regex.Replace(text, @"<%--.*?--%>", m =>
+            {
+                var sb = new StringBuilder(m.Value.Length);
+                foreach (var c in m.Value) sb.Append(c == '\n' || c == '\r' ? c : ' ');
+                return sb.ToString();
+            }, RegexOptions.Singleline);
         }
 
         private static void AssertNone(List<string> problems)

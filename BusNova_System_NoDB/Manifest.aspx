@@ -1,7 +1,7 @@
 ﻿<%@ Page Title="Passenger Manifest" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Manifest.aspx.cs" Inherits="BusNova_System.Manifest" %>
 <%@ Import Namespace="BusNova_System.Helpers" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/Ops.css?v=7" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=8" rel="stylesheet" />
     <link href="Styles/Manifest.css?v=2" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
@@ -11,13 +11,11 @@
         <%-- Everything in this block is hidden when printing. What comes
              out of the printer is the manifest, not the application. --%>
         <div class="mf-screen-only">
-            <div class="bn-page-header">
-                <h1 class="bn-page-header__title">Passenger manifest</h1>
-                <p class="bn-page-header__subtitle">
-                    The list to carry on the bus. Print it, or export it if it has to go into
-                    another system.
-                </p>
-            </div>
+            <%-- The page title is rendered once, by Site.Master's top bar. --%>
+            <p class="bn-page-intro">
+                The list to carry on the bus. Print it, or export it if it has to go into
+                another system.
+            </p>
 
             <div class="bn-card">
                 <div class="rpt-filters">
@@ -53,8 +51,15 @@
             </div>
 
             <div class="ops-grid-wrap">
+                <%-- OnRowDataBound is what puts the header into a real <thead>
+                     and copies each HeaderText onto its cell as data-label.
+                     Without it this grid collapsed at 360px into a column of
+                     unlabelled values under a header row that stayed visible
+                     and was clipped mid-word - AUD-066. Every other .ops-grid
+                     in the application already routed through this. --%>
                 <asp:GridView ID="gvManifest" runat="server" AutoGenerateColumns="false"
                               CssClass="ops-grid mf-grid" GridLines="None" UseAccessibleHeader="true"
+                              OnRowDataBound="gvManifest_RowDataBound"
                               EmptyDataText="No passengers are booked on this trip.">
                     <Columns>
                         <asp:BoundField DataField="SeatNumber" HeaderText="Seat" />

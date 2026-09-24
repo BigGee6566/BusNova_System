@@ -123,6 +123,42 @@
 }
 
 /* ============================================================
+   DOCUMENT
+   AUD-065. These four properties are the most visible in the system and
+   until WP-14 they lived in Styles/style.css, which is linked per page.
+   Ten of the thirty-three pages never linked it and fell through to
+   Bootstrap: a white page in `system-ui` instead of #f5f7fb in
+   -apple-system. The application changed colour and typeface as you
+   navigated. Nothing that applies to `body` belongs in a page-level
+   sheet - if a rule is meant for every page, it has to be loaded by
+   every page, and only Site.Master can promise that.
+   ============================================================ */
+
+html,
+body {
+    margin: 0;
+    height: 100%;
+}
+
+body {
+    background-color: var(--bn-bg);
+    color: var(--bn-text);
+    font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+/* The single server-side <form> wraps every page. A column that is at
+   least as tall as the viewport is what lets the public footer sit at the
+   bottom of a short page rather than half way up it. The app shell does
+   not depend on this - .bn-app-main is its own flex column - but it was
+   applied to 23 pages and not to the other 10, and one document should
+   not have two box models depending on which stylesheet it linked. */
+#form1 {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ============================================================
    APP SHELL
    Only dashboard pages get this. Public pages (Home, Login, Register,
    Error) keep the marketing navbar and footer in Site.Master, which is

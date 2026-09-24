@@ -1,4 +1,4 @@
-﻿/* ---------- Operational screens (Fleet Manager / Driver) ----------
+/* ---------- Operational screens (Fleet Manager / Driver) ----------
 
    The shared furniture that used to be here - .ops-page, .ops-wrap,
    .ops-box, .ops-title, .ops-subtitle, .ops-back-link, .ops-actions,
@@ -130,67 +130,9 @@
         }
 }
 
-/*
-   Below 700px, every .ops-grid table drops its header row and each row
-   becomes a self-contained card instead of scrolling sideways. The field
-   name in front of each value comes from the data-label attribute that
-   Helpers/GridViewHelpers.ApplyResponsiveLabels writes onto every cell at
-   bind time (one HeaderText per column, already defined on every grid) -
-   nothing here is hard-coded to a particular table.
-*/
-@media (max-width: 700px) {
-    .ops-grid-wrap {
-        overflow-x: visible;
-    }
-
-    .ops-grid,
-    .ops-grid tbody,
-    .ops-grid tr,
-    .ops-grid td {
-        display: block;
-        width: 100%;
-    }
-
-    .ops-grid thead {
-        display: none;
-    }
-
-    .ops-grid tr {
-        margin-bottom: 12px;
-        border: 1px solid rgba(var(--bn-navy-rgb),0.14);
-        border-radius: 10px;
-        overflow: hidden;
-    }
-
-    .ops-grid td {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 12px;
-        white-space: normal;
-        text-align: right;
-        border-bottom: 1px solid rgba(var(--bn-navy-rgb),0.08);
-    }
-
-        .ops-grid td:last-child {
-            border-bottom: none;
-        }
-
-        .ops-grid td::before {
-            content: attr(data-label);
-            font-weight: 600;
-            color: var(--bn-text-secondary);
-            text-align: left;
-        }
-
-        /* An EmptyDataText row is a single unlabelled cell spanning the
-           whole table - it never gets a data-label, so it should not show
-           the field-name prefix either. */
-        .ops-grid td:only-child {
-            text-align: left;
-        }
-
-            .ops-grid td:only-child::before {
-                content: none;
-            }
-}
+/* The "below 700px" card-stacking block that used to end this file moved to
+   Styles/busnova-components.css in WP-14 (AUD-067). It defined the mobile
+   behaviour of .ops-grid, a class used on 23 pages, while living in a sheet
+   that only 19 of them link - so the four report pages repaired by AUD-063
+   kept a sideways-scrolling table where every other page collapsed into
+   cards. Same class, two layouts, decided by a <link> tag. */

@@ -1,8 +1,8 @@
 ﻿<%@ Page Title="Fuel Efficiency" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ReportFuelEfficiency.aspx.cs" Inherits="BusNova_System.ReportFuelEfficiency" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=6" rel="stylesheet" />
-    <link href="Styles/Ops.css?v=7" rel="stylesheet" />
-    <link href="Styles/Reports.css?v=1" rel="stylesheet" />
+    <link href="Styles/style.css?v=7" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=8" rel="stylesheet" />
+    <link href="Styles/Reports.css?v=2" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
@@ -11,7 +11,7 @@
 
         <div class="ops-box">
 
-            <h3 class="ops-title">Fuel efficiency</h3>
+            <h2 class="ops-title">Fuel efficiency</h2>
             <div class="ops-subtitle">
                 Consumption and running cost per bus over a chosen period, so a vehicle
                 that is drinking more than it should shows up before the fuel bill does.

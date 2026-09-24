@@ -1,6 +1,6 @@
 ﻿<%@ Page Title="My Trip" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="DriverWorkspace.aspx.cs" Inherits="BusNova_System.DriverWorkspace" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/Ops.css?v=7" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=8" rel="stylesheet" />
     <link href="Styles/DriverWorkspace.css?v=1" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
@@ -10,12 +10,10 @@
          driver reads this on a phone, at a bus, often in the dark. --%>
     <div class="ops-wrap ops-wrap--narrow dw">
 
-        <div class="bn-page-header">
-            <h1 class="bn-page-header__title">My trip</h1>
-            <p class="bn-page-header__subtitle">
-                <asp:Literal ID="litToday" runat="server" />
-            </p>
-        </div>
+        <%-- The page title is rendered once, by Site.Master's top bar. --%>
+        <p class="bn-page-intro">
+            <asp:Literal ID="litToday" runat="server" />
+        </p>
 
         <asp:Label ID="lblMessage" runat="server" />
 

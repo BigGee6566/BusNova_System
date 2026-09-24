@@ -543,32 +543,40 @@ textarea.bn-field__control {
     margin-top: 18px;
 }
 
+/* AUD-068. These used to be a second button design system: a 90deg
+   gradient at 8px radius with 10px padding and no minimum height, sitting
+   next to .bn-btn's flat fill at 6px radius, 20px padding and a 44px
+   touch target. Both are used in quantity - 44 .btn-ops-* against 28
+   .bn-btn - so a primary action changed shape depending on the vintage of
+   the page it was on. They now share .bn-btn's geometry and tokens. The
+   class names are kept so no page markup has to change; what is gone is
+   the second set of values. */
+
 .btn-ops-primary {
-    flex: 1;
-    padding: 10px;
-    background: linear-gradient(90deg, var(--bn-blue), var(--bn-blue-deep));
-    border: none;
-    color: var(--bn-white);
+    padding: 0 var(--bn-space-5);
+    background: var(--bn-primary);
+    border: 1px solid transparent;
+    color: #fff;
     font-weight: 600;
-    border-radius: 8px;
+    border-radius: var(--bn-radius-sm);
 }
 
     .btn-ops-primary:hover {
-        filter: brightness(1.08);
-        color: var(--bn-white);
+        background: var(--bn-primary-hover);
+        color: #fff;
     }
 
 .btn-ops-secondary {
-    padding: 10px 18px;
-    background: transparent;
-    border: 1px solid rgba(var(--bn-navy-rgb),0.2);
+    padding: 0 var(--bn-space-5);
+    background: var(--bn-surface);
+    border: 1px solid var(--bn-border-strong);
     color: var(--bn-text);
     font-weight: 600;
-    border-radius: 8px;
+    border-radius: var(--bn-radius-sm);
 }
 
     .btn-ops-secondary:hover {
-        background: rgba(var(--bn-blue-rgb),0.08);
+        background: var(--bn-surface-sunken);
         color: var(--bn-text);
     }
 
@@ -704,10 +712,25 @@ textarea.bn-field__control {
     align-items: center;
     justify-content: center;
     gap: var(--bn-space-2);
-    min-height: 40px;
+    /* 44px, the same as .bn-btn, so the two vocabularies are one size.
+       These measured 42, 44 and 46 depending on their container. */
+    min-height: 44px;
+    font-size: var(--bn-text-base);
+    font-family: inherit;
+    line-height: 1;
     cursor: pointer;
+    /* AUD-071. An <asp:LinkButton> renders an <a>, so without this a
+       button-shaped control carrying these classes kept its underline -
+       eleven of them on Manage Users alone - and sat next to an
+       <asp:Button> that had none. */
+    text-decoration: none;
     transition: background var(--bn-transition), filter var(--bn-transition),
                 box-shadow var(--bn-transition);
+}
+
+.btn-ops-primary:hover,
+.btn-ops-secondary:hover {
+    text-decoration: none;
 }
 
 .btn-ops-primary:active,
@@ -726,16 +749,31 @@ textarea.bn-field__control {
     outline-offset: 2px;
 }
 
-/* .btn-ops-primary carries flex: 1, which is right inside .ops-actions on a
-   narrow form but stretches a lone export button across the whole card. */
+/* AUD-069. .btn-ops-primary used to carry `flex: 1`, so inside .ops-actions
+   it grew to fill whatever space was left: 772px of "Create Account" beside
+   75px of "Clear" on Manage Users, and 787/75 on three more pages. A button
+   should be as wide as its label, and a primary and a secondary choice
+   should look like two choices.
+
+   On a phone the opposite is true - a full-width target is easier to hit
+   and there is no room for two buttons side by side - so below 560px they
+   go back to filling the row, which is where `flex: 1` was actually
+   earning its keep. */
+.ops-actions > .btn-ops-primary,
+.ops-actions > .btn-ops-secondary {
+    flex: 0 0 auto;
+}
+
+@media (max-width: 560px) {
+    .ops-actions > .btn-ops-primary,
+    .ops-actions > .btn-ops-secondary {
+        flex: 1 1 100%;
+    }
+}
+
 .ops-actions--start {
     justify-content: flex-start;
 }
-
-    .ops-actions--start .btn-ops-primary,
-    .ops-actions--start .btn-ops-secondary {
-        flex: 0 0 auto;
-    }
 
 /* ---------- empty state ---------- */
 
@@ -857,4 +895,182 @@ textarea.bn-field__control {
    under it on a narrow one, rather than being pushed onto one long line. */
 .bn-app-content .ops-title + .ops-subtitle {
     margin-top: var(--bn-space-1);
+}
+
+
+/* ============================================================
+   .ops-grid ON A SMALL SCREEN                       (AUD-067)
+   Promoted out of Styles/Ops.css, which is linked per page. It governs
+   how .ops-grid behaves below 700px on all 23 pages that use the class,
+   but only 19 of them linked the sheet, so the four report pages fixed
+   by AUD-063 kept a sideways-scrolling table while the rest collapsed
+   into cards. This is the unfinished half of that finding: WP-13
+   promoted the desktop rules and left the responsive ones behind.
+   ============================================================ */
+/*
+   Below 700px, every .ops-grid table drops its header row and each row
+   becomes a self-contained card instead of scrolling sideways. The field
+   name in front of each value comes from the data-label attribute that
+   Helpers/GridViewHelpers.ApplyResponsiveLabels writes onto every cell at
+   bind time (one HeaderText per column, already defined on every grid) -
+   nothing here is hard-coded to a particular table.
+*/
+@media (max-width: 700px) {
+    .ops-grid-wrap {
+        overflow-x: visible;
+    }
+
+    .ops-grid,
+    .ops-grid tbody,
+    .ops-grid tr,
+    .ops-grid td {
+        display: block;
+        width: 100%;
+    }
+
+    .ops-grid thead {
+        display: none;
+    }
+
+    .ops-grid tr {
+        margin-bottom: 12px;
+        border: 1px solid rgba(var(--bn-navy-rgb),0.14);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .ops-grid td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        white-space: normal;
+        text-align: right;
+        border-bottom: 1px solid rgba(var(--bn-navy-rgb),0.08);
+    }
+
+        .ops-grid td:last-child {
+            border-bottom: none;
+        }
+
+        .ops-grid td::before {
+            content: attr(data-label);
+            font-weight: 600;
+            color: var(--bn-text-secondary);
+            text-align: left;
+        }
+
+        /* An EmptyDataText row is a single unlabelled cell spanning the
+           whole table - it never gets a data-label, so it should not show
+           the field-name prefix either. */
+        .ops-grid td:only-child {
+            text-align: left;
+        }
+
+            .ops-grid td:only-child::before {
+                content: none;
+            }
+}
+
+/* A cell with no data-label has no field name to show, so right-aligning
+   it strands a bare value in the middle of a card with nothing to say
+   what it is. That is exactly what AUD-066 looked like on the manifest:
+   35 cells, no labels, and a column of numbers and names that could not
+   be read. The grid should be fixed at the source - every .ops-grid must
+   run through GridViewHelpers.ApplyResponsiveLabels - but if one is ever
+   missed again it should degrade to a plain readable list rather than to
+   nonsense. */
+@media (max-width: 700px) {
+    .ops-grid td:not([data-label]) {
+        display: block;
+        text-align: left;
+    }
+}
+
+
+/* ============================================================
+   FILTER BAR                                        (AUD-070)
+   Promoted out of Styles/Reports.css. Manifest.aspx marks its trip
+   selector up as .rpt-filters and links Manifest.css and Ops.css only,
+   so the bar computed `display: block` instead of the flex row it is
+   written to be. Third page found with a class defined only in a sheet
+   it does not load; the remedy is the same one AUD-063 used.
+   ============================================================ */
+/* ---------- filter bar ---------- */
+
+.rpt-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--bn-space-4);
+    padding: var(--bn-space-4);
+    background: var(--bn-surface-sunken);
+    border: 1px solid var(--bn-border);
+    border-radius: var(--bn-radius-md);
+    margin-bottom: var(--bn-space-6);
+}
+
+.rpt-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--bn-space-1);
+    min-width: 0;
+}
+
+.rpt-field label {
+    font-size: var(--bn-text-xs);
+    font-weight: 600;
+    color: var(--bn-text-muted);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.rpt-field input[type="text"],
+.rpt-field input[type="date"] {
+    min-height: 44px;
+    padding: 0 var(--bn-space-3);
+    border: 1px solid var(--bn-border-strong);
+    border-radius: var(--bn-radius-sm);
+    font-size: var(--bn-text-base);
+    color: var(--bn-text);
+    background: var(--bn-surface);
+}
+
+.rpt-field input:focus-visible {
+    outline: 2px solid var(--bn-primary);
+    outline-offset: 1px;
+}
+
+.rpt-filters .btn-ops-primary,
+.rpt-filters .btn-ops-secondary {
+    min-height: 44px;
+}
+
+
+/* ============================================================
+   PAGE INTRO                                        (AUD-072)
+   The one line of orientation under the top bar.
+
+   Nine pages used to open with <div class="bn-page-header"> wrapping an
+   <h1 class="bn-page-header__title"> and a <p class="bn-page-header__
+   subtitle">. Neither of those two class names is defined in any
+   stylesheet in this repository - the component library calls them
+   .bn-page-title and .bn-page-subtitle, without the __ - so the heading
+   fell through to Bootstrap's default <h1> of 40px, a size that appears
+   nowhere in the type scale, and the paragraph got no muted colour and
+   no measure.
+
+   The heading was also a duplicate. Site.Master renders
+   <h1 class="bn-topbar__title"> for every shell page, so those nine
+   documents carried two <h1> elements with the same words in them. The
+   title is now rendered once, in the top bar, and what stays here is the
+   sentence that actually adds something.
+   ============================================================ */
+
+.bn-app-content .bn-page-intro {
+    margin: 0 0 var(--bn-space-6);
+    font-size: var(--bn-text-base);
+    color: var(--bn-text-muted);
+    line-height: var(--bn-leading-body);
+    max-width: 78ch;
 }

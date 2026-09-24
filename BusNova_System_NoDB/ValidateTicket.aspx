@@ -1,17 +1,15 @@
 ﻿<%@ Page Title="Validate Ticket" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ValidateTicket.aspx.cs" Inherits="BusNova_System.ValidateTicket" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/Ops.css?v=7" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=8" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
     <div class="ops-wrap ops-wrap--narrow">
 
-        <div class="bn-page-header">
-            <h1 class="bn-page-header__title">Validate a ticket</h1>
-            <p class="bn-page-header__subtitle">
-                Scan the passenger's QR code, or type the ticket number if the code will not scan.
-            </p>
-        </div>
+        <%-- The page title is rendered once, by Site.Master's top bar. --%>
+        <p class="bn-page-intro">
+            Scan the passenger's QR code, or type the ticket number if the code will not scan.
+        </p>
 
         <div class="bn-card">
 
