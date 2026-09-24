@@ -1,4 +1,4 @@
-/* =============================================================
+﻿/* =============================================================
    Live map (WP-10)
 
    The map is an addition to the table, not a replacement for it,
@@ -16,7 +16,8 @@
    rather than leaving a grey rectangle that looks broken. */
 .lm-map[data-map-state="unavailable"]::after,
 .lm-map[data-map-state="no-positions"]::after,
-.lm-map[data-map-state="bad-data"]::after {
+.lm-map[data-map-state="bad-data"]::after,
+.lm-map[data-map-state="no-tiles"]::after {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -33,6 +34,50 @@
 
 .lm-map[data-map-state="no-positions"]::after {
     content: "No positions have been reported yet.";
+}
+
+/* WP-13. The basemap is refused by OpenStreetMap under its tile usage
+   policy, which used to fill the panel with a grid of yellow-and-black
+   "403 Access blocked" images. Only the basemap is missing: the positions,
+   the arrival windows and the trip list are all still correct, and the
+   message says so rather than leaving the page looking broken. */
+.lm-map[data-map-state="no-tiles"]::after {
+    content: "Map tiles are unavailable. Positions and arrival times below are still live.";
+}
+
+/* Leaflet's zoom buttons sit directly on the tiles with no surface of
+   their own, which is unreadable over a dark or busy basemap and invisible
+   over a blank one. */
+/* .leaflet-bar is included in each selector deliberately. Leaflet's own
+   stylesheet loads after this one and carries .leaflet-touch .leaflet-bar
+   rules at the same two-class specificity, so a two-class selector here
+   ties and loses on order - measured: border-radius applied but box-shadow
+   and width did not. Three classes wins outright. Same trap as the Font
+   Awesome icon rules in WP-12. */
+.lm-map .leaflet-control-zoom.leaflet-bar {
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.lm-map .leaflet-control-zoom.leaflet-bar a {
+    width: 34px;
+    height: 34px;
+    line-height: 34px;
+    background: #fff;
+    color: var(--bn-text, #1F2937);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    font-size: 1.1rem;
+}
+
+.lm-map .leaflet-control-zoom.leaflet-bar a:last-child { border-bottom: none; }
+
+.lm-map .leaflet-control-zoom.leaflet-bar a:hover { background: #f3f4f6; }
+
+.lm-map .leaflet-control-zoom.leaflet-bar a:focus-visible {
+    outline: 2px solid var(--bn-blue, #2563EB);
+    outline-offset: -2px;
 }
 
 .lm-map[data-map-state="bad-data"]::after {

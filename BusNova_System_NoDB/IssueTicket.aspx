@@ -1,7 +1,7 @@
 ﻿<%@ Page Title="Issue Ticket" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="IssueTicket.aspx.cs" Inherits="BusNova_System.IssueTicket" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="Styles/style.css?v=6" rel="stylesheet" />
-    <link href="Styles/Ops.css?v=6" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=7" rel="stylesheet" />
     <link href="Styles/SeatMap.css?v=2" rel="stylesheet" />
     <script src="Scripts/seat-map.js?v=1"></script>
 </asp:Content>

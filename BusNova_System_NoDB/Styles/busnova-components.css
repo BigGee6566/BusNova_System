@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    BusNova component library (WP-0).
 
    Loads after busnova-design-system.css and uses only its tokens.
@@ -466,3 +466,395 @@ textarea.bn-field__control {
 .ops-message--success { color: var(--bn-success) !important; }
 .ops-message--danger  { color: var(--bn-danger) !important; }
 .ops-message--warning { color: var(--bn-warning) !important; }
+
+
+/* ============================================================
+   OPERATIONAL SCREEN FURNITURE  (promoted from Styles/Ops.css)
+   ============================================================
+   AUD-063. These rules used to live in Ops.css, which is linked by
+   individual pages rather than by Site.Master. Four pages carried
+   CssClass="ops-grid" on their GridView and never linked the file, so
+   they rendered the browser's default table instead: measured computed
+   padding of 1px 1px against 10px 12px elsewhere, th white-space normal
+   instead of nowrap, and no cell border at all. That is what "squished
+   columns" and "LicenseRoute" were.
+
+   The lesson is the one AUD-061 and the dashboard's inline <style> block
+   already taught twice: a shared style that lives in a page-level sheet
+   is not shared, it is available by coincidence of which pages happened
+   to link it. Anything every operational screen uses belongs here, in a
+   file Site.Master loads for all of them.
+
+   Ops.css keeps only what is genuinely specific to one page.
+   ============================================================ */
+
+/* ---------- Operational screens (Fleet Manager / Driver) ---------- */
+
+.ops-page {
+    min-height: calc(100vh - 200px);
+    padding-top: 90px;
+    background-color: var(--bn-bg);
+}
+
+.ops-wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 30px 20px 60px;
+}
+
+.ops-box {
+    padding: 32px;
+    background: var(--bn-white);
+    border: 1px solid rgba(var(--bn-navy-rgb),0.16);
+    border-left: 3px solid var(--bn-blue);
+    border-radius: 14px;
+    box-shadow: 0 8px 32px rgba(var(--bn-navy-rgb),0.14);
+}
+
+.ops-title {
+    margin: 0 0 4px;
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: var(--bn-text);
+}
+
+.ops-subtitle {
+    font-size: 0.85rem;
+    color: var(--bn-text-secondary);
+    margin-bottom: 24px;
+}
+
+.ops-back-link {
+    display: inline-block;
+    margin-bottom: 16px;
+    font-size: 0.85rem;
+    color: var(--bn-blue);
+    text-decoration: none;
+}
+
+    .ops-back-link:hover {
+        text-decoration: underline;
+    }
+
+.ops-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.btn-ops-primary {
+    flex: 1;
+    padding: 10px;
+    background: linear-gradient(90deg, var(--bn-blue), var(--bn-blue-deep));
+    border: none;
+    color: var(--bn-white);
+    font-weight: 600;
+    border-radius: 8px;
+}
+
+    .btn-ops-primary:hover {
+        filter: brightness(1.08);
+        color: var(--bn-white);
+    }
+
+.btn-ops-secondary {
+    padding: 10px 18px;
+    background: transparent;
+    border: 1px solid rgba(var(--bn-navy-rgb),0.2);
+    color: var(--bn-text);
+    font-weight: 600;
+    border-radius: 8px;
+}
+
+    .btn-ops-secondary:hover {
+        background: rgba(var(--bn-blue-rgb),0.08);
+        color: var(--bn-text);
+    }
+
+.ops-message {
+    margin-top: 16px;
+    font-size: 0.85rem;
+    color: var(--bn-green);
+    text-align: center;
+    display: block;
+}
+
+/* ---------- Schedule grid (View Assigned Routes) ---------- */
+
+.ops-grid-wrap {
+    overflow-x: auto;
+}
+
+.ops-grid {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+    .ops-grid th {
+        text-align: left;
+        padding: 10px 12px;
+        color: var(--bn-text-secondary);
+        font-weight: 600;
+        border-bottom: 1px solid rgba(var(--bn-navy-rgb),0.12);
+        white-space: nowrap;
+    }
+
+    .ops-grid td {
+        padding: 10px 12px;
+        color: var(--bn-text);
+        border-bottom: 1px solid rgba(var(--bn-navy-rgb),0.08);
+        white-space: nowrap;
+    }
+
+    .ops-grid tr:last-child td {
+        border-bottom: none;
+    }
+
+.status-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.status-scheduled {
+    background: rgba(var(--bn-blue-rgb),0.10);
+    color: var(--bn-blue-deep);
+}
+
+.status-completed {
+    background: rgba(30,138,95,0.10);
+    color: var(--bn-green);
+}
+
+.status-muted {
+    background: rgba(var(--bn-navy-rgb),0.08);
+    color: var(--bn-text-secondary);
+}
+
+.status-danger {
+    background: rgba(192,57,43,0.10);
+    color: var(--bn-red);
+}
+
+/* Amber sits between "fine" and "gone". A bus that is off the road for
+   service is neither, and used to render in the same blue as a bus
+   awaiting its next trip. (AUD-038) */
+.status-warning {
+    background: var(--bn-warning-subtle);
+    color: var(--bn-warning);
+}
+
+/* ============================================================
+   WP-13 POLISH
+   ============================================================
+   Everything below is added once, here, so all 27 operational screens
+   inherit it rather than the eight that happened to be reported.
+   ============================================================ */
+
+/* ---------- tables ---------- */
+
+.ops-grid th {
+    /* Headers carry the column name and nothing else, so they must never
+       wrap: "Licence" + "Route" wrapping into one another is what read as
+       "LicenseRoute". nowrap is already set above; this adds the visual
+       separation that made the columns look fused even when they were not. */
+    background: var(--bn-surface-sunken);
+    border-bottom-width: 2px;
+    letter-spacing: 0.01em;
+}
+
+/* Zebra striping. nth-child rather than nth-of-type because GridView emits
+   a plain <tr> sequence, and :nth-child(even) inside tbody is stable across
+   the header row GridView renders into <thead> with UseAccessibleHeader. */
+.ops-grid tbody tr:nth-child(even) {
+    background: rgba(var(--bn-navy-rgb), 0.025);
+}
+
+.ops-grid tbody tr:hover {
+    background: rgba(var(--bn-blue-rgb), 0.05);
+}
+
+/* Numbers and money read down the column, so they align on the right.
+   Applied per column by the page, since only the page knows which of its
+   columns are quantities. */
+.ops-grid .num,
+.ops-grid td.num,
+.ops-grid th.num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+/* A long free-text column should be allowed to wrap rather than force the
+   whole table into a horizontal scroll. Opt-in for the same reason. */
+.ops-grid .wrap,
+.ops-grid td.wrap {
+    white-space: normal;
+    min-width: 16ch;
+}
+
+/* ---------- buttons ---------- */
+
+.btn-ops-primary,
+.btn-ops-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--bn-space-2);
+    min-height: 40px;
+    cursor: pointer;
+    transition: background var(--bn-transition), filter var(--bn-transition),
+                box-shadow var(--bn-transition);
+}
+
+.btn-ops-primary:active,
+.btn-ops-secondary:active {
+    transform: translateY(1px);
+}
+
+/* Several of these had no visible focus at all, which is WCAG 2.4.7.
+   :focus-visible rather than :focus so a mouse click does not leave a ring
+   behind, while keyboard navigation always shows one. */
+.btn-ops-primary:focus-visible,
+.btn-ops-secondary:focus-visible,
+.ops-grid a:focus-visible,
+.bn-empty__action:focus-visible {
+    outline: 2px solid var(--bn-blue);
+    outline-offset: 2px;
+}
+
+/* .btn-ops-primary carries flex: 1, which is right inside .ops-actions on a
+   narrow form but stretches a lone export button across the whole card. */
+.ops-actions--start {
+    justify-content: flex-start;
+}
+
+    .ops-actions--start .btn-ops-primary,
+    .ops-actions--start .btn-ops-secondary {
+        flex: 0 0 auto;
+    }
+
+/* ---------- empty state ---------- */
+
+.bn-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--bn-space-2);
+    padding: var(--bn-space-8) var(--bn-space-4);
+    text-align: center;
+    color: var(--bn-text-muted);
+}
+
+.bn-empty__icon {
+    font-size: 2rem;
+    opacity: 0.35;
+    margin-bottom: var(--bn-space-1);
+}
+
+.bn-empty__title {
+    font-weight: 600;
+    color: var(--bn-text-secondary);
+}
+
+.bn-empty__hint {
+    font-size: var(--bn-text-sm);
+    max-width: 46ch;
+}
+
+/* GridView's EmptyDataText renders as a single cell. Give it the same
+   breathing room as the empty-state block so a table with no rows does not
+   read as a broken one. */
+.ops-grid .ops-grid__empty,
+.ops-grid tbody tr td[colspan] {
+    padding: var(--bn-space-8) var(--bn-space-4);
+    text-align: center;
+    color: var(--bn-text-muted);
+    /* .ops-grid td is nowrap, which is right for data columns and wrong
+       for a paragraph. Without this the empty-state hint renders as one
+       long line and puts a scrollbar under an otherwise empty table. */
+    white-space: normal;
+}
+
+.bn-empty,
+.bn-empty * {
+    white-space: normal;
+}
+
+/* ---------- checkboxes ---------- */
+
+/* The manifest's "Boarded" column is ticked with a pen on a printed sheet,
+   so the box has to be big enough to aim at and dark enough to photocopy. */
+.bn-check {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--bn-border-strong, rgba(var(--bn-navy-rgb), 0.35));
+    border-radius: 4px;
+    background: var(--bn-surface);
+    cursor: pointer;
+    vertical-align: middle;
+    display: inline-block;
+    position: relative;
+}
+
+.bn-check:checked {
+    background: var(--bn-blue);
+    border-color: var(--bn-blue);
+}
+
+    .bn-check:checked::after {
+        content: "";
+        position: absolute;
+        left: 5px;
+        top: 1px;
+        width: 5px;
+        height: 10px;
+        border: solid #fff;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+    }
+
+.bn-check:focus-visible {
+    outline: 2px solid var(--bn-blue);
+    outline-offset: 2px;
+}
+
+/* ---------- print ---------- */
+
+@media print {
+    .ops-grid tbody tr:nth-child(even),
+    .ops-grid tbody tr:hover {
+        background: transparent;
+    }
+
+    .ops-grid th {
+        background: transparent;
+    }
+}
+
+/* ---------- prose measure ---------- */
+
+/* Now that the content area fills the window (WP-12), an explanatory
+   paragraph runs the full width of a 1920px monitor - around 200 characters
+   a line, where readable prose is 45-90. Tables and grids still fill the
+   space; only running text is held to a measure.
+
+   max-width, not width, so this never makes anything narrower than the
+   space actually available. */
+.bn-app-content .bn-note,
+.bn-app-content .ops-subtitle,
+.bn-app-content .bn-callout p,
+.bn-app-content .bn-empty__hint {
+    max-width: 78ch;
+}
+
+/* The page header's subtitle sits beside the title on a wide screen and
+   under it on a narrow one, rather than being pushed onto one long line. */
+.bn-app-content .ops-title + .ops-subtitle {
+    margin-top: var(--bn-space-1);
+}

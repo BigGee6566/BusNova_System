@@ -46,10 +46,33 @@
         // Eastern Cape, roughly, for when nothing is moving.
         var map = L.map(el).setView([-32.9, 27.0], 7);
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        /* No {s} subdomain placeholder. OpenStreetMap has deprecated the
+           a/b/c.tile.openstreetmap.org hostnames and asks for the single
+           host; continuing to request the old ones is itself outside the
+           tile usage policy, and this deployment was being served
+           "Access blocked - App is not following the tile usage policy"
+           in place of every tile. */
+        var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 18,
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
+        });
+
+        /* If tiles do not arrive, say so once and plainly. A grid of
+           yellow-and-black 403 images reads as a broken application, when
+           in fact only the basemap is missing - the positions, the ETAs and
+           the trip list below are all still correct and still useful. One
+           failure is enough to know: OSM refuses the whole layer, not
+           individual squares, and leaving the layer attached would keep
+           painting the refusal image at every zoom level. */
+        var tilesFailed = false;
+        tiles.on('tileerror', function () {
+            if (tilesFailed) return;
+            tilesFailed = true;
+            map.removeLayer(tiles);
+            el.setAttribute('data-map-state', 'no-tiles');
+        });
+
+        tiles.addTo(map);
 
         if (withFix.length === 0) {
             el.setAttribute('data-map-state', 'no-positions');

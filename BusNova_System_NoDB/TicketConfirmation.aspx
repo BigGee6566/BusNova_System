@@ -1,7 +1,7 @@
 ﻿<%@ Page Title="Your Tickets" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="TicketConfirmation.aspx.cs" Inherits="BusNova_System.TicketConfirmation" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="Styles/style.css?v=6" rel="stylesheet" />
-    <link href="Styles/Ops.css?v=6" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=7" rel="stylesheet" />
     <link href="Styles/Ticket.css?v=1" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="Scripts/ticket-confirmation.js?v=1"></script>

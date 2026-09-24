@@ -1,7 +1,7 @@
 ﻿<%@ Page Title="Live Map" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="LiveMap.aspx.cs" Inherits="BusNova_System.LiveMap" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/Ops.css?v=6" rel="stylesheet" />
-    <link href="Styles/LiveMap.css?v=1" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=7" rel="stylesheet" />
+    <link href="Styles/LiveMap.css?v=3" rel="stylesheet" />
 
     <%-- Leaflet and OpenStreetMap, from cdnjs, with subresource integrity.
          Approved as an exception to the no-new-dependency rule; see the
@@ -35,7 +35,7 @@
                 percentage for real roads, and the assumption is stated on every row. A single confident-looking
                 time that is twenty minutes out is worse than an honest range.
             </p>
-            <div class="ops-actions">
+            <div class="ops-actions ops-actions--start">
                 <asp:Button ID="btnRefresh" runat="server" Text="Refresh"
                             CssClass="bn-btn bn-btn--primary" OnClick="btnRefresh_Click" />
                 <asp:Button ID="btnSimulate" runat="server" Text="Simulate positions"

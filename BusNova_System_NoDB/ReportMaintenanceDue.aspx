@@ -1,7 +1,7 @@
 ﻿<%@ Page Title="Maintenance Due" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ReportMaintenanceDue.aspx.cs" Inherits="BusNova_System.ReportMaintenanceDue" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="Styles/style.css?v=6" rel="stylesheet" />
-    <link href="Styles/Ops.css?v=6" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=7" rel="stylesheet" />
     <link href="Styles/Reports.css?v=1" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
@@ -46,7 +46,7 @@
             </asp:Panel>
 
             <asp:Panel ID="pnlResults" runat="server" Visible="false">
-                <div class="ops-actions">
+                <div class="ops-actions ops-actions--start">
                 <asp:Button ID="btnCsv" runat="server" Text="Export CSV"
                             CssClass="bn-btn bn-btn--secondary" OnClick="btnCsv_Click" />
                 <asp:Button ID="btnExcel" runat="server" Text="Export Excel"

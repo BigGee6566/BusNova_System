@@ -196,12 +196,16 @@
 
 /* An entry form is the exception. A "Registration number" box stretched
    across a 2560px monitor is worse to use, not better, so single-column
-   forms keep a readable measure - but sit against the left gutter rather
-   than being centred, which is what leaves dead space on both sides. */
+   forms keep a readable measure.
+
+   WP-13: centred, reversing WP-12's left alignment at the user's request.
+   Left-aligning a capped form is what put all the empty space on the right
+   and made the page read as unfinished; balanced space either side reads
+   as deliberate. The cap itself is unchanged. */
 .bn-app-content .ops-wrap--narrow {
     max-width: 820px;
     width: 100%;
-    margin-inline: 0 auto;
+    margin-inline: auto;
     padding-inline: 0;
 }
 

@@ -1,4 +1,5 @@
 ﻿<%@ Page Title="Driver Schedule" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ReportDriverSchedule.aspx.cs" Inherits="BusNova_System.ReportDriverSchedule" %>
+<%@ Import Namespace="BusNova_System.Helpers" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="Styles/Reports.css?v=2" rel="stylesheet" />
 </asp:Content>
@@ -27,7 +28,7 @@
                 </div>
             </div>
 
-            <div class="ops-actions">
+            <div class="ops-actions ops-actions--start">
                 <asp:Button ID="btnCsv" runat="server" Text="Export CSV"
                             CssClass="bn-btn bn-btn--secondary" OnClick="btnCsv_Click" />
                 <asp:Button ID="btnExcel" runat="server" Text="Export Excel"
@@ -49,8 +50,14 @@
                         <asp:BoundField DataField="LicenseNumber" HeaderText="Licence" />
                         <asp:BoundField DataField="RouteName" HeaderText="Route" />
                         <asp:BoundField DataField="BusRegistration" HeaderText="Bus" />
-                        <asp:BoundField DataField="TripStatus" HeaderText="Status" />
-                        <asp:BoundField DataField="PassengerCount" HeaderText="Passengers" />
+                        <asp:TemplateField HeaderText="Status">
+                            <ItemTemplate>
+                                <span class='<%# "status-badge " + StatusTone.ForTrip(Eval("TripStatus")) %>'>
+                                    <%# Server.HtmlEncode(Convert.ToString(Eval("TripStatus"))) %>
+                                </span>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:BoundField DataField="PassengerCount" HeaderText="Passengers" ItemStyle-CssClass="num" HeaderStyle-CssClass="num" />
                     </Columns>
                 </asp:GridView>
             </div>

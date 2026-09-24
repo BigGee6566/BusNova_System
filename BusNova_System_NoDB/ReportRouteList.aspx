@@ -12,7 +12,7 @@
         </div>
 
         <div class="bn-card">
-            <div class="ops-actions">
+            <div class="ops-actions ops-actions--start">
                 <asp:Button ID="btnCsv" runat="server" Text="Export CSV"
                             CssClass="bn-btn bn-btn--secondary" OnClick="btnCsv_Click" />
                 <asp:Button ID="btnExcel" runat="server" Text="Export Excel"
@@ -32,9 +32,9 @@
                         <asp:BoundField DataField="RouteName" HeaderText="Route" />
                         <asp:BoundField DataField="Origin" HeaderText="From" />
                         <asp:BoundField DataField="Destination" HeaderText="To" />
-                        <asp:BoundField DataField="DistanceKm" HeaderText="Distance (km)" DataFormatString="{0:N1}" HtmlEncode="false" />
-                        <asp:BoundField DataField="EstimatedDurationMinutes" HeaderText="Duration (min)" />
-                        <asp:BoundField DataField="TripsScheduled" HeaderText="Trips" />
+                        <asp:BoundField DataField="DistanceKm" HeaderText="Distance (km)" DataFormatString="{0:N1}" HtmlEncode="false" ItemStyle-CssClass="num" HeaderStyle-CssClass="num" />
+                        <asp:BoundField DataField="EstimatedDurationMinutes" HeaderText="Duration (min)" ItemStyle-CssClass="num" HeaderStyle-CssClass="num" />
+                        <asp:BoundField DataField="TripsScheduled" HeaderText="Trips" ItemStyle-CssClass="num" HeaderStyle-CssClass="num" />
                     </Columns>
                 </asp:GridView>
             </div>

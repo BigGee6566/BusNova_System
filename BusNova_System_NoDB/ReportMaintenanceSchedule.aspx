@@ -1,4 +1,5 @@
 ﻿<%@ Page Title="Maintenance Schedule" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ReportMaintenanceSchedule.aspx.cs" Inherits="BusNova_System.ReportMaintenanceSchedule" %>
+<%@ Import Namespace="BusNova_System.Helpers" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="Styles/Reports.css?v=2" rel="stylesheet" />
 </asp:Content>
@@ -12,7 +13,7 @@
         </div>
 
         <div class="bn-card">
-            <div class="ops-actions">
+            <div class="ops-actions ops-actions--start">
                 <asp:Button ID="btnCsv" runat="server" Text="Export CSV"
                             CssClass="bn-btn bn-btn--secondary" OnClick="btnCsv_Click" />
                 <asp:Button ID="btnExcel" runat="server" Text="Export Excel"
@@ -26,14 +27,31 @@
                 <asp:GridView ID="gvReport" runat="server" AutoGenerateColumns="false"
                               CssClass="ops-grid" GridLines="None" UseAccessibleHeader="true"
                               OnRowDataBound="gvReport_RowDataBound"
-                              EmptyDataText="No preventive schedules have been set up yet.">
+                              >
+                    <EmptyDataTemplate>
+                        <div class="bn-empty">
+                            <i class="fas fa-calendar-check bn-empty__icon" aria-hidden="true"></i>
+                            <div class="bn-empty__title">No preventive schedules yet</div>
+                            <p class="bn-empty__hint">
+                                A schedule tells BusNova when a bus is next due for service, by
+                                distance or by date. Until one exists this report has nothing to
+                                work from and every bus is treated as not yet due.
+                            </p>
+                        </div>
+                    </EmptyDataTemplate>
                     <Columns>
                         <asp:BoundField DataField="BusRegistration" HeaderText="Bus" />
                         <asp:BoundField DataField="ScheduleName" HeaderText="Schedule" />
                         <asp:BoundField DataField="Interval" HeaderText="Interval" />
-                        <asp:BoundField DataField="CurrentOdometer" HeaderText="Odometer" DataFormatString="{0:N0}" HtmlEncode="false" />
+                        <asp:BoundField DataField="CurrentOdometer" HeaderText="Odometer" DataFormatString="{0:N0}" HtmlEncode="false" ItemStyle-CssClass="num" HeaderStyle-CssClass="num" />
                         <asp:BoundField DataField="LastServiced" HeaderText="Last serviced" />
-                        <asp:BoundField DataField="Status" HeaderText="Status" />
+                        <asp:TemplateField HeaderText="Status">
+                            <ItemTemplate>
+                                <span class='<%# "status-badge " + StatusTone.ForDueness(Eval("Status")) %>'>
+                                    <%# Server.HtmlEncode(Convert.ToString(Eval("Status"))) %>
+                                </span>
+                            </ItemTemplate>
+                        </asp:TemplateField>
                         <asp:BoundField DataField="Detail" HeaderText="Detail" />
                     </Columns>
                 </asp:GridView>

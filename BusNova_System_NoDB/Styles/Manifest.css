@@ -1,4 +1,4 @@
-/* =============================================================
+﻿/* =============================================================
    Printable passenger manifest (WP-8)
 
    The point of this file is the @media print block. On screen the
@@ -44,7 +44,20 @@
 /* An empty box to tick with a pen. Boarding is recorded properly on
    ValidateTicket; this is the paper fallback for when the scanner is
    dead, which is exactly when a manifest gets used. */
-.mf-tick { display: inline-block; font-size: 1.3rem; line-height: 1; }
+/* The boarded box is ticked with a pen on a printed sheet, so it is a
+   drawn square rather than a form checkbox - a checkbox would imply it
+   does something on screen, and it does not. Drawn in CSS rather than as
+   the U+25A1 glyph it used to be, because a glyph's weight depends on
+   whichever font the printer substitutes, and several render it too faint
+   to see once photocopied. */
+.mf-tick {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid #111;
+    border-radius: 2px;
+    vertical-align: middle;
+}
 
 .mf-foot {
     display: flex;

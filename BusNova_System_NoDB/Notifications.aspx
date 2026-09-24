@@ -1,6 +1,6 @@
 ﻿<%@ Page Title="Notifications" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Notifications.aspx.cs" Inherits="BusNova_System.Notifications" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/Ops.css?v=6" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=7" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
@@ -22,7 +22,7 @@
                 <code>INotificationSender</code> and a config key.
             </p>
 
-            <div class="ops-actions">
+            <div class="ops-actions ops-actions--start">
                 <asp:Button ID="btnDispatch" runat="server" Text="Send anything due"
                             CssClass="bn-btn bn-btn--primary" OnClick="btnDispatch_Click" />
             </div>

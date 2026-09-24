@@ -1,7 +1,8 @@
 ﻿<%@ Page Title="Passenger Manifest" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Manifest.aspx.cs" Inherits="BusNova_System.Manifest" %>
+<%@ Import Namespace="BusNova_System.Helpers" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/Ops.css?v=6" rel="stylesheet" />
-    <link href="Styles/Manifest.css?v=1" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=7" rel="stylesheet" />
+    <link href="Styles/Manifest.css?v=2" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
@@ -59,9 +60,15 @@
                         <asp:BoundField DataField="SeatNumber" HeaderText="Seat" />
                         <asp:BoundField DataField="PassengerName" HeaderText="Passenger" />
                         <asp:BoundField DataField="TicketNumber" HeaderText="Ticket" />
-                        <asp:BoundField DataField="TicketStatus" HeaderText="Status" />
+                        <asp:TemplateField HeaderText="Status">
+                            <ItemTemplate>
+                                <span class='<%# "status-badge " + StatusTone.ForTicket(Eval("TicketStatus")) %>'>
+                                    <%# Server.HtmlEncode(Convert.ToString(Eval("TicketStatus"))) %>
+                                </span>
+                            </ItemTemplate>
+                        </asp:TemplateField>
                         <asp:TemplateField HeaderText="Boarded">
-                            <ItemTemplate><span class="mf-tick">&#9633;</span></ItemTemplate>
+                            <ItemTemplate><span class="mf-tick" aria-hidden="true"></span></ItemTemplate>
                         </asp:TemplateField>
                     </Columns>
                 </asp:GridView>
