@@ -728,6 +728,46 @@ defect.
 across 25 pages × 4 widths; all 33 pages measured before and after; clean checkout from a fresh worktree.
 
 
+## 7g. WP-15 — the Live Map 403s that were already fixed — **COMPLETE** (2026-09-24)
+
+You reported the Live Map still showing a grid of yellow-and-black "403 Access blocked" tiles. WP-13 had
+already changed the tile URL to the single documented host. Both were true.
+
+**The fix shipped; the delivery did not.** `7be1acd` changed `Scripts/live-map.js` but left `LiveMap.aspx`
+pointing at `Scripts/live-map.js?v=1` — the same URL the broken file was cached under. Any browser that had
+opened the page before that commit kept running the pre-fix script and went on requesting the deprecated
+`{s}.tile.openstreetmap.org` subdomains. **AUD-074.**
+
+Measured in a browser with a **fresh profile**, before changing anything: 15 tile requests, **all HTTP 200**,
+**zero** `{s}` subdomain requests, one map pane, one tile layer. The code on disk was already right, which is
+what pointed at delivery rather than logic.
+
+`site.js` and `payment-simulation.js` were each bumped in the same commit that changed them, so the discipline
+existed and was simply not applied to `live-map.js`. The guard written for this found two more splits the same
+day: `seat-map.js` at `?v=2` on BookTrip and `?v=1` on IssueTicket, and `Reports.css` at `?v=2` on four pages
+and `?v=3` on four others — the latter predating WP-14 and *preserved* by it, because that pass incremented
+each reference in place and kept the two groups one apart.
+
+**Also delivered**, from the brief: a single `BusNovaMapConfig` so the tile endpoint is one edit, with a written
+note that the public OSM endpoint suits development and a low-volume demo only and that any future provider key
+belongs in `Web.config` and never in a committed script; `maxZoom` raised to 19 and `minZoom` set to 3; and a
+real **Retry map** affordance, which the page did not have — previously a tile failure could only be cleared by
+reloading. Retry rebuilds the tile layer only, never the map, and nothing retries on a timer: a provider that is
+blocking you should not then be polled.
+
+**Verification.** 42 browser assertions, 42 passing. Tiles 200 / no 403 / no deprecated subdomain; one map and
+one tile layer holding after **5× Refresh and 5× Simulate Positions**; blocking the tile host shows the
+fallback once and hides the map rather than leaving a grey rectangle; Retry recovers **without a page reload**
+and still leaves exactly one map and one tile layer; no horizontal overflow at 360 / 768 / 1024 / 1440 or at
+80 / 100 / 125 / 150% zoom; no uncaught exceptions. The marker path, stale-fix styling and HTML escaping were
+exercised with synthetic positions injected in the browser — `<script>` arrives as `&lt;script&gt;` text —
+**without writing a row to the database**.
+
+**One assertion of mine was wrong**, not the product: I checked the trip table kept all 7 columns and it
+reported 0. There are no `InProgress` trips in the demo data, so the GridView correctly renders only its
+empty-data row — an empty GridView has no header. The populated table therefore remains unverified at runtime,
+and manufacturing trips in your database to verify it is your call, not mine.
+
 ## 8. Housekeeping
 
 One item per phase. These run alongside feature work and never block it.
