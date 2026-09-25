@@ -80,6 +80,17 @@ namespace BusNova_System.Services
         /// </summary>
         public static List<TicketSalesRow> GetTicketSales(DateTime from, DateTime to)
         {
+            return GetTicketSales(from, to, null);
+        }
+
+        /// <summary>
+        /// Sales by day and route, optionally isolated to one route. Manager
+        /// picked a route filter over a route grouping (WP-16 UI/UX audit)
+        /// because the report is already grouped by date first; a second,
+        /// independent grouping in the same table would compete with it.
+        /// </summary>
+        public static List<TicketSalesRow> GetTicketSales(DateTime from, DateTime to, string routeCode)
+        {
             const string sql = @"
 SELECT CAST(t.PurchaseDate AS DATE) AS SaleDate,
        r.RouteCode, r.RouteName,
@@ -91,6 +102,7 @@ FROM dbo.Ticket t
 INNER JOIN dbo.RouteAssignment ra ON ra.AssignmentID = t.AssignmentID
 INNER JOIN dbo.Route r            ON r.RouteCode     = ra.RouteCode
 WHERE CAST(t.PurchaseDate AS DATE) BETWEEN @from AND @to
+  AND (@routeCode IS NULL OR r.RouteCode = @routeCode)
 GROUP BY CAST(t.PurchaseDate AS DATE), r.RouteCode, r.RouteName
 ORDER BY CAST(t.PurchaseDate AS DATE) DESC, r.RouteName;";
 
@@ -108,7 +120,8 @@ ORDER BY CAST(t.PurchaseDate AS DATE) DESC, r.RouteName;";
                 };
                 row.NetRevenue = row.GrossRevenue - row.Refunded;
                 return row;
-            }, Db.P("@from", from.Date), Db.P("@to", to.Date));
+            }, Db.P("@from", from.Date), Db.P("@to", to.Date),
+               Db.P("@routeCode", (object)routeCode ?? DBNull.Value));
         }
 
         /// <summary>The route reference list, with how much each is actually used.</summary>

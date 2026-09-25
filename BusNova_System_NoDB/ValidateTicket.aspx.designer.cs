@@ -9,6 +9,7 @@ namespace BusNova_System
     public partial class ValidateTicket
     {
         protected global::System.Web.UI.WebControls.DropDownList ddlTrip;
+        protected global::System.Web.UI.WebControls.Panel pnlScan;
         protected global::System.Web.UI.WebControls.TextBox txtToken;
         protected global::System.Web.UI.WebControls.Button btnValidateToken;
         protected global::System.Web.UI.WebControls.TextBox txtTicketNumber;

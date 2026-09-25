@@ -62,8 +62,13 @@ namespace BusNova_System
 
         private void Run()
         {
-            gvReport.DataSource = Rows();
+            var rows = Rows();
+            gvReport.DataSource = rows;
             gvReport.DataBind();
+
+            // An export button that produces an empty file is an action
+            // offered for nothing. Hide both until there is a row to export.
+            exportActions.Visible = rows.Count > 0;
         }
 
         protected void btnCsv_Click(object sender, EventArgs e)

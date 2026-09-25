@@ -32,14 +32,21 @@ namespace BusNova_System
             if (!Page.IsValid) return;
 
             var routeCode = txtRouteCode.Text.Trim().ToUpperInvariant();
-            var routeName = txtRouteName.Text.Trim();
-            var origin = txtOrigin.Text.Trim();
-            var destination = txtDestination.Text.Trim();
+            var routeName = TitleCaseIfShouting(txtRouteName.Text.Trim());
+            var origin = TitleCaseIfShouting(txtOrigin.Text.Trim());
+            var destination = TitleCaseIfShouting(txtDestination.Text.Trim());
 
             if (routeCode.Length == 0 || routeName.Length == 0 ||
                 origin.Length == 0 || destination.Length == 0)
             {
                 ShowError("Please complete every field.");
+                return;
+            }
+
+            if (!System.Text.RegularExpressions.Regex.IsMatch(routeCode, "^[A-Z0-9-]{2,10}$"))
+            {
+                ShowError("Route code must be 2-10 characters: letters, digits and hyphens only.");
+                txtRouteCode.Focus();
                 return;
             }
 
@@ -120,6 +127,30 @@ namespace BusNova_System
             txtDestination.Text = string.Empty;
             txtDistanceKM.Text = string.Empty;
             txtEstimatedDuration.Text = string.Empty;
+        }
+
+        /// <summary>
+        /// Free-text place names typed in all caps ("GQEBERHA") render as
+        /// shouting and, on the Route List report, as visually fused with
+        /// neighbouring columns. Mixed-case and short (likely intentional,
+        /// e.g. "N2") input is left exactly as typed.
+        /// </summary>
+        private static string TitleCaseIfShouting(string value)
+        {
+            if (value.Length < 4) return value;
+
+            var hasLetters = false;
+            var isShouting = true;
+            foreach (var c in value)
+            {
+                if (!char.IsLetter(c)) continue;
+                hasLetters = true;
+                if (char.IsLower(c)) { isShouting = false; break; }
+            }
+
+            if (!hasLetters || !isShouting) return value;
+
+            return CultureInfo.InvariantCulture.TextInfo.ToTitleCase(value.ToLowerInvariant());
         }
 
         private void ShowError(string message)

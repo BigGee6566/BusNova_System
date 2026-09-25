@@ -80,8 +80,25 @@ namespace BusNova_System
             var value = Convert.ToString(status);
             if (string.IsNullOrEmpty(value)) return string.Empty;
 
+            // "Sent" is true only in the sense that QueueOnlySender handed
+            // the message off; there is no mail transport to confirm actual
+            // delivery. Calling it "Dispatched" here says exactly as much
+            // as the system actually knows, and no more. (WP-16 audit)
+            if (value == NotificationStatuses.Sent) value = "Dispatched";
+
             return Server.HtmlEncode(
                 System.Text.RegularExpressions.Regex.Replace(value, "(?<=[a-z])(?=[A-Z])", " "));
+        }
+
+        protected string NextAttempt(object status, object nextAttemptAt)
+        {
+            var value = Convert.ToString(status);
+            if (value != NotificationStatuses.Queued && value != NotificationStatuses.Failed)
+                return "<span class=\"rpt-muted\">&mdash;</span>";
+
+            if (!(nextAttemptAt is DateTime)) return "<span class=\"rpt-muted\">&mdash;</span>";
+
+            return Server.HtmlEncode(((DateTime)nextAttemptAt).ToString("dd MMM yyyy HH:mm"));
         }
 
         protected string LastError(object error)

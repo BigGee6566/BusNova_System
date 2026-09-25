@@ -105,6 +105,7 @@ namespace BusNova_System
             litDriver.Text = Server.HtmlEncode(trip.DriverName ?? string.Empty);
             litBooked.Text = rows.Count + (bus == null ? string.Empty : " of " + bus.SeatingCapacity);
             litPrinted.Text = AppClock.Now().ToString("dd MMM yyyy HH:mm");
+            litPrintedBy.Text = Server.HtmlEncode(SessionHelper.FullName ?? string.Empty);
 
             gvManifest.DataSource = rows;
             gvManifest.DataBind();

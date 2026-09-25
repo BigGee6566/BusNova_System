@@ -23,16 +23,17 @@
                 </p>
             </div>
 
-            <div class="bn-field">
-                <label for="<%= txtToken.ClientID %>">Scanned code</label>
-                <asp:TextBox ID="txtToken" runat="server" CssClass="form-control" TextMode="MultiLine"
-                             Rows="3" placeholder="Put the cursor here and scan" autocomplete="off" />
+            <asp:Panel ID="pnlScan" runat="server" DefaultButton="btnValidateToken" CssClass="bn-field">
+                <label for="<%= txtToken.ClientID %>">Scan code</label>
+                <asp:TextBox ID="txtToken" runat="server" CssClass="form-control bn-scan-input"
+                             placeholder="Waiting for scan&hellip;" autocomplete="off"
+                             autocapitalize="off" spellcheck="false" />
                 <p class="bn-note">
                     A hardware scanner types the code into this box and presses Enter.
                 </p>
                 <asp:Button ID="btnValidateToken" runat="server" Text="Validate scanned code"
                             CssClass="bn-btn bn-btn--primary bn-w-full" OnClick="btnValidateToken_Click" />
-            </div>
+            </asp:Panel>
 
             <div class="bn-callout">
                 <strong>Code will not scan?</strong>

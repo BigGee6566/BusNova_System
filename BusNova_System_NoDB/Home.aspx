@@ -16,7 +16,7 @@
 
                     <div class="row align-items-center min-vh-100">
 
-                        <!-- Hero Text (single column — full-bleed background photo is behind it, no separate foreground image) -->
+                        <%--<!-- Hero Text (single column — full-bleed background photo is behind it, no separate foreground image) -->--%>
                         <div class="col-lg-8">
 
                             <div class="hero-content">

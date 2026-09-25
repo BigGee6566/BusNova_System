@@ -418,6 +418,24 @@ textarea.bn-field__control {
     margin-top: var(--bn-space-1);
 }
 
+/* A collapsed technical explanation. The plain-language sentence stays
+   visible; anyone who wants the "why" opens this instead of it being
+   printed on the page for everyone. (AUD-077) */
+.bn-details {
+    margin-top: var(--bn-space-2);
+}
+
+.bn-details summary {
+    cursor: pointer;
+    font-size: var(--bn-text-sm);
+    font-weight: 600;
+    color: var(--bn-primary);
+}
+
+.bn-details[open] summary {
+    margin-bottom: var(--bn-space-2);
+}
+
 /* ---------- callout ----------
    The bordered, tinted panel that several pages built inline - the
    password-setup link box, the register-passenger panel, the payment
@@ -1017,6 +1035,10 @@ textarea.bn-field__control {
     min-width: 0;
 }
 
+.rpt-field--grow {
+    flex: 1 1 220px;
+}
+
 .rpt-field label {
     font-size: var(--bn-text-xs);
     font-weight: 600;
@@ -1036,14 +1058,50 @@ textarea.bn-field__control {
     background: var(--bn-surface);
 }
 
-.rpt-field input:focus-visible {
+.rpt-field input:focus-visible,
+.rpt-field select:focus-visible {
     outline: 2px solid var(--bn-primary);
     outline-offset: 1px;
+}
+
+.rpt-field select {
+    min-height: 44px;
+    padding: 0 var(--bn-space-3);
+    border: 1px solid var(--bn-border-strong);
+    border-radius: var(--bn-radius-sm);
+    font-size: var(--bn-text-base);
+    color: var(--bn-text);
+    background: var(--bn-surface);
 }
 
 .rpt-filters .btn-ops-primary,
 .rpt-filters .btn-ops-secondary {
     min-height: 44px;
+}
+
+/* The scanner field on Validate Ticket. A hardware scanner types one line
+   and an Enter; a control built for that should look and act like a
+   single-line field, not a resizable textarea. (AUD-078) */
+.bn-scan-input {
+    min-height: 44px;
+    font-size: var(--bn-text-lg);
+    font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+    letter-spacing: 0.02em;
+}
+
+/* A route/ticket code is a key, not prose - it reads as one when it is
+   monospaced and boxed rather than left to blend into the row's other
+   text. (AUD-076) */
+.code-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: var(--bn-radius-sm);
+    background: rgba(var(--bn-navy-rgb), 0.06);
+    border: 1px solid var(--bn-border);
+    font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 0.85em;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
 }
 
 

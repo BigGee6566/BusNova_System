@@ -38,7 +38,7 @@ namespace BusNova_System
             new KeyValuePair<string, string>("fluids", "Oil, coolant and fuel"),
             new KeyValuePair<string, string>("belts", "Seatbelts and seats"),
             new KeyValuePair<string, string>("extinguisher", "Fire extinguisher and first-aid kit"),
-            new KeyValuePair<string, string>("clean", "Saloon clean and clear")
+            new KeyValuePair<string, string>("clean", "Passenger area clean and clear")
         };
 
         private static readonly KeyValuePair<string, string>[] PostTripChecks =
@@ -46,7 +46,7 @@ namespace BusNova_System
             new KeyValuePair<string, string>("damage", "No new damage"),
             new KeyValuePair<string, string>("lost", "No property left behind"),
             new KeyValuePair<string, string>("fuel", "Refuelled if required"),
-            new KeyValuePair<string, string>("clean", "Saloon cleared"),
+            new KeyValuePair<string, string>("clean", "Passenger area cleared"),
             new KeyValuePair<string, string>("faults", "Faults reported")
         };
 
@@ -300,6 +300,24 @@ namespace BusNova_System
                 case "Valid": return "status-scheduled";
                 case "Cancelled": return "status-danger";
                 default: return "status-muted";
+            }
+        }
+
+        /// <summary>
+        /// This manifest exists so a driver can see who still needs to
+        /// board, not to restate the ticket's lifecycle state. "Valid"
+        /// tells a driver nothing about whether the seat is filled;
+        /// "Not boarded" does. Boarding itself still happens only on
+        /// Validate Ticket, which is what actually flips TicketStatus.
+        /// </summary>
+        protected string BoardingText(object status)
+        {
+            switch (Convert.ToString(status))
+            {
+                case "Used": return "Boarded";
+                case "Valid": return "Not boarded";
+                case "Cancelled": return "Cancelled";
+                default: return Convert.ToString(status);
             }
         }
 

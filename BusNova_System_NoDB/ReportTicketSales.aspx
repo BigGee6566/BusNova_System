@@ -19,13 +19,17 @@
                     <label for="<%= txtTo.ClientID %>">To</label>
                     <asp:TextBox ID="txtTo" runat="server" TextMode="Date" CssClass="form-control" />
                 </div>
+                <div class="bn-field">
+                    <label for="<%= ddlRoute.ClientID %>">Route</label>
+                    <asp:DropDownList ID="ddlRoute" runat="server" CssClass="form-control" />
+                </div>
                 <div class="bn-field bn-align-end">
                     <asp:Button ID="btnRun" runat="server" Text="Run report"
                                 CssClass="bn-btn bn-btn--primary" OnClick="btnRun_Click" />
                 </div>
             </div>
 
-            <div class="ops-actions ops-actions--start">
+            <div class="ops-actions ops-actions--start" runat="server" id="exportActions">
                 <asp:Button ID="btnCsv" runat="server" Text="Export CSV"
                             CssClass="bn-btn bn-btn--secondary" OnClick="btnCsv_Click" />
                 <asp:Button ID="btnExcel" runat="server" Text="Export Excel"
@@ -39,18 +43,24 @@
                 <asp:GridView ID="gvReport" runat="server" AutoGenerateColumns="false"
                               CssClass="ops-grid" GridLines="None" UseAccessibleHeader="true"
                               OnRowDataBound="gvReport_RowDataBound"
+                              ShowFooter="true"
                               EmptyDataText="No tickets were sold in that period.">
                     <Columns>
-                        <asp:BoundField DataField="SaleDate" HeaderText="Date" DataFormatString="{0:dd MMM yyyy}" HtmlEncode="false" />
+                        <asp:BoundField DataField="SaleDate" HeaderText="Date" DataFormatString="{0:dd MMM yyyy}" HtmlEncode="false" FooterText="Total" />
                         <asp:BoundField DataField="RouteName" HeaderText="Route" />
-                        <asp:BoundField DataField="TicketsSold" HeaderText="Sold" ItemStyle-CssClass="num" HeaderStyle-CssClass="num" />
-                        <asp:BoundField DataField="TicketsCancelled" HeaderText="Cancelled" ItemStyle-CssClass="num" HeaderStyle-CssClass="num" />
-                        <asp:BoundField DataField="GrossRevenue" HeaderText="Gross" DataFormatString="{0:C}" HtmlEncode="false" ItemStyle-CssClass="num" HeaderStyle-CssClass="num" />
-                        <asp:BoundField DataField="Refunded" HeaderText="Refunded" DataFormatString="{0:C}" HtmlEncode="false" ItemStyle-CssClass="num" HeaderStyle-CssClass="num" />
-                        <asp:BoundField DataField="NetRevenue" HeaderText="Net" DataFormatString="{0:C}" HtmlEncode="false" ItemStyle-CssClass="num" HeaderStyle-CssClass="num" />
+                        <asp:BoundField DataField="TicketsSold" HeaderText="Sold" ItemStyle-CssClass="num" HeaderStyle-CssClass="num" FooterStyle-CssClass="num" />
+                        <asp:BoundField DataField="TicketsCancelled" HeaderText="Cancelled" ItemStyle-CssClass="num" HeaderStyle-CssClass="num" FooterStyle-CssClass="num" />
+                        <asp:BoundField DataField="GrossRevenue" HeaderText="Gross" DataFormatString="{0:C}" HtmlEncode="false" ItemStyle-CssClass="num" HeaderStyle-CssClass="num" FooterStyle-CssClass="num" />
+                        <asp:BoundField DataField="Refunded" HeaderText="Refunded" DataFormatString="{0:C}" HtmlEncode="false" ItemStyle-CssClass="num" HeaderStyle-CssClass="num" FooterStyle-CssClass="num" />
+                        <asp:BoundField DataField="NetRevenue" HeaderText="Net" DataFormatString="{0:C}" HtmlEncode="false" ItemStyle-CssClass="num" HeaderStyle-CssClass="num" FooterStyle-CssClass="num" />
                     </Columns>
                 </asp:GridView>
             </div>
+            <p class="rpt-method" runat="server" id="netFormulaNote">
+                <strong>Net revenue = Gross sales &minus; Refunds.</strong>
+                Cancellations and refunds are shown as their own columns rather than netted away, so a day's
+                selling activity stays visible even on a day that also had refunds.
+            </p>
         </div>
 
     </div>

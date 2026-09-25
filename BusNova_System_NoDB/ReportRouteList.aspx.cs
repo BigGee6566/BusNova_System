@@ -63,8 +63,10 @@ namespace BusNova_System
 
         private void Run()
         {
-            gvReport.DataSource = Rows();
+            var rows = Rows();
+            gvReport.DataSource = rows;
             gvReport.DataBind();
+            exportActions.Visible = rows.Count > 0;
         }
 
         protected void btnCsv_Click(object sender, EventArgs e)

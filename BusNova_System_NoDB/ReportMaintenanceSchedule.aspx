@@ -8,10 +8,10 @@
     <div class="ops-wrap ops-wrap--wide">
 
         <%-- The page title is rendered once, by Site.Master's top bar. --%>
-        <p class="bn-page-intro">Preventive service schedules, overdue first. Due-ness is worked out in one place - see MaintenanceScheduleService.</p>
+        <p class="bn-page-intro">Preventive service schedules, overdue first.</p>
 
         <div class="bn-card">
-            <div class="ops-actions ops-actions--start">
+            <div class="ops-actions ops-actions--start" runat="server" id="exportActions">
                 <asp:Button ID="btnCsv" runat="server" Text="Export CSV"
                             CssClass="bn-btn bn-btn--secondary" OnClick="btnCsv_Click" />
                 <asp:Button ID="btnExcel" runat="server" Text="Export Excel"

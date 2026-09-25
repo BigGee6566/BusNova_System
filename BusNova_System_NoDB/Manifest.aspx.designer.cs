@@ -20,6 +20,7 @@ namespace BusNova_System
         protected global::System.Web.UI.WebControls.Literal litDriver;
         protected global::System.Web.UI.WebControls.Literal litBooked;
         protected global::System.Web.UI.WebControls.Literal litPrinted;
+        protected global::System.Web.UI.WebControls.Literal litPrintedBy;
         protected global::System.Web.UI.WebControls.GridView gvManifest;
     }
 }

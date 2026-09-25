@@ -8,6 +8,7 @@ namespace BusNova_System
 {
     public partial class ReportMaintenanceSchedule
     {
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl exportActions;
         protected global::System.Web.UI.WebControls.Button btnCsv;
         protected global::System.Web.UI.WebControls.Button btnExcel;
         protected global::System.Web.UI.WebControls.Label lblMessage;

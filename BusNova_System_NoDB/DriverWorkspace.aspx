@@ -78,7 +78,7 @@
                                   RepeatLayout="UnorderedList" RepeatDirection="Vertical" />
 
                 <div class="bn-field">
-                    <label for="<%= txtInspectionNotes.ClientID %>">Anything to note?</label>
+                    <label for="<%= txtInspectionNotes.ClientID %>">Notes (optional)</label>
                     <asp:TextBox ID="txtInspectionNotes" runat="server" CssClass="form-control"
                                  TextMode="MultiLine" Rows="2" MaxLength="400"
                                  placeholder="Optional - e.g. nearside mirror loose" />
@@ -100,10 +100,10 @@
                             <asp:BoundField DataField="SeatNumber" HeaderText="Seat" />
                             <asp:BoundField DataField="PassengerName" HeaderText="Passenger" />
                             <asp:BoundField DataField="TicketNumber" HeaderText="Ticket" />
-                            <asp:TemplateField HeaderText="Status">
+                            <asp:TemplateField HeaderText="Boarding">
                                 <ItemTemplate>
                                     <span class='<%# "status-badge " + TicketCss(Eval("TicketStatus")) %>'>
-                                        <%# Server.HtmlEncode(Convert.ToString(Eval("TicketStatus"))) %>
+                                        <%# Server.HtmlEncode(BoardingText(Eval("TicketStatus"))) %>
                                     </span>
                                 </ItemTemplate>
                             </asp:TemplateField>
@@ -120,7 +120,7 @@
             <div class="bn-card">
                 <h2 class="bn-subheading">Report a delay</h2>
                 <div class="bn-field">
-                    <label for="<%= ddlDelay.ClientID %>">How late?</label>
+                    <label for="<%= ddlDelay.ClientID %>">Delay duration</label>
                     <asp:DropDownList ID="ddlDelay" runat="server" CssClass="form-control dw-select">
                         <asp:ListItem Text="15 minutes" Value="15" />
                         <asp:ListItem Text="30 minutes" Value="30" />
@@ -129,7 +129,7 @@
                     </asp:DropDownList>
                 </div>
                 <div class="bn-field">
-                    <label for="<%= txtDelayReason.ClientID %>">Why?</label>
+                    <label for="<%= txtDelayReason.ClientID %>">Reason</label>
                     <asp:TextBox ID="txtDelayReason" runat="server" CssClass="form-control"
                                  TextMode="MultiLine" Rows="2" MaxLength="300"
                                  placeholder="e.g. roadworks on the N2" />

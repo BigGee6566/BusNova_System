@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using BusNova_System.Helpers;
@@ -54,6 +55,13 @@ namespace BusNova_System
             {
                 txtFrom.Text = AppClock.Today().AddDays(-30).ToString("yyyy-MM-dd");
                 txtTo.Text = AppClock.Today().ToString("yyyy-MM-dd");
+
+                ddlRoute.Items.Add(new ListItem("All routes", ""));
+                foreach (var route in FleetService.GetAllRoutes())
+                {
+                    ddlRoute.Items.Add(new ListItem(route.RouteName, route.RouteCode));
+                }
+
                 Run();
             }
         }
@@ -79,13 +87,27 @@ namespace BusNova_System
             }
 
             lblMessage.Text = string.Empty;
-            return MatrixReportsService.GetTicketSales(from, to);
+            var routeCode = string.IsNullOrEmpty(ddlRoute.SelectedValue) ? null : ddlRoute.SelectedValue;
+            return MatrixReportsService.GetTicketSales(from, to, routeCode);
         }
 
         private void Run()
         {
-            gvReport.DataSource = Rows();
+            var rows = Rows();
+            gvReport.DataSource = rows;
             gvReport.DataBind();
+
+            exportActions.Visible = rows.Count > 0;
+            netFormulaNote.Visible = rows.Count > 0;
+
+            if (rows.Count > 0 && gvReport.FooterRow != null)
+            {
+                gvReport.FooterRow.Cells[2].Text = rows.Sum(r => r.TicketsSold).ToString(CultureInfo.InvariantCulture);
+                gvReport.FooterRow.Cells[3].Text = rows.Sum(r => r.TicketsCancelled).ToString(CultureInfo.InvariantCulture);
+                gvReport.FooterRow.Cells[4].Text = rows.Sum(r => r.GrossRevenue).ToString("C", Money);
+                gvReport.FooterRow.Cells[5].Text = rows.Sum(r => r.Refunded).ToString("C", Money);
+                gvReport.FooterRow.Cells[6].Text = rows.Sum(r => r.NetRevenue).ToString("C", Money);
+            }
         }
 
         protected void btnCsv_Click(object sender, EventArgs e)

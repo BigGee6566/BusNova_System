@@ -13,15 +13,21 @@
 
         <div class="bn-card">
             <p class="bn-note">
-                There is no mail server configured for this deployment, so delivery is the
-                queue itself &mdash; a message here has been durably recorded, not emailed.
-                That is deliberate: a sender that silently discarded messages while reporting
-                success would be worse than none. Wiring a real one is an implementation of
-                <code>INotificationSender</code> and a config key.
+                No email service is currently configured for this deployment. Notifications are
+                safely recorded here and will be sent as soon as one is enabled.
             </p>
+            <details class="bn-details">
+                <summary>About this queue</summary>
+                <p class="bn-note">
+                    Delivery is the queue itself &mdash; a message here has been durably recorded,
+                    not emailed. That is deliberate: a system that silently discarded messages
+                    while reporting success would be worse than one that is honest about not
+                    having sent them.
+                </p>
+            </details>
 
             <div class="ops-actions ops-actions--start">
-                <asp:Button ID="btnDispatch" runat="server" Text="Send anything due"
+                <asp:Button ID="btnDispatch" runat="server" Text="Process due notifications"
                             CssClass="bn-btn bn-btn--primary" OnClick="btnDispatch_Click" />
             </div>
 
@@ -49,6 +55,11 @@
                         <asp:TemplateField HeaderText="Attempts">
                             <ItemTemplate>
                                 <%# Eval("AttemptCount") %> / <%# Eval("MaxAttempts") %>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Next attempt">
+                            <ItemTemplate>
+                                <%# NextAttempt(Eval("Status"), Eval("NextAttemptAt")) %>
                             </ItemTemplate>
                         </asp:TemplateField>
                         <asp:TemplateField HeaderText="Last error">

@@ -62,9 +62,13 @@
                               OnRowDataBound="gvManifest_RowDataBound"
                               EmptyDataText="No passengers are booked on this trip.">
                     <Columns>
-                        <asp:BoundField DataField="SeatNumber" HeaderText="Seat" />
+                        <asp:BoundField DataField="SeatNumber" HeaderText="Seat" ItemStyle-CssClass="num" HeaderStyle-CssClass="num" />
                         <asp:BoundField DataField="PassengerName" HeaderText="Passenger" />
-                        <asp:BoundField DataField="TicketNumber" HeaderText="Ticket" />
+                        <asp:TemplateField HeaderText="Ticket">
+                            <ItemTemplate>
+                                <span class="code-badge"><%# Server.HtmlEncode(Convert.ToString(Eval("TicketNumber"))) %></span>
+                            </ItemTemplate>
+                        </asp:TemplateField>
                         <asp:TemplateField HeaderText="Status">
                             <ItemTemplate>
                                 <span class='<%# "status-badge " + StatusTone.ForTicket(Eval("TicketStatus")) %>'>
@@ -88,7 +92,10 @@
                     <span class="mf-sign__line"></span>
                     <span class="mf-sign__label">Date</span>
                 </div>
-                <div class="mf-printed">Printed <asp:Literal ID="litPrinted" runat="server" /></div>
+                <div class="mf-printed">
+                    Printed <asp:Literal ID="litPrinted" runat="server" />
+                    by <asp:Literal ID="litPrintedBy" runat="server" />
+                </div>
             </div>
 
         </asp:Panel>
