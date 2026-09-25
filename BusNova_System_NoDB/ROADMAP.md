@@ -768,6 +768,81 @@ reported 0. There are no `InProgress` trips in the demo data, so the GridView co
 empty-data row — an empty GridView has no header. The populated table therefore remains unverified at runtime,
 and manufacturing trips in your database to verify it is your call, not mine.
 
+## 7h. WP-16 — granular UI/UX audit repair — **COMPLETE** (2026-09-25)
+
+A second, more granular UI/UX audit — screen-by-screen, with screenshots — found problems WP-12 through WP-15
+did not: those packages fixed system-wide layout, colour and button consistency; this one found bugs in what
+individual pages actually *said* and how individual *values* rendered. Verified each against the running
+application (IIS Express + a fresh login) before changing anything, not against the screenshots alone, since
+several of the screenshot's claims — the Passenger Manifest checkbox glyph, the Validate Ticket placeholder
+value, the currency run-together — turned out not to reproduce: WP-13's `.num`/tabular-nums work and the real
+`<input type="checkbox">` already in `Manifest.aspx` had already fixed them.
+
+**Confirmed and fixed:**
+
+- **Route List data quality (AUD-076).** `QGE-PE` carried `RouteName = 'N20'`, `Origin = 'GQEBERHA'`,
+  `Destination = 'PORT ALFRED'` in the live database — not a display bug. Corrected at the source
+  (`017_RouteNameDataQuality.sql`, idempotent) to `Gqeberha to Port Alfred` / `Gqeberha` / `Port Alfred`.
+  `CreateRoute.aspx.cs` now rejects malformed route codes and auto-title-cases a shouting-caps place name on
+  the way in, so the same row cannot recur from the form.
+- **Route List, missing features.** Route codes now render as a monospace badge; a client-side search box and
+  an Active/Retired status filter sit above the table (the report already sent every row to the browser, so
+  filtering it again on the server would be a round trip for nothing); a Status column was added, sourced from
+  `RouteListRow.IsActive`, which existed and was already selected but never displayed.
+- **Maintenance Schedule (AUD-077).** The subtitle no longer names `MaintenanceScheduleService` to the user.
+  Export CSV/Export Excel are hidden when the report has no rows — extended to Route List and Ticket Sales too,
+  since all three share the same GridView-plus-export-buttons shape. No schedule-creation workflow exists
+  anywhere in the application, so the empty state's primary action was left undone rather than pointed at
+  nothing; that is a feature request, not a UI fix.
+- **Ticket Sales.** A totals row, a Route filter (`MatrixReportsService.GetTicketSales` gained an overload
+  rather than a breaking signature change), and a stated `Net revenue = Gross sales − Refunds` note. The
+  "currency running together" and "R-82,50" claims from the screenshot did not reproduce — `.num` right-align
+  and `ToString("C", en-ZA)`'s sign-before-symbol behaviour were already correct.
+- **Notifications.** The `INotificationSender` sentence moved into a collapsed `<details>` "About this queue"
+  panel; the visible text is now plain language. "Sent" now reads "Dispatched" (display-only — the stored
+  `NotificationStatuses.Sent` value is unchanged) because the system has no mail transport to confirm delivery
+  with. "Send anything due" is now "Process due notifications". A Next attempt column surfaces
+  `NextAttemptAt`, which already existed on the model and was never rendered.
+- **Passenger Manifest.** Seat right-aligned with tabular-nums; ticket numbers as a monospace badge; the
+  printed footer now reads "Printed *(date)* by *(SessionHelper.FullName)*". The broken-checkbox-glyph and
+  identical-status-badge claims did not reproduce.
+- **Validate Ticket.** The scan field was a 3-row `TextMode="MultiLine"` textarea — a hardware scanner's
+  trailing Enter added a newline instead of submitting. Replaced with a single-line, monospaced input inside a
+  `Panel` with `DefaultButton`, labelled "Scan code" with placeholder "Waiting for scan…" instead of the old
+  instruction-as-placeholder. The result panel and recent-attempts history the audit asked for already existed.
+- **Driver delay/emergency.** `ddlDelay` was already a dropdown, not free text, and the emergency button
+  already used the accessible confirm dialog, not `confirm()` — both contrary to the audit's assumption.
+  Relabelled "How late?" / "Why?" to "Delay duration" / "Reason" to match the noun-phrase pattern the rest of
+  the form uses.
+- **My Trip / inspection / manifest.** "Saloon clean and clear" → "Passenger area clean and clear" (both the
+  pre-trip and post-trip checklist copies). "Anything to note?" → "Notes (optional)". The driver's own
+  passenger manifest now shows "Boarded" / "Not boarded" (derived from `TicketStatus`, display-only) instead of
+  the generic ticket status, since a driver preparing to board people needs to know who still needs boarding,
+  not whether their ticket happens to be valid.
+
+**Not done, and why:** row-level Edit/Retire actions on Route List. No route-editing or route-retirement page
+exists anywhere in the application; adding disabled buttons that go nowhere was judged worse than the pattern
+gap the audit itself warned against ("do not create broken buttons"). Building that workflow is a new feature,
+not a UI fix, and is left for a separate decision. Exhaustive 360/480/768/1024/1440px and 80/100/125/150% zoom
+sweeps, as WP-12 through WP-14 ran for the system-wide layout pass, were not repeated here — this package's
+changes are localised (a search box, a dropdown, a label, a column) rather than structural, and were instead
+verified against the running application at desktop width plus the responsive patterns (`.rpt-filters`,
+`.ops-grid`, `.code-badge`) already proven at those breakpoints in WP-12/13.
+
+**Verification.** `Verify.ps1` clean — build, markup, **258** tests (0 new tests added; every change here is
+either presentation or additive-validation, covered by the existing markup guards and the manual verification
+below). Manual verification against a running IIS Express instance, logged in as Manager and as Driver: Route
+List search and status filter both tested interactively; Ticket Sales totals and route filter confirmed by
+reading the rendered table; Notifications confirmed to render "Dispatched" and a populated Next Attempt column,
+with no `INotificationSender` text on the visible page; Maintenance Schedule confirmed to hide both export
+buttons with zero rows; Passenger Manifest footer confirmed to render the signed-in manager's name; Validate
+Ticket's scan field confirmed single-line with the new placeholder; My Trip confirmed to render "Passenger area
+clean and clear", "Notes (optional)", "Delay duration", "Reason", and "Not boarded" for every seat on a trip
+with no boarded passengers. Live Map re-verified rather than re-fixed: 15 tiles loaded from
+`tile.openstreetmap.org` (no `{s}.` subdomain), each confirmed `complete: true` with `naturalWidth: 256` (real
+image data, not a 403 placeholder) via a JavaScript check against the live DOM, and the fallback panel stayed
+hidden.
+
 ## 8. Housekeeping
 
 One item per phase. These run alongside feature work and never block it.

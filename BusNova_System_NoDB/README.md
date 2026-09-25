@@ -91,7 +91,7 @@ Run the `BusNova.Tests` MSTest project from Visual Studio's Test Explorer, or:
 vstest.console.exe BusNova.Tests\bin\Debug\BusNova.Tests.dll
 ```
 
-255 tests. Coverage is unit tests plus markup guards: password hashing, password policy, setup tokens, roles, ticket pricing, seat validation (`TicketService.ValidateSeat`), the sign-in lockout decision (`LoginThrottle.Evaluate`), payments, refund policy, notifications and analytics, maintenance scheduling, table export, tracking, dynamic pricing, the local-URL open-redirect guard (`LocalUrl`), and the markup guards described above. Services that reach the database are still not covered — the service tests target logic deliberately written to be callable without one.
+258 tests. Coverage is unit tests plus markup guards: password hashing, password policy, setup tokens, roles, ticket pricing, seat validation (`TicketService.ValidateSeat`), the sign-in lockout decision (`LoginThrottle.Evaluate`), payments, refund policy, notifications and analytics, maintenance scheduling, table export, tracking, dynamic pricing, the local-URL open-redirect guard (`LocalUrl`), and the markup guards described above. Services that reach the database are still not covered — the service tests target logic deliberately written to be callable without one.
 
 ## Project layout
 
