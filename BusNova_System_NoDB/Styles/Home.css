@@ -36,10 +36,16 @@
 
     /* Amber/orange - warnings, pending states, decorative highlights. */
     --bn-amber: #FFB020;
-    --bn-amber-deep: #B8790C;
+    /* UI-001: every token below that is used as TEXT is set so it clears
+       WCAG AA (4.5:1) on both the white card and the --bn-bg page, measured.
+       The previous values failed on every screen: amber-deep 3.36:1 on its
+       own badge, green 4.32:1 (the "Active", "Paid", "Used" badges), muted
+       4.37:1 (every page intro and filter label) and faint 3.07:1 (the
+       sidebar section labels and every empty-state line). */
+    --bn-amber-deep: #8A5A00;
 
     /* Green - success, valid, paid. */
-    --bn-green: #1E8A5F;
+    --bn-green: #17704C;
 
     /* Red - errors, invalid, cancelled, destructive actions. */
     --bn-red: #C0392B;
@@ -49,8 +55,8 @@
     --bn-bg: #F5F7FB;
     --bn-text: #14213D;
     --bn-text-secondary: #55607A;
-    --bn-text-muted: #6B7488;
-    --bn-text-faint: #8B93A8;
+    --bn-text-muted: #5A6377;
+    --bn-text-faint: #656E82;
 }
 
 body {
@@ -300,7 +306,8 @@ body {
     transform: scale(1.15);
 }
 
-.service-card h4 {
+.service-card h3 {
+    font-size: 1.35rem;
     color: var(--bn-text);
     margin-bottom: 15px;
     font-weight: 600;
@@ -504,7 +511,7 @@ body {
     border-top: 3px solid var(--bn-blue);
 }
 
-    .footer h4 {
+    .footer h2 {
         color: var(--bn-white);
         font-size: 22px;
         font-weight: 700;

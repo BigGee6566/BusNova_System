@@ -86,19 +86,47 @@ namespace BusNova_System
             // as the system actually knows, and no more. (WP-16 audit)
             if (value == NotificationStatuses.Sent) value = "Dispatched";
 
-            return Server.HtmlEncode(
-                System.Text.RegularExpressions.Regex.Replace(value, "(?<=[a-z])(?=[A-Z])", " "));
+            return Server.HtmlEncode(StatusTone.Label(value));
         }
 
+        /// <summary>"BookingConfirmed" reads "Booking confirmed".</summary>
+        protected string TypeText(object type)
+        {
+            var label = StatusTone.Label(type);
+            return Server.HtmlEncode(label.Length > 1
+                ? label.Substring(0, 1) + label.Substring(1).ToLowerInvariant()
+                : label);
+        }
+
+        /// <summary>
+        /// Subject and recipient as one cell: the subject says what the
+        /// message is, the address underneath says who it is for. As two
+        /// columns they pushed the table to 1122px inside a 938px card at
+        /// 1280px, and the Last error column disappeared off the edge.
+        /// </summary>
+        protected string MessageCell(object subject, object recipient)
+        {
+            return "<span class=\"cell-stack\"><span>" + Server.HtmlEncode(Convert.ToString(subject)) +
+                   "</span><span class=\"cell-meta\">" + Server.HtmlEncode(Convert.ToString(recipient)) +
+                   "</span></span>";
+        }
+
+        /// <summary>
+        /// A line under the delivery badge, only while a retry is pending.
+        /// Nothing at all otherwise: a dash in a cell that is about
+        /// something else says nothing.
+        /// </summary>
         protected string NextAttempt(object status, object nextAttemptAt)
         {
             var value = Convert.ToString(status);
             if (value != NotificationStatuses.Queued && value != NotificationStatuses.Failed)
-                return "<span class=\"rpt-muted\">&mdash;</span>";
+                return string.Empty;
 
-            if (!(nextAttemptAt is DateTime)) return "<span class=\"rpt-muted\">&mdash;</span>";
+            if (!(nextAttemptAt is DateTime)) return string.Empty;
 
-            return Server.HtmlEncode(((DateTime)nextAttemptAt).ToString("dd MMM yyyy HH:mm"));
+            return "<span class=\"cell-meta\">Next try " +
+                   Server.HtmlEncode(((DateTime)nextAttemptAt).ToString("dd MMM yyyy HH:mm")) +
+                   "</span>";
         }
 
         protected string LastError(object error)

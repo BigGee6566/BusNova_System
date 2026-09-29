@@ -222,7 +222,7 @@ label {
     border-radius: 20px;
     background: rgba(var(--bn-blue-rgb),0.08);
     border: 1px solid rgba(var(--bn-blue-rgb),0.3);
-    font-size: 0.72rem;
+    font-size: var(--bn-text-xs);
     color: var(--bn-blue);
     margin-bottom: 16px;
 }

@@ -61,6 +61,12 @@
            in place of every tile. */
         tileUrl: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
 
+        /* The world tile: one request, almost always already cached by
+           the provider, used only to read the HTTP status of a tile. */
+        probeUrl: 'https://tile.openstreetmap.org/0/0/0.png',
+
+        referrerPolicy: 'strict-origin-when-cross-origin',
+
         maxZoom: 19,
         minZoom: 3,
 
@@ -106,7 +112,14 @@
             var layer = L.tileLayer(BusNovaMapConfig.tileUrl, {
                 maxZoom: BusNovaMapConfig.maxZoom,
                 minZoom: BusNovaMapConfig.minZoom,
-                attribution: BusNovaMapConfig.attribution
+                attribution: BusNovaMapConfig.attribution,
+                /* Web.config sends Referrer-Policy: same-origin, so tile
+                   requests left with NO Referer at all - and a valid
+                   Referer is one of OpenStreetMap's stated conditions for
+                   browser use. Its absence is what earns the "Access
+                   blocked" tile. This sends the origin only, never the
+                   path or query string. */
+                referrerPolicy: BusNovaMapConfig.referrerPolicy
             });
 
             /* If tiles do not arrive, say so once and plainly. A grid of
@@ -122,7 +135,7 @@
                reports once per attempt and never loops. */
             var reported = false;
 
-            layer.on('tileerror', function () {
+            function refuse() {
                 if (reported) return;
                 reported = true;
 
@@ -132,7 +145,25 @@
 
                 if (fallback) fallback.hidden = false;
                 if (retryBtn) retryBtn.disabled = false;
-            });
+            }
+
+            layer.on('tileerror', refuse);
+
+            /* tileerror alone never fired in practice. The refusal is a
+               403 whose body is a perfectly decodable PNG - the striped
+               "Access blocked" picture - and an <img> that decodes counts
+               as loaded, whatever the status. So one tile is also fetched,
+               where the status IS visible. A network or CORS failure is
+               not treated as a refusal: it proves nothing either way, and
+               the image layer may still be fine. */
+            if (window.fetch) {
+                fetch(BusNovaMapConfig.probeUrl, {
+                    mode: 'cors',
+                    referrerPolicy: BusNovaMapConfig.referrerPolicy
+                }).then(function (response) {
+                    if (!response.ok) refuse();
+                }).catch(function () { /* inconclusive - leave the layer */ });
+            }
 
             return layer;
         }

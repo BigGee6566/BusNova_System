@@ -1,7 +1,7 @@
 ﻿<%@ Page Title="Maintenance Due" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ReportMaintenanceDue.aspx.cs" Inherits="BusNova_System.ReportMaintenanceDue" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=7" rel="stylesheet" />
-    <link href="Styles/Ops.css?v=8" rel="stylesheet" />
+    <link href="Styles/style.css?v=8" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=9" rel="stylesheet" />
     <link href="Styles/Reports.css?v=3" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
@@ -59,10 +59,10 @@
                                   OnRowDataBound="gvBuses_RowDataBound">
                         <Columns>
                             <asp:BoundField DataField="BusRegistration" HeaderText="Bus" />
-                            <asp:BoundField DataField="Model" HeaderText="Model" />
+                            <asp:BoundField DataField="Model" HeaderText="Model" ItemStyle-CssClass="wrap" />
                             <asp:TemplateField HeaderText="Bus status">
                                 <ItemTemplate>
-                                    <span class='<%# "status-badge " + BusStatusCss(Eval("BusStatus")) %>'><%# Server.HtmlEncode(Convert.ToString(Eval("BusStatus"))) %></span>
+                                    <span class='<%# "status-badge " + BusStatusCss(Eval("BusStatus")) %>'><%# Server.HtmlEncode(BusNova_System.Helpers.StatusTone.Label(Eval("BusStatus"))) %></span>
                                 </ItemTemplate>
                             </asp:TemplateField>
                             <asp:TemplateField HeaderText="Next service">

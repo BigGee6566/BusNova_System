@@ -1,6 +1,6 @@
 ﻿<%@ Page Title="Live Map" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="LiveMap.aspx.cs" Inherits="BusNova_System.LiveMap" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/Ops.css?v=8" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=9" rel="stylesheet" />
     <link href="Styles/LiveMap.css?v=4" rel="stylesheet" />
 
     <%-- Leaflet and OpenStreetMap, from cdnjs, with subresource integrity.
@@ -15,7 +15,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"
             integrity="sha512-puJW3E/qXDqYp9IfhAI54BJEaWIfloJ7JWs7OeD5i6ruC9JZL1gERT1wjtwXFlh7CjE7ZJ+/vcRZRkIYIb6p4g=="
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="Scripts/live-map.js?v=2" defer></script>
+    <script src="Scripts/live-map.js?v=3" defer></script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 

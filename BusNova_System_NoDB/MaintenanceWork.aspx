@@ -1,14 +1,12 @@
 ﻿<%@ Page Title="Maintenance" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="MaintenanceWork.aspx.cs" Inherits="BusNova_System.MaintenanceWork" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=7" rel="stylesheet" />
-    <link href="Styles/Ops.css?v=8" rel="stylesheet" />
+    <link href="Styles/style.css?v=8" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=9" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
     <div class="ops-page">
     <div class="ops-wrap ops-wrap--wide">
-
-        <a class="ops-back-link" href="Dashboard.aspx">&larr; Back to Dashboard</a>
 
         <div class="ops-box">
 
@@ -48,7 +46,7 @@
                         <asp:TemplateField HeaderText="Status">
                             <ItemTemplate>
                                 <span class='<%# "status-badge " + StatusCss(Eval("Status")) %>'>
-                                    <%# Server.HtmlEncode(Convert.ToString(Eval("Status"))) %>
+                                    <%# Server.HtmlEncode(BusNova_System.Helpers.StatusTone.Label(Eval("Status"))) %>
                                 </span>
                             </ItemTemplate>
                         </asp:TemplateField>
@@ -81,7 +79,7 @@
             <asp:Panel CssClass="bn-callout bn-mt-6" ID="pnlService" runat="server" Visible="false"
                       >
 
-                <h5 class="bn-subheading--sm">Log completed service</h5>
+                <h3 class="bn-subheading bn-subheading--sm">Log completed service</h3>
                 <div class="ops-subtitle bn-mb-4">
                     <asp:Literal ID="litServiceFault" runat="server" />
                 </div>

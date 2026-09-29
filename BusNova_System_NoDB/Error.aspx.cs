@@ -64,6 +64,10 @@ namespace BusNova_System
                     break;
             }
 
+            // The browser tab said "Something went wrong" above a page that
+            // said "That page could not be found" (UI-016).
+            Title = litTitle.Text;
+
             // Stop IIS replacing this page with its own generic error page.
             Response.TrySkipIisCustomErrors = true;
 

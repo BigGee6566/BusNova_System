@@ -1,6 +1,6 @@
 ﻿<%@ Page Title="Home" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Home.aspx.cs" Inherits="BusNova_System.Home" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/Home.css?v=6" rel="stylesheet" />
+    <link href="Styles/Home.css?v=7" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <!-- ===================================== -->
@@ -150,7 +150,7 @@
                                 <div class="service-icon">
                                     <i class="fas fa-route"></i>
                                 </div>
-                                <h4>Route Management</h4>
+                                <h3>Route Management</h3>
                                 <p>Create and manage bus routes and schedules.</p>
                             </div>
                         </div>
@@ -161,7 +161,7 @@
                                 <div class="service-icon">
                                     <i class="fas fa-bus"></i>
                                 </div>
-                                <h4>Fleet Management</h4>
+                                <h3>Fleet Management</h3>
                                 <p>Register buses and assign drivers to routes.</p>
                             </div>
                         </div>
@@ -172,7 +172,7 @@
                                 <div class="service-icon">
                                     <i class="fas fa-tools"></i>
                                 </div>
-                                <h4>Maintenance</h4>
+                                <h3>Maintenance</h3>
                                 <p>Schedule servicing and monitor vehicle condition.</p>
                             </div>
                         </div>
@@ -183,7 +183,7 @@
                                 <div class="service-icon">
                                     <i class="fas fa-ticket-alt"></i>
                                 </div>
-                                <h4>Ticket Services</h4>
+                                <h3>Ticket Services</h3>
                                 <p>Purchase tickets and view bus availability.</p>
                             </div>
                         </div>
@@ -194,7 +194,7 @@
                                 <div class="service-icon">
                                     <i class="fas fa-chart-line"></i>
                                 </div>
-                                <h4>Reports & Analytics</h4>
+                                <h3>Reports & Analytics</h3>
                                 <p>Generate operational, maintenance and fuel reports.</p>
                             </div>
                         </div>
@@ -205,7 +205,7 @@
                                 <div class="service-icon">
                                           <i class="fas fa-map-marker-alt"></i>
                         </div>
-                                <h4>Live Trip Monitoring</h4>
+                                <h3>Live Trip Monitoring</h3>
                                 <p>Track trip progress and bus status.</p>
                             </div>
                         </div>

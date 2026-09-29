@@ -1,14 +1,13 @@
 ﻿<%@ Page Title="My Schedule" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ViewAssignedRoutes.aspx.cs" Inherits="BusNova_System.ViewAssignedRoutes" %>
+<%@ Import Namespace="BusNova_System.Helpers" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=7" rel="stylesheet" />
-    <link href="Styles/Ops.css?v=8" rel="stylesheet" />
+    <link href="Styles/style.css?v=8" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=9" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
     <div class="ops-page">
     <div class="ops-wrap ops-wrap--default">
-
-        <a class="ops-back-link" href="Dashboard.aspx">&larr; Back to Dashboard</a>
 
         <div class="ops-box">
 
@@ -33,27 +32,32 @@
                     OnRowDataBound="gvAssignedRoutes_RowDataBound">
                     <Columns>
                         <asp:BoundField DataField="AssignmentId" HeaderText="Trip" />
-                        <asp:BoundField DataField="RouteName" HeaderText="Route" />
-                        <asp:TemplateField HeaderText="From / To">
+                        <%-- Route name with its endpoints underneath, and one
+                             Time column: ten columns pushed the Action
+                             column, which holds Start and Complete trip,
+                             off the right edge of the card at 1280px. --%>
+                        <asp:TemplateField HeaderText="Route" ItemStyle-CssClass="wrap">
                             <ItemTemplate>
-                                <%# Server.HtmlEncode(Convert.ToString(Eval("Origin"))) %>
-                                &rarr;
-                                <%# Server.HtmlEncode(Convert.ToString(Eval("Destination"))) %>
+                                <span class="cell-stack">
+                                    <span><%# Server.HtmlEncode(Convert.ToString(Eval("RouteName"))) %></span>
+                                    <span class="cell-meta">
+                                        <%# Server.HtmlEncode(Convert.ToString(Eval("Origin"))) %>
+                                        &rarr;
+                                        <%# Server.HtmlEncode(Convert.ToString(Eval("Destination"))) %>
+                                    </span>
+                                </span>
                             </ItemTemplate>
                         </asp:TemplateField>
                         <asp:BoundField DataField="BusRegistration" HeaderText="Bus" />
                         <asp:BoundField DataField="AssignmentDate" HeaderText="Date" DataFormatString="{0:dd MMM yyyy}" />
-                        <asp:TemplateField HeaderText="Departure">
-                            <ItemTemplate><%# FormatTime(Eval("DepartureTime")) %></ItemTemplate>
+                        <asp:TemplateField HeaderText="Time">
+                            <ItemTemplate><%# FormatTime(Eval("DepartureTime")) %>&ndash;<%# FormatTime(Eval("ArrivalTime")) %></ItemTemplate>
                         </asp:TemplateField>
-                        <asp:TemplateField HeaderText="Arrival">
-                            <ItemTemplate><%# FormatTime(Eval("ArrivalTime")) %></ItemTemplate>
-                        </asp:TemplateField>
-                        <asp:BoundField DataField="PassengerCount" HeaderText="Passengers" />
+                        <asp:BoundField DataField="PassengerCount" HeaderText="Passengers" ItemStyle-CssClass="num" HeaderStyle-CssClass="num" />
                         <asp:TemplateField HeaderText="Status">
                             <ItemTemplate>
-                                <span class='<%# "status-badge " + TripCss(Eval("TripStatus")) %>'>
-                                    <%# Server.HtmlEncode(Convert.ToString(Eval("TripStatus"))) %>
+                                <span class='<%# "status-badge " + StatusTone.ForTrip(Eval("TripStatus")) %>'>
+                                    <%# Server.HtmlEncode(StatusTone.Label(Eval("TripStatus"))) %>
                                 </span>
                             </ItemTemplate>
                         </asp:TemplateField>
@@ -68,7 +72,7 @@
                                     runat="server"
                                     CommandName="StartTrip"
                                     CommandArgument='<%# Eval("AssignmentId") %>'
-                                    CssClass="btn-ops-secondary"
+                                    CssClass="btn-ops-primary"
                                     CausesValidation="false"
                                     Visible='<%# Convert.ToString(Eval("TripStatus")) == "Scheduled" %>'
                                     Text="Start trip" />
@@ -78,7 +82,7 @@
                                     runat="server"
                                     CommandName="CompleteTrip"
                                     CommandArgument='<%# Eval("AssignmentId") %>'
-                                    CssClass="btn-ops-secondary"
+                                    CssClass="btn-ops-primary"
                                     CausesValidation="false"
                                     Visible='<%# Convert.ToString(Eval("TripStatus")) == "InProgress" %>'
                                     Text="Complete trip" />
@@ -100,7 +104,7 @@
             <asp:Panel CssClass="bn-callout bn-mt-6" ID="pnlComplete" runat="server" Visible="false"
                       >
 
-                <h5 class="bn-subheading--sm">Complete trip</h5>
+                <h3 class="bn-subheading bn-subheading--sm">Complete trip</h3>
                 <div class="ops-subtitle bn-mb-4">
                     <asp:Literal ID="litCompleteTrip" runat="server" />
                 </div>

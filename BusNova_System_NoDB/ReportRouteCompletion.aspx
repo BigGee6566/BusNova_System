@@ -1,7 +1,7 @@
 ﻿<%@ Page Title="Route Completion" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ReportRouteCompletion.aspx.cs" Inherits="BusNova_System.ReportRouteCompletion" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=7" rel="stylesheet" />
-    <link href="Styles/Ops.css?v=8" rel="stylesheet" />
+    <link href="Styles/style.css?v=8" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=9" rel="stylesheet" />
     <link href="Styles/Reports.css?v=3" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
@@ -78,7 +78,7 @@
                             <asp:BoundField DataField="DriverName" HeaderText="Driver" />
                             <asp:TemplateField HeaderText="Status">
                                 <ItemTemplate>
-                                    <span class='<%# "status-badge " + StatusCss(Eval("TripStatus")) %>'><%# Server.HtmlEncode(Convert.ToString(Eval("TripStatus"))) %></span>
+                                    <span class='<%# "status-badge " + StatusCss(Eval("TripStatus")) %>'><%# Server.HtmlEncode(BusNova_System.Helpers.StatusTone.Label(Eval("TripStatus"))) %></span>
                                 </ItemTemplate>
                             </asp:TemplateField>
                             <asp:TemplateField HeaderText="Started" ItemStyle-CssClass="rpt-num" HeaderStyle-CssClass="rpt-num">

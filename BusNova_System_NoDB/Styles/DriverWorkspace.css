@@ -88,15 +88,30 @@
 
 .dw-checks { list-style: none; margin: 0 0 12px; padding: 0; }
 
-.dw-checks li { margin: 0; }
-
-/* The whole row is the target, not just the 13px box. */
-.dw-checks label {
+/* The row is the <li>. asp:CheckBoxList renders the box and its label as
+   SIBLINGS - <li><input><label for></li> - not a label wrapping the box,
+   so the flex row this rule used to put on the label made the label a
+   full-width block on the line below its own box. Every item then read
+   as a box followed by the name of the NEXT box (UI-002). */
+.dw-checks li {
     display: flex;
     align-items: center;
     gap: 12px;
+    margin: 0;
+    border-bottom: 1px solid var(--bn-border);
+}
+
+.dw-checks li:last-child { border-bottom: none; }
+
+/* The label fills the rest of the row, so the whole row is the target,
+   not just the box. */
+.dw-checks label {
+    flex: 1;
+    display: flex;
+    align-items: center;
     min-height: 48px;
     padding: 4px 2px;
+    margin: 0;
     font-size: 1rem;
     cursor: pointer;
 }

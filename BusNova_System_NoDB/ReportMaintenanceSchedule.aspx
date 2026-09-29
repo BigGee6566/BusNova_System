@@ -46,7 +46,7 @@
                         <asp:TemplateField HeaderText="Status">
                             <ItemTemplate>
                                 <span class='<%# "status-badge " + StatusTone.ForDueness(Eval("Status")) %>'>
-                                    <%# Server.HtmlEncode(Convert.ToString(Eval("Status"))) %>
+                                    <%# Server.HtmlEncode(BusNova_System.Helpers.StatusTone.Label(Eval("Status"))) %>
                                 </span>
                             </ItemTemplate>
                         </asp:TemplateField>

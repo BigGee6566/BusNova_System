@@ -293,13 +293,7 @@ namespace BusNova_System
         /// </summary>
         protected string StatusText(object status)
         {
-            var value = Convert.ToString(status);
-            if (string.IsNullOrEmpty(value)) return string.Empty;
-
-            var spaced = System.Text.RegularExpressions.Regex.Replace(
-                value, "(?<=[a-z])(?=[A-Z])", " ");
-
-            return Server.HtmlEncode(spaced);
+            return Server.HtmlEncode(StatusTone.Label(status));
         }
     }
 }

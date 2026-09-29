@@ -1,6 +1,6 @@
 ﻿<%@ Page Title="Login" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Login.aspx.cs" Inherits="BusNova_System.Login" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=7" rel="stylesheet" />
+    <link href="Styles/style.css?v=8" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
      <div class="login-wrap">
@@ -11,7 +11,7 @@
              Route Network Online
          </div>
 
-         <h3 class="login-title">Sign in</h3>
+         <h1 class="login-title">Sign in</h1>
 
          <div class="mb-3">
              <label for="<%= txtEmail.ClientID %>">Email<span class="required-mark">*</span></label>

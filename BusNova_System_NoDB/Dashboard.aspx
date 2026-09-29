@@ -1,7 +1,7 @@
 ﻿<%@ Page Title="Dashboard" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Dashboard.aspx.cs" Inherits="BusNova_System.Dashboard" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=7" rel="stylesheet" />
-    <link href="Styles/Ops.css?v=8" rel="stylesheet" />
+    <link href="Styles/style.css?v=8" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=9" rel="stylesheet" />
     <%-- busnova-dashboard.css is loaded by Site.Master for every page. --%>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
@@ -104,37 +104,39 @@
                 </a>
             </div>
 
-            <div class="dash-section-title">Needs attention</div>
+            <h2 class="dash-section-title">Needs attention</h2>
             <div class="dash-panel">
-                <asp:GridView ID="gvAttention" runat="server" AutoGenerateColumns="false"
-                              CssClass="ops-grid" GridLines="None" UseAccessibleHeader="true"
-                              OnRowDataBound="gvAttention_RowDataBound"
-                              EmptyDataText="Nothing needs attention right now.">
-                    <Columns>
-                        <asp:BoundField DataField="Category" HeaderText="Area" />
-                        <asp:BoundField DataField="Subject" HeaderText="What" />
-                        <asp:BoundField DataField="Detail" HeaderText="Why" />
-                        <asp:TemplateField HeaderText="Priority">
-                            <ItemTemplate>
-                                <span class='<%# "status-badge " + SeverityCss(Eval("Severity")) %>'>
-                                    <%# Server.HtmlEncode(Convert.ToString(Eval("Severity")) == "danger" ? "Act now" : "Soon") %>
-                                </span>
-                            </ItemTemplate>
-                        </asp:TemplateField>
-                    </Columns>
-                </asp:GridView>
+                <div class="ops-grid-wrap">
+                    <asp:GridView ID="gvAttention" runat="server" AutoGenerateColumns="false"
+                                  CssClass="ops-grid" GridLines="None" UseAccessibleHeader="true"
+                                  OnRowDataBound="gvAttention_RowDataBound"
+                                  EmptyDataText="Nothing needs attention right now.">
+                        <Columns>
+                            <asp:BoundField DataField="Category" HeaderText="Area" />
+                            <asp:BoundField DataField="Subject" HeaderText="What" />
+                            <asp:BoundField DataField="Detail" HeaderText="Why" ItemStyle-CssClass="wrap" />
+                            <asp:TemplateField HeaderText="Priority">
+                                <ItemTemplate>
+                                    <span class='<%# "status-badge " + SeverityCss(Eval("Severity")) %>'>
+                                        <%# Server.HtmlEncode(Convert.ToString(Eval("Severity")) == "danger" ? "Act now" : "Soon") %>
+                                    </span>
+                                </ItemTemplate>
+                            </asp:TemplateField>
+                        </Columns>
+                    </asp:GridView>
+                </div>
             </div>
 
-            <div class="dash-section-title">Fleet</div>
+            <h2 class="dash-section-title">Fleet</h2>
             <div class="dash-panel">
-<div class="ops-grid-wrap">
+                <div class="ops-grid-wrap">
                     <asp:GridView ID="gvBuses" runat="server" CssClass="ops-grid"
                                   AutoGenerateColumns="false" GridLines="None"
                                   OnRowDataBound="gvBuses_RowDataBound"
                                   EmptyDataText="No buses registered yet. Use Register Bus to add the first one.">
                         <Columns>
                             <asp:BoundField DataField="RegistrationNumber" HeaderText="Registration" />
-                            <asp:BoundField DataField="Model" HeaderText="Model" />
+                            <asp:BoundField DataField="Model" HeaderText="Model" ItemStyle-CssClass="wrap" />
                             <asp:BoundField DataField="Manufacturer" HeaderText="Manufacturer" />
                             <asp:BoundField DataField="SeatingCapacity" HeaderText="Seats" />
                             <asp:BoundField DataField="FuelType" HeaderText="Fuel" />
@@ -146,7 +148,7 @@
                                     </span>
                                 </ItemTemplate>
                             </asp:TemplateField>
-                            <asp:TemplateField HeaderText="Next service">
+                            <asp:TemplateField HeaderText="Next service" ItemStyle-CssClass="wrap">
                                 <ItemTemplate>
                                     <%# FormatServiceDate(Eval("NextServiceDueDate")) %>
                                 </ItemTemplate>
@@ -156,7 +158,7 @@
                 </div>
             </div>
 
-            <div class="dash-section-title">Routes</div>
+            <h2 class="dash-section-title">Routes</h2>
             <div class="dash-panel">
                 <div class="ops-grid-wrap">
                     <asp:GridView ID="gvRoutes" runat="server" CssClass="ops-grid"
@@ -175,7 +177,7 @@
                 </div>
             </div>
 
-            <div class="dash-section-title">Trips</div>
+            <h2 class="dash-section-title">Trips</h2>
             <div class="dash-panel">
                 <div class="ops-grid-wrap">
                     <asp:GridView ID="gvAssignments" runat="server" CssClass="ops-grid"
@@ -216,7 +218,18 @@
                 </div>
             </div>
 
+            <%-- My Trip and Validate Ticket lead: they are what a driver
+                 opens at the bus, and neither had a tile, so the driver's
+                 landing page pointed everywhere except the day's work. --%>
             <div class="dash-grid">
+                <a class="dash-tile" href="DriverWorkspace.aspx">
+                    My Trip
+                    <span class="dash-tile-desc">Today's trip: inspection, start and complete, manifest, delays</span>
+                </a>
+                <a class="dash-tile" href="ValidateTicket.aspx">
+                    Validate Ticket
+                    <span class="dash-tile-desc">Scan or type a ticket as passengers board</span>
+                </a>
                 <a class="dash-tile" href="ViewAssignedRoutes.aspx">
                     My Schedule
                     <span class="dash-tile-desc">View your assigned routes and start or complete a trip</span>
@@ -231,7 +244,7 @@
                 </a>
             </div>
 
-            <div class="dash-section-title">Next trips</div>
+            <h2 class="dash-section-title">Next trips</h2>
             <div class="dash-panel">
                 <div class="ops-grid-wrap">
                     <asp:GridView ID="gvDriverTrips" runat="server" CssClass="ops-grid"
@@ -280,7 +293,7 @@
                 </a>
             </div>
 
-            <div class="dash-section-title">Buses needing attention</div>
+            <h2 class="dash-section-title">Buses needing attention</h2>
             <div class="dash-panel">
                 <div class="ops-grid-wrap">
                     <asp:GridView ID="gvMaintenance" runat="server" CssClass="ops-grid"
@@ -289,7 +302,7 @@
                                   EmptyDataText="No buses are due for service in the next 14 days.">
                         <Columns>
                             <asp:BoundField DataField="RegistrationNumber" HeaderText="Registration" />
-                            <asp:BoundField DataField="Model" HeaderText="Model" />
+                            <asp:BoundField DataField="Model" HeaderText="Model" ItemStyle-CssClass="wrap" />
                             <asp:BoundField DataField="OdometerReading" HeaderText="Odometer" DataFormatString="{0:N0}" />
                             <asp:TemplateField HeaderText="Status">
                                 <ItemTemplate>
@@ -325,7 +338,7 @@
                 </a>
             </div>
 
-            <div class="dash-section-title">Upcoming trips you can travel on</div>
+            <h2 class="dash-section-title">Upcoming trips you can travel on</h2>
             <div class="dash-panel">
                 <div class="ops-grid-wrap">
                     <asp:GridView ID="gvPassengerTrips" runat="server" CssClass="ops-grid"
@@ -345,7 +358,7 @@
                     </asp:GridView>
                 </div>
                 <p class="empty-note bn-mt-4">
-                    Use Buy Ticket above to book a seat on any of these trips.
+                    Use Book Trip above to book a seat on any of these trips.
                 </p>
             </div>
 

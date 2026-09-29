@@ -24,17 +24,17 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
-    <link href="Styles/Home.css?v=6" rel="stylesheet" />
+    <link href="Styles/Home.css?v=7" rel="stylesheet" />
     <%-- Must load after Home.css: its semantic tokens resolve against the
          brand tokens Home.css declares. --%>
-    <link href="Styles/busnova-design-system.css?v=5" rel="stylesheet" />
+    <link href="Styles/busnova-design-system.css?v=6" rel="stylesheet" />
     <%-- Components load after the tokens they consume. --%>
-    <link href="Styles/busnova-components.css?v=5" rel="stylesheet" />
+    <link href="Styles/busnova-components.css?v=10" rel="stylesheet" />
     <%-- Dashboard and shared page furniture (stat cards, tiles, panels).
          These were an inline <style> block inside Dashboard.aspx, which is
          why no other screen could look like the dashboard. Loaded for every
          page so they can. --%>
-    <link href="Styles/busnova-dashboard.css?v=1" rel="stylesheet" />
+    <link href="Styles/busnova-dashboard.css?v=3" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
     <asp:ContentPlaceHolder ID="head" runat="server">
@@ -661,7 +661,7 @@
                         <!-- About -->
                         <div class="col-lg-4 col-md-6">
 
-                            <h4>BusNova System Management</h4>
+                            <h2>BusNova System Management</h2>
 
                             <p>
                                 A modern transport management platform designed to
@@ -674,7 +674,7 @@
                         <!-- Quick Links -->
                         <div class="col-lg-4 col-md-6">
 
-                            <h4>Quick Links</h4>
+                            <h2>Quick Links</h2>
 
                             <ul class="footer-links">
 
@@ -705,7 +705,7 @@
                         <!-- Contact -->
                         <div class="col-lg-4 col-md-12">
 
-                            <h4>Contact Us</h4>
+                            <h2>Contact Us</h2>
 
                             <p>
 

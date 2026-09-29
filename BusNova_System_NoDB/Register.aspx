@@ -1,13 +1,13 @@
 ﻿<%@ Page Title="Register" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Register.aspx.cs" Inherits="BusNova_System.Register" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=7" rel="stylesheet" />
+    <link href="Styles/style.css?v=8" rel="stylesheet" />
     <script src="Scripts/password-strength.js?v=1"></script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <div class="reg-wrap">
     <div class="reg-box">
 
-        <h3 class="reg-title">Create an account</h3>
+        <h1 class="reg-title">Create an account</h1>
         <div class="reg-subtitle">Register as a Passenger.</div>
 
         <div class="row">

@@ -1,16 +1,14 @@
 ﻿<%@ Page Title="Book Trip" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="BookTrip.aspx.cs" Inherits="BusNova_System.BookTrip" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=7" rel="stylesheet" />
-    <link href="Styles/Ops.css?v=8" rel="stylesheet" />
-    <link href="Styles/SeatMap.css?v=2" rel="stylesheet" />
+    <link href="Styles/style.css?v=8" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=9" rel="stylesheet" />
+    <link href="Styles/SeatMap.css?v=3" rel="stylesheet" />
     <script src="Scripts/seat-map.js?v=2"></script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
     <div class="ops-page">
     <div class="ops-wrap ops-wrap--default">
-
-        <a class="ops-back-link" href="Dashboard.aspx">&larr; Back to Dashboard</a>
 
         <div class="ops-box">
 
@@ -98,7 +96,7 @@
             <asp:Panel CssClass="bn-callout bn-mt-6" ID="pnlSeat" runat="server" Visible="false" data-role="seat-form"
                       >
 
-                <h5 class="bn-subheading--sm">Choose seats</h5>
+                <h3 class="bn-subheading bn-subheading--sm">Choose seats</h3>
                 <div class="ops-subtitle bn-mb-4">
                     <asp:Literal ID="litSeatTrip" runat="server" />
                     Select one seat per traveller (up to five in total).
@@ -138,7 +136,7 @@
 
                 <hr />
 
-                <h5 class="bn-subheading--sm">Traveller details</h5>
+                <h3 class="bn-subheading bn-subheading--sm">Traveller details</h3>
 
                 <%-- Five fixed rows - simpler and more in keeping with this app's
                      declarative WebForms style than generating a variable-length

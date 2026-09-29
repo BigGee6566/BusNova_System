@@ -1,6 +1,6 @@
 ﻿<%@ Page Title="Notifications" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Notifications.aspx.cs" Inherits="BusNova_System.Notifications" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/Ops.css?v=8" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=9" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
@@ -42,27 +42,30 @@
                               EmptyDataText="Nothing has been queued yet.">
                     <Columns>
                         <asp:BoundField DataField="CreatedAt" HeaderText="Queued" DataFormatString="{0:dd MMM yyyy HH:mm}" />
-                        <asp:BoundField DataField="NotificationType" HeaderText="Type" />
-                        <asp:BoundField DataField="Recipient" HeaderText="To" />
-                        <asp:BoundField DataField="Subject" HeaderText="Subject" />
-                        <asp:TemplateField HeaderText="Status">
+                        <asp:TemplateField HeaderText="Type">
+                            <ItemTemplate><%# TypeText(Eval("NotificationType")) %></ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Message" ItemStyle-CssClass="wrap wrap--wide">
+                            <ItemTemplate><%# MessageCell(Eval("Subject"), Eval("Recipient")) %></ItemTemplate>
+                        </asp:TemplateField>
+                        <%-- Status, attempts and the next retry are one fact -
+                             where delivery stands - so they share a cell. As
+                             three columns they left the message itself one
+                             word wide. --%>
+                        <asp:TemplateField HeaderText="Delivery">
                             <ItemTemplate>
-                                <span class='<%# "status-badge " + StatusCss(Eval("Status")) %>'>
-                                    <%# StatusText(Eval("Status")) %>
+                                <span class="cell-stack">
+                                    <span class='<%# "status-badge " + StatusCss(Eval("Status")) %>'>
+                                        <%# StatusText(Eval("Status")) %>
+                                    </span>
+                                    <span class="cell-meta">
+                                        Attempt <%# Eval("AttemptCount") %> of <%# Eval("MaxAttempts") %>
+                                    </span>
+                                    <%# NextAttempt(Eval("Status"), Eval("NextAttemptAt")) %>
                                 </span>
                             </ItemTemplate>
                         </asp:TemplateField>
-                        <asp:TemplateField HeaderText="Attempts">
-                            <ItemTemplate>
-                                <%# Eval("AttemptCount") %> / <%# Eval("MaxAttempts") %>
-                            </ItemTemplate>
-                        </asp:TemplateField>
-                        <asp:TemplateField HeaderText="Next attempt">
-                            <ItemTemplate>
-                                <%# NextAttempt(Eval("Status"), Eval("NextAttemptAt")) %>
-                            </ItemTemplate>
-                        </asp:TemplateField>
-                        <asp:TemplateField HeaderText="Last error">
+                        <asp:TemplateField HeaderText="Last error" ItemStyle-CssClass="wrap">
                             <ItemTemplate>
                                 <%# LastError(Eval("LastError")) %>
                             </ItemTemplate>

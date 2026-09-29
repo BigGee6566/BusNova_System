@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using BusNova_System.Models;
 
 namespace BusNova_System.Helpers
@@ -120,6 +121,18 @@ namespace BusNova_System.Helpers
                 case "Scheduled": return Active;
                 default: return Inactive;
             }
+        }
+
+        /// <summary>
+        /// The words a badge prints. Statuses are stored as PascalCase
+        /// constants, and three pages printed them verbatim - "InProgress",
+        /// "UnderMaintenance" - while two others split them with a private
+        /// copy of this regex. Display only; returns plain text, so the
+        /// caller encodes it.
+        /// </summary>
+        public static string Label(object status)
+        {
+            return Regex.Replace(Text(status), "(?<=[a-z])(?=[A-Z])", " ");
         }
 
         private static string Text(object value)

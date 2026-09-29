@@ -38,7 +38,7 @@
 .e-ticket-status {
     padding: 3px 12px;
     border-radius: 20px;
-    font-size: 0.72rem;
+    font-size: var(--bn-text-xs);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.03em;

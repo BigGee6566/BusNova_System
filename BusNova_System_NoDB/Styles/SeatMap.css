@@ -25,7 +25,7 @@
 
 .seat-summary-label {
     display: block;
-    font-size: 0.72rem;
+    font-size: var(--bn-text-xs);
     color: var(--bn-text-muted);
     text-transform: uppercase;
     letter-spacing: 0.04em;

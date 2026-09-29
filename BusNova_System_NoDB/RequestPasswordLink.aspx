@@ -1,12 +1,12 @@
 ﻿<%@ Page Title="Get Set-Password Link" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="RequestPasswordLink.aspx.cs" Inherits="BusNova_System.RequestPasswordLink" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=7" rel="stylesheet" />
+    <link href="Styles/style.css?v=8" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <div class="reg-wrap">
     <div class="reg-box">
 
-        <h3 class="reg-title">Get your set-password link</h3>
+        <h1 class="reg-title">Get your set-password link</h1>
         <div class="reg-subtitle">
             If a conductor registered you and you've lost the link, enter the email or phone number
             they used and a new one will be shown below.

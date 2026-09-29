@@ -1,14 +1,12 @@
 ﻿<%@ Page Title="My Tickets" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="MyTickets.aspx.cs" Inherits="BusNova_System.MyTickets" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=7" rel="stylesheet" />
-    <link href="Styles/Ops.css?v=8" rel="stylesheet" />
+    <link href="Styles/style.css?v=8" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=9" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
     <div class="ops-page">
     <div class="ops-wrap ops-wrap--default">
-
-        <a class="ops-back-link" href="Dashboard.aspx">&larr; Back to Dashboard</a>
 
         <div class="ops-box">
 
@@ -45,24 +43,24 @@
                         </asp:TemplateField>
                         <asp:TemplateField HeaderText="Payment">
                             <ItemTemplate>
-                                <%# Server.HtmlEncode(Convert.ToString(Eval("PaymentStatus"))) %>
+                                <%# Server.HtmlEncode(BusNova_System.Helpers.StatusTone.Label(Eval("PaymentStatus"))) %>
                             </ItemTemplate>
                         </asp:TemplateField>
                         <asp:TemplateField HeaderText="Status">
                             <ItemTemplate>
                                 <span class='<%# "status-badge " + StatusCss(Eval("TicketStatus")) %>'>
-                                    <%# Server.HtmlEncode(Convert.ToString(Eval("TicketStatus"))) %>
+                                    <%# Server.HtmlEncode(BusNova_System.Helpers.StatusTone.Label(Eval("TicketStatus"))) %>
                                 </span>
                             </ItemTemplate>
                         </asp:TemplateField>
                         <asp:TemplateField HeaderText="Action">
                             <ItemTemplate>
+                                <span class="cell-actions">
                                 <asp:HyperLink
                                     ID="hlViewTicket"
                                     runat="server"
                                     NavigateUrl='<%# "TicketConfirmation.aspx?bookingId=" + Eval("BookingId") %>'
                                     CssClass="btn-ops-secondary"
-                                    Style="text-decoration:none; display:inline-block; margin-bottom:4px;"
                                     Visible='<%# Eval("BookingId") != null %>'
                                     Text="View ticket" />
                                 <asp:LinkButton
@@ -77,11 +75,16 @@
                                     data-bn-confirm-ok="Cancel ticket" 
                                     Visible='<%# CanCancel(Eval("TicketStatus"), Eval("AssignmentDate"), Eval("DepartureTime")) %>'
                                     Text="Cancel" />
+                                <%-- The dash means "nothing to do here", so it
+                                     shows only when neither action does. It used
+                                     to sit beside "View ticket" on every ticket
+                                     that could no longer be cancelled. --%>
                                 <asp:Label
                                     ID="lblNoAction"
                                     runat="server"
                                     Text="&mdash;"
-                                    Visible='<%# !CanCancel(Eval("TicketStatus"), Eval("AssignmentDate"), Eval("DepartureTime")) %>' />
+                                    Visible='<%# Eval("BookingId") == null && !CanCancel(Eval("TicketStatus"), Eval("AssignmentDate"), Eval("DepartureTime")) %>' />
+                                </span>
                             </ItemTemplate>
                         </asp:TemplateField>
                     </Columns>
@@ -126,7 +129,7 @@
                         <asp:TemplateField HeaderText="Payment">
                             <ItemTemplate>
                                 <span class='<%# "status-badge " + PaymentCss(Eval("PaymentStatus")) %>'>
-                                    <%# Server.HtmlEncode(Convert.ToString(Eval("PaymentStatus"))) %>
+                                    <%# Server.HtmlEncode(BusNova_System.Helpers.StatusTone.Label(Eval("PaymentStatus"))) %>
                                 </span>
                             </ItemTemplate>
                         </asp:TemplateField>

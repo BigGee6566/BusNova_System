@@ -164,13 +164,6 @@ namespace BusNova_System
             return time.Hours.ToString("00") + ":" + time.Minutes.ToString("00");
         }
 
-        protected string TripCss(object status)
-        {
-            return Convert.ToString(status) == TripStatus.Completed
-                ? "status-completed"
-                : "status-scheduled";
-        }
-
         private void ShowError(string message)
         {
             lblMessage.CssClass = "ops-message ops-message--danger";

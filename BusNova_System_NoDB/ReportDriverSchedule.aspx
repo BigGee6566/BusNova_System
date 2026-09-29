@@ -46,12 +46,12 @@
                         <asp:BoundField DataField="DepartureTime" HeaderText="Departs" DataFormatString="{0:hh\:mm}" HtmlEncode="false" />
                         <asp:BoundField DataField="DriverName" HeaderText="Driver" />
                         <asp:BoundField DataField="LicenseNumber" HeaderText="Licence" />
-                        <asp:BoundField DataField="RouteName" HeaderText="Route" />
+                        <asp:BoundField DataField="RouteName" HeaderText="Route" ItemStyle-CssClass="wrap" />
                         <asp:BoundField DataField="BusRegistration" HeaderText="Bus" />
                         <asp:TemplateField HeaderText="Status">
                             <ItemTemplate>
                                 <span class='<%# "status-badge " + StatusTone.ForTrip(Eval("TripStatus")) %>'>
-                                    <%# Server.HtmlEncode(Convert.ToString(Eval("TripStatus"))) %>
+                                    <%# Server.HtmlEncode(BusNova_System.Helpers.StatusTone.Label(Eval("TripStatus"))) %>
                                 </span>
                             </ItemTemplate>
                         </asp:TemplateField>

@@ -200,8 +200,18 @@ else {
         $failures.Add("Test assembly not found at $testDll.")
     }
     else {
-        & $vstest $testDll /Logger:console`;verbosity=minimal
+        & $vstest $testDll /Logger:console`;verbosity=minimal 2>&1 | Tee-Object -Variable testOutput
         if ($LASTEXITCODE -ne 0) { $failures.Add('Unit tests failed.') }
+
+        # vstest exits 0 when it runs NOTHING. With the project inside a
+        # OneDrive folder the MSTest adapter fails to load (0x80131515,
+        # "Operation is not supported" - the DLL is treated as a remote
+        # file), vstest reports "No test is available", and this script
+        # printed PASSED over zero tests. A run only counts if it ran
+        # something.
+        if (-not ($testOutput -match '(Total tests|Total):\s*[1-9]')) {
+            $failures.Add('No tests were executed - the test adapter did not load. Copy the solution out of OneDrive, or run BusNova.Tests from a local folder.')
+        }
     }
 }
 

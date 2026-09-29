@@ -1,7 +1,7 @@
 ﻿<%@ Page Title="My Trip" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="DriverWorkspace.aspx.cs" Inherits="BusNova_System.DriverWorkspace" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/Ops.css?v=8" rel="stylesheet" />
-    <link href="Styles/DriverWorkspace.css?v=1" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=9" rel="stylesheet" />
+    <link href="Styles/DriverWorkspace.css?v=2" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 

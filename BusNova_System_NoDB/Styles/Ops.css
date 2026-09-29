@@ -22,7 +22,7 @@
     display: inline-block;
     padding: 4px 12px;
     border-radius: 20px;
-    font-size: 0.72rem;
+    font-size: var(--bn-text-xs);
     font-weight: 700;
     letter-spacing: 0.03em;
     text-transform: uppercase;

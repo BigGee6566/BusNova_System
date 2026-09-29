@@ -1,8 +1,8 @@
 ﻿<%@ Page Title="Passenger Manifest" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Manifest.aspx.cs" Inherits="BusNova_System.Manifest" %>
 <%@ Import Namespace="BusNova_System.Helpers" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/Ops.css?v=8" rel="stylesheet" />
-    <link href="Styles/Manifest.css?v=2" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=9" rel="stylesheet" />
+    <link href="Styles/Manifest.css?v=4" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
@@ -72,7 +72,7 @@
                         <asp:TemplateField HeaderText="Status">
                             <ItemTemplate>
                                 <span class='<%# "status-badge " + StatusTone.ForTicket(Eval("TicketStatus")) %>'>
-                                    <%# Server.HtmlEncode(Convert.ToString(Eval("TicketStatus"))) %>
+                                    <%# Server.HtmlEncode(BusNova_System.Helpers.StatusTone.Label(Eval("TicketStatus"))) %>
                                 </span>
                             </ItemTemplate>
                         </asp:TemplateField>

@@ -1,16 +1,14 @@
 ﻿<%@ Page Title="Issue Ticket" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="IssueTicket.aspx.cs" Inherits="BusNova_System.IssueTicket" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=7" rel="stylesheet" />
-    <link href="Styles/Ops.css?v=8" rel="stylesheet" />
-    <link href="Styles/SeatMap.css?v=2" rel="stylesheet" />
+    <link href="Styles/style.css?v=8" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=9" rel="stylesheet" />
+    <link href="Styles/SeatMap.css?v=3" rel="stylesheet" />
     <script src="Scripts/seat-map.js?v=2"></script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
     <div class="ops-page">
     <div class="ops-wrap ops-wrap--default">
-
-        <a class="ops-back-link" href="Dashboard.aspx">&larr; Back to Dashboard</a>
 
         <div class="ops-box">
 
@@ -50,7 +48,7 @@
                         <asp:TemplateField HeaderText="Status">
                             <ItemTemplate>
                                 <span class='<%# "status-badge " + (Convert.ToString(Eval("TicketStatus")) == "Cancelled" ? "status-muted" : "status-completed") %>'>
-                                    <%# Server.HtmlEncode(Convert.ToString(Eval("TicketStatus"))) %>
+                                    <%# Server.HtmlEncode(BusNova_System.Helpers.StatusTone.Label(Eval("TicketStatus"))) %>
                                 </span>
                             </ItemTemplate>
                         </asp:TemplateField>
@@ -60,7 +58,7 @@
 
             <hr />
 
-            <h4 class="bn-subheading--sm">Find or register the passenger</h4>
+            <h3 class="bn-subheading bn-subheading--sm">Find or register the passenger</h3>
             <div class="row">
                 <div class="col-md-8 mb-3">
                     <label for="<%= txtContact.ClientID %>">Passenger email or phone</label>
@@ -120,7 +118,7 @@
 
             <asp:Panel ID="pnlIssue" runat="server" Visible="false" data-role="seat-form">
                 <hr />
-                <h4 class="bn-subheading--sm">Issue the ticket</h4>
+                <h3 class="bn-subheading bn-subheading--sm">Issue the ticket</h3>
 
                 <div class="seat-summary">
                     <div class="seat-summary-item">

@@ -1,7 +1,7 @@
 ﻿<%@ Page Title="Payment" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="PaymentSimulation.aspx.cs" Inherits="BusNova_System.PaymentSimulation" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="Styles/style.css?v=7" rel="stylesheet" />
-    <link href="Styles/Ops.css?v=8" rel="stylesheet" />
+    <link href="Styles/style.css?v=8" rel="stylesheet" />
+    <link href="Styles/Ops.css?v=9" rel="stylesheet" />
     <script src="Scripts/payment-simulation.js?v=3"></script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
@@ -60,7 +60,7 @@
                 </div>
             </div>
 
-            <h4 class="bn-subheading bn-mt-6">Payment method</h4>
+            <h3 class="bn-subheading bn-mt-6">Payment method</h3>
 
             <div class="payment-method-options" data-role="payment-method-options">
                 <label class="payment-method-option">

@@ -40,7 +40,9 @@
 /* Key operational numbers, shown before the actions. */
 .stat-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    /* auto-fill, so one or two stat cards (Driver, Maintenance) keep a card
+       width instead of stretching across the whole row. */
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 14px;
     margin-bottom: 26px;
 }
@@ -95,6 +97,11 @@
     box-shadow: 0 8px 20px rgba(var(--bn-navy-rgb),0.12);
 }
 
+.dash-tile:focus-visible {
+    outline: 2px solid var(--bn-primary);
+    outline-offset: 2px;
+}
+
 .dash-tile .dash-tile-desc {
     display: block;
     font-weight: 400;
@@ -110,12 +117,10 @@
     color: var(--bn-text);
 }
 
-.dash-panel {
-    background: var(--bn-white);
-    border: 1px solid rgba(var(--bn-navy-rgb),0.16);
-    border-radius: 12px;
-    padding: 18px;
-}
+/* .dash-panel takes its geometry from the shared card rule in
+   busnova-components.css. It used to redefine a 12px radius, 18px
+   padding and its own border here, which is why the dashboard's panels
+   were the one surface that looked unlike every other card (UI-004). */
 
 .empty-note {
     color: var(--bn-text-muted);

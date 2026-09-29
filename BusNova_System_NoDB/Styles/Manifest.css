@@ -26,14 +26,14 @@
 
 .mf-meta {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: 8px 16px;
 }
 
 .mf-meta div { display: flex; flex-direction: column; }
 
 .mf-meta span {
-    font-size: 0.72rem;
+    font-size: var(--bn-text-xs);
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: var(--bn-text-muted);

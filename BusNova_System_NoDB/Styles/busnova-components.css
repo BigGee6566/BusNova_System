@@ -50,16 +50,41 @@
 }
 
 /* ---------- card ----------
-   Header, body, optional footer, hairline separators. Cards do not
-   nest: a card inside a card means the page needs restructuring, not
-   another border. */
+   The one card. .ops-box and .dash-panel are older names for the same
+   thing and resolve to these values, so every surface in the app has
+   one padding, one radius, one shadow and the brand's left accent.
 
-.bn-card {
+   The card pads itself. It used to rely on a .bn-card__body child that
+   no page in the application ever wrote, so on Validate Ticket, the
+   driver's trip screen, Notifications and five reports the labels and
+   inputs sat flush against the card's border (UI-003). Cards do not
+   nest. */
+
+.bn-card,
+.ops-box,
+.dash-panel {
     background: var(--bn-surface);
-    border: 1px solid var(--bn-border);
+    border: 1px solid var(--bn-border-strong);
+    border-left: 3px solid var(--bn-primary);
     border-radius: var(--bn-radius-lg);
-    box-shadow: var(--bn-shadow-1);
-    margin-bottom: var(--bn-space-6);
+    box-shadow: var(--bn-shadow-2);
+    padding: var(--bn-space-6);
+}
+
+.bn-card { margin-bottom: var(--bn-space-6); }
+
+@media (min-width: 768px) {
+    .bn-card,
+    .ops-box,
+    .dash-panel {
+        padding: var(--bn-space-7);
+    }
+}
+
+.bn-card > :last-child,
+.ops-box > :last-child,
+.dash-panel > :last-child {
+    margin-bottom: 0;
 }
 
 .bn-card__header {
@@ -398,7 +423,7 @@ textarea.bn-field__control {
 
 /* Aligns a control with the bottom of a labelled field beside it -
    the "button next to an input" row that appears on several forms. */
-.bn-align-end { display: flex; align-items: flex-end; }
+.bn-align-end { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--bn-space-2); }
 
 /* Section heading inside a card. Was font-size:1.1rem or 1rem inline,
    depending on the page. */
@@ -520,15 +545,6 @@ textarea.bn-field__control {
     padding: 30px 20px 60px;
 }
 
-.ops-box {
-    padding: 32px;
-    background: var(--bn-white);
-    border: 1px solid rgba(var(--bn-navy-rgb),0.16);
-    border-left: 3px solid var(--bn-blue);
-    border-radius: 14px;
-    box-shadow: 0 8px 32px rgba(var(--bn-navy-rgb),0.14);
-}
-
 .ops-title {
     margin: 0 0 4px;
     font-weight: 700;
@@ -542,11 +558,18 @@ textarea.bn-field__control {
     margin-bottom: 24px;
 }
 
+/* Only for a step back inside a flow (payment -> booking). "Back to
+   Dashboard" links were removed from eleven shell pages: the sidebar
+   already offers Dashboard on every screen, and the link appeared on
+   some pages and not others, as a 20px-high target (UI-010). */
 .ops-back-link {
-    display: inline-block;
-    margin-bottom: 16px;
-    font-size: 0.85rem;
-    color: var(--bn-blue);
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin-bottom: var(--bn-space-2);
+    font-size: var(--bn-text-sm);
+    font-weight: 600;
+    color: var(--bn-primary);
     text-decoration: none;
 }
 
@@ -608,8 +631,11 @@ textarea.bn-field__control {
 
 /* ---------- Schedule grid (View Assigned Routes) ---------- */
 
+/* The wrapper is a size container, so a table decides how to lay itself
+   out from the width it actually has - see "ON A NARROW CONTAINER" below. */
 .ops-grid-wrap {
     overflow-x: auto;
+    container: bn-grid / inline-size;
 }
 
 .ops-grid {
@@ -720,6 +746,59 @@ textarea.bn-field__control {
 .ops-grid td.wrap {
     white-space: normal;
     min-width: 16ch;
+    /* An email address is one unbreakable word, and it alone set the
+       Message column on Notifications wider than the card. Breaking
+       inside a word is the last resort; min-width keeps it rare. */
+    overflow-wrap: anywhere;
+}
+
+/* Two related values in one cell - a route and its endpoints, a subject
+   and its recipient. One element, so a stacked card row keeps it as one
+   value beside its label instead of scattering the parts. */
+.ops-grid .cell-stack {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+}
+
+/* The column a row is about - a message, a route - gets a real measure
+   rather than the 16ch floor that lets it collapse to a word a line. */
+.ops-grid td.wrap--wide {
+    min-width: 26ch;
+}
+
+/* More than one action in a cell - View and Cancel on My Tickets. */
+.ops-grid .cell-actions {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--bn-space-2);
+}
+
+/* A button directly under an input in the same field, e.g. Validate
+   Ticket's "Validate ticket number", sat glued to the input's border. */
+.bn-field:not(.bn-align-end) > .bn-btn,
+.bn-field:not(.bn-align-end) > .btn-ops-primary,
+.bn-field:not(.bn-align-end) > .btn-ops-secondary {
+    margin-top: var(--bn-space-3);
+}
+
+.ops-grid .cell-meta {
+    font-size: var(--bn-text-sm);
+    color: var(--bn-text-muted);
+}
+
+/* An action inside a row is a row-sized control. At the full 44px, a
+   row with a button stood taller than the row beside it with none, so
+   My Tickets and Manage Users read as a ragged list (UI-013). 36px is
+   well above the 24px WCAG 2.5.8 minimum. */
+.ops-grid .btn-ops-primary,
+.ops-grid .btn-ops-secondary,
+.ops-grid .bn-btn {
+    min-height: 36px;
+    padding: 0 var(--bn-space-3);
+    font-size: var(--bn-text-sm);
 }
 
 /* ---------- buttons ---------- */
@@ -917,27 +996,21 @@ textarea.bn-field__control {
 
 
 /* ============================================================
-   .ops-grid ON A SMALL SCREEN                       (AUD-067)
-   Promoted out of Styles/Ops.css, which is linked per page. It governs
-   how .ops-grid behaves below 700px on all 23 pages that use the class,
-   but only 19 of them linked the sheet, so the four report pages fixed
-   by AUD-063 kept a sideways-scrolling table while the rest collapsed
-   into cards. This is the unfinished half of that finding: WP-13
-   promoted the desktop rules and left the responsive ones behind.
-   ============================================================ */
-/*
-   Below 700px, every .ops-grid table drops its header row and each row
-   becomes a self-contained card instead of scrolling sideways. The field
-   name in front of each value comes from the data-label attribute that
-   Helpers/GridViewHelpers.ApplyResponsiveLabels writes onto every cell at
-   bind time (one HeaderText per column, already defined on every grid) -
-   nothing here is hard-coded to a particular table.
-*/
-@media (max-width: 700px) {
-    .ops-grid-wrap {
-        overflow-x: visible;
-    }
+   .ops-grid ON A NARROW CONTAINER                  (AUD-067, UI-005)
+   A table too narrow for its columns drops its header row and each row
+   becomes a self-contained card. The field name in front of each value
+   comes from the data-label attribute that
+   Helpers/GridViewHelpers.ApplyResponsiveLabels writes onto every cell.
 
+   This is a container query, not a media query. It used to be
+   @media (max-width: 700px), which measures the WINDOW - but beside the
+   240px sidebar a 768px tablet leaves a table 384-465px of room, so ten
+   tables squeezed into a sideways scroll at exactly the width most
+   tablets use, and only collapsed once the window itself fell below
+   700px. .ops-grid-wrap is the container, so each table now switches
+   on the space it is actually given, sidebar open, collapsed or absent.
+   ============================================================ */
+@container bn-grid (max-width: 720px) {
     .ops-grid,
     .ops-grid tbody,
     .ops-grid tr,
@@ -951,9 +1024,9 @@ textarea.bn-field__control {
     }
 
     .ops-grid tr {
-        margin-bottom: 12px;
-        border: 1px solid rgba(var(--bn-navy-rgb),0.14);
-        border-radius: 10px;
+        margin-bottom: var(--bn-space-3);
+        border: 1px solid var(--bn-border-strong);
+        border-radius: var(--bn-radius-md);
         overflow: hidden;
     }
 
@@ -961,10 +1034,10 @@ textarea.bn-field__control {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        gap: 12px;
+        gap: var(--bn-space-3);
         white-space: normal;
         text-align: right;
-        border-bottom: 1px solid rgba(var(--bn-navy-rgb),0.08);
+        border-bottom: 1px solid var(--bn-border);
     }
 
         .ops-grid td:last-child {
@@ -988,17 +1061,9 @@ textarea.bn-field__control {
             .ops-grid td:only-child::before {
                 content: none;
             }
-}
 
-/* A cell with no data-label has no field name to show, so right-aligning
-   it strands a bare value in the middle of a card with nothing to say
-   what it is. That is exactly what AUD-066 looked like on the manifest:
-   35 cells, no labels, and a column of numbers and names that could not
-   be read. The grid should be fixed at the source - every .ops-grid must
-   run through GridViewHelpers.ApplyResponsiveLabels - but if one is ever
-   missed again it should degrade to a plain readable list rather than to
-   nonsense. */
-@media (max-width: 700px) {
+    /* A cell with no data-label degrades to a plain readable line rather
+       than a bare value stranded on the right of a card (AUD-066). */
     .ops-grid td:not([data-label]) {
         display: block;
         text-align: left;
@@ -1039,12 +1104,33 @@ textarea.bn-field__control {
     flex: 1 1 220px;
 }
 
-.rpt-field label {
+.rpt-field label,
+.rpt-filters .bn-field > label {
     font-size: var(--bn-text-xs);
     font-weight: 600;
     color: var(--bn-text-muted);
     text-transform: uppercase;
     letter-spacing: .04em;
+}
+
+/* Most filter bars are written with .bn-field rather than .rpt-field, and
+   picked up its 20px bottom margin inside the bar - a dead band under
+   every row of filters (UI-011) - and a plain label beside the report
+   pages' small caps. The bar owns its spacing through `gap`. */
+.rpt-filters .bn-field {
+    margin-bottom: 0;
+}
+
+.rpt-filters .bn-field:not(.bn-align-end) {
+    display: flex;
+    flex-direction: column;
+    gap: var(--bn-space-1);
+}
+
+/* A trip picker read "Thu 01 Oct 17:30 - East Lo" at its intrinsic
+   width. */
+.rpt-filters select.form-control {
+    min-width: 16rem;
 }
 
 .rpt-field input[type="text"],

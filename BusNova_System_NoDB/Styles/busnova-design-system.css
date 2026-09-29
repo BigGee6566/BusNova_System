@@ -500,10 +500,14 @@ html.bn-sidebar-collapsed .bn-sidebar__toggle .bn-sidebar__icon--closed { displa
     font-size: var(--bn-text-base);
 }
 
+/* Wraps rather than truncates. At 240px "Maintenance Schedule" was cut
+   to "Maintenance Sched..." on every Manager page, so the one place a
+   label must be read in full was the one place it could not be (UI-009).
+   Two lines still fit the link's 44px minimum height. */
 .bn-sidebar__nav-text {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    min-width: 0;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
 }
 
 /* Active item. The left edge bar is what carries the meaning in the

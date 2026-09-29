@@ -52,7 +52,9 @@ namespace BusNova_System.Helpers
 
             html.Append("<div class=\"seat-row seat-row-driver\">");
             html.Append("<div class=\"seat seat-driver\" aria-label=\"Driver seat. Not selectable.\">");
-            html.Append("<i class=\"fas fa-steering-wheel\" aria-hidden=\"true\"></i>");
+            // fa-steering-wheel is a Font Awesome Pro glyph and rendered as
+            // an empty box on the free CDN build this site loads (AUD-037).
+            html.Append("<i class=\"fas fa-user\" aria-hidden=\"true\"></i>");
             html.Append("<span class=\"seat-driver-label\">Driver</span>");
             html.Append("</div>");
             html.Append("</div>");
