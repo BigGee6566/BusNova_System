@@ -73,49 +73,47 @@ namespace BusNova_System
             }
         }
 
-        protected string FormatDate(object value)
+        protected CellText FormatDate(object value)
         {
-            if (value == null || value == DBNull.Value)
-                return "<span class=\"rpt-muted\">Never</span>";
-            return Server.HtmlEncode(Convert.ToDateTime(value).ToString("dd MMM yyyy"));
+            if (value == null || value == DBNull.Value) return CellText.Muted("Never");
+            return new CellText(Convert.ToDateTime(value).ToString("dd MMM yyyy"));
         }
 
-        protected string FormatDue(object value)
+        protected CellText FormatDue(object value)
         {
-            if (value == null || value == DBNull.Value)
-                return "<span class=\"rpt-muted\">Not scheduled</span>";
-            return Server.HtmlEncode(Convert.ToDateTime(value).ToString("dd MMM yyyy"));
+            if (value == null || value == DBNull.Value) return CellText.Muted("Not scheduled");
+            return new CellText(Convert.ToDateTime(value).ToString("dd MMM yyyy"));
         }
 
         /// <summary>
         /// The verdict text already says what is wrong, so colour here only
         /// reinforces a message that survives without it.
         /// </summary>
-        protected string FormatVerdict(object verdict, object isOverdue, object isDueSoon, object criticalFaults)
+        protected CellText FormatVerdict(object verdict, object isOverdue, object isDueSoon, object criticalFaults)
         {
-            var text = Server.HtmlEncode(Convert.ToString(verdict));
+            var text = Convert.ToString(verdict);
 
             var critical = (criticalFaults != null && criticalFaults != DBNull.Value)
                            && Convert.ToInt32(criticalFaults) > 0;
             var overdue = (isOverdue != null && isOverdue != DBNull.Value) && Convert.ToBoolean(isOverdue);
             var soon = (isDueSoon != null && isDueSoon != DBNull.Value) && Convert.ToBoolean(isDueSoon);
 
-            if (critical || overdue) return "<span class=\"rpt-flag-overdue\">" + text + "</span>";
-            if (soon) return "<span class=\"rpt-flag-soon\">" + text + "</span>";
-            return "<span class=\"rpt-flag-ok\">" + text + "</span>";
+            if (critical || overdue) return new CellText(text, "rpt-flag-overdue");
+            if (soon) return new CellText(text, "rpt-flag-soon");
+            return new CellText(text, "rpt-flag-ok");
         }
 
-        protected string FormatFaults(object open, object critical)
+        protected CellText FormatFaults(object open, object critical)
         {
             var openCount = (open == null || open == DBNull.Value) ? 0 : Convert.ToInt32(open);
             var criticalCount = (critical == null || critical == DBNull.Value) ? 0 : Convert.ToInt32(critical);
 
-            if (openCount == 0) return "<span class=\"rpt-muted\">0</span>";
+            if (openCount == 0) return CellText.Muted("0");
 
             if (criticalCount > 0)
-                return "<span class=\"rpt-flag-overdue\">" + openCount + " (" + criticalCount + " critical)</span>";
+                return new CellText(openCount + " (" + criticalCount + " critical)", "rpt-flag-overdue");
 
-            return openCount.ToString();
+            return new CellText(openCount.ToString());
         }
 
         // ---------------- export (WP-9) ----------------

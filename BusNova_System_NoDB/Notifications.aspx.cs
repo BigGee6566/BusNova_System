@@ -99,22 +99,9 @@ namespace BusNova_System
         }
 
         /// <summary>
-        /// Subject and recipient as one cell: the subject says what the
-        /// message is, the address underneath says who it is for. As two
-        /// columns they pushed the table to 1122px inside a 938px card at
-        /// 1280px, and the Last error column disappeared off the edge.
-        /// </summary>
-        protected string MessageCell(object subject, object recipient)
-        {
-            return "<span class=\"cell-stack\"><span>" + Server.HtmlEncode(Convert.ToString(subject)) +
-                   "</span><span class=\"cell-meta\">" + Server.HtmlEncode(Convert.ToString(recipient)) +
-                   "</span></span>";
-        }
-
-        /// <summary>
-        /// A line under the delivery badge, only while a retry is pending.
-        /// Nothing at all otherwise: a dash in a cell that is about
-        /// something else says nothing.
+        /// "Next try ..." under the delivery badge, only while a retry is
+        /// pending. Empty otherwise, and the page then shows nothing: a dash
+        /// in a cell that is about something else says nothing.
         /// </summary>
         protected string NextAttempt(object status, object nextAttemptAt)
         {
@@ -124,18 +111,13 @@ namespace BusNova_System
 
             if (!(nextAttemptAt is DateTime)) return string.Empty;
 
-            return "<span class=\"cell-meta\">Next try " +
-                   Server.HtmlEncode(((DateTime)nextAttemptAt).ToString("dd MMM yyyy HH:mm")) +
-                   "</span>";
+            return "Next try " + ((DateTime)nextAttemptAt).ToString("dd MMM yyyy HH:mm");
         }
 
-        protected string LastError(object error)
+        protected CellText LastError(object error)
         {
             var value = Convert.ToString(error);
-            if (string.IsNullOrEmpty(value))
-                return "<span class=\"rpt-muted\">&mdash;</span>";
-
-            return Server.HtmlEncode(value);
+            return string.IsNullOrEmpty(value) ? CellText.Muted("\u2014") : new CellText(value);
         }
     }
 }

@@ -66,18 +66,18 @@
                                 </ItemTemplate>
                             </asp:TemplateField>
                             <asp:TemplateField HeaderText="Next service">
-                                <ItemTemplate><%# FormatDue(Eval("NextServiceDueDate")) %></ItemTemplate>
+                                <ItemTemplate><asp:Label runat="server" CssClass='<%# FormatDue(Eval("NextServiceDueDate")).Css %>' ToolTip='<%# FormatDue(Eval("NextServiceDueDate")).Title %>' Text='<%# Server.HtmlEncode(FormatDue(Eval("NextServiceDueDate")).Text) %>' /></ItemTemplate>
                             </asp:TemplateField>
                             <asp:TemplateField HeaderText="Position">
-                                <ItemTemplate><%# FormatVerdict(Eval("Verdict"), Eval("IsOverdue"), Eval("IsDueSoon"), Eval("OpenCriticalFaults")) %></ItemTemplate>
+                                <ItemTemplate><asp:Label runat="server" CssClass='<%# FormatVerdict(Eval("Verdict"), Eval("IsOverdue"), Eval("IsDueSoon"), Eval("OpenCriticalFaults")).Css %>' ToolTip='<%# FormatVerdict(Eval("Verdict"), Eval("IsOverdue"), Eval("IsDueSoon"), Eval("OpenCriticalFaults")).Title %>' Text='<%# Server.HtmlEncode(FormatVerdict(Eval("Verdict"), Eval("IsOverdue"), Eval("IsDueSoon"), Eval("OpenCriticalFaults")).Text) %>' /></ItemTemplate>
                             </asp:TemplateField>
                             <asp:TemplateField HeaderText="Last serviced">
-                                <ItemTemplate><%# FormatDate(Eval("LastServiceDate")) %></ItemTemplate>
+                                <ItemTemplate><asp:Label runat="server" CssClass='<%# FormatDate(Eval("LastServiceDate")).Css %>' ToolTip='<%# FormatDate(Eval("LastServiceDate")).Title %>' Text='<%# Server.HtmlEncode(FormatDate(Eval("LastServiceDate")).Text) %>' /></ItemTemplate>
                             </asp:TemplateField>
                             <asp:BoundField DataField="OdometerReading" HeaderText="Odometer" DataFormatString="{0:N0}"
                                             ItemStyle-CssClass="rpt-num" HeaderStyle-CssClass="rpt-num" />
                             <asp:TemplateField HeaderText="Open faults" ItemStyle-CssClass="rpt-num" HeaderStyle-CssClass="rpt-num">
-                                <ItemTemplate><%# FormatFaults(Eval("OpenFaults"), Eval("OpenCriticalFaults")) %></ItemTemplate>
+                                <ItemTemplate><asp:Label runat="server" CssClass='<%# FormatFaults(Eval("OpenFaults"), Eval("OpenCriticalFaults")).Css %>' ToolTip='<%# FormatFaults(Eval("OpenFaults"), Eval("OpenCriticalFaults")).Title %>' Text='<%# Server.HtmlEncode(FormatFaults(Eval("OpenFaults"), Eval("OpenCriticalFaults")).Text) %>' /></ItemTemplate>
                             </asp:TemplateField>
                         </Columns>
                     </asp:GridView>

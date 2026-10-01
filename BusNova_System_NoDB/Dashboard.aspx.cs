@@ -97,7 +97,7 @@ namespace BusNova_System
             // trips ran" is not "trips ran empty".
             litOccupancy.Text = snapshot.OccupancyPercent.HasValue
                 ? snapshot.OccupancyPercent.Value.ToString("0.0") + "%"
-                : "&mdash;";
+                : "\u2014";
             litOccupancyDetail.Text = Server.HtmlEncode(
                 snapshot.SeatsOffered > 0
                     ? snapshot.SeatsSold + " of " + snapshot.SeatsOffered + " seats over the last 30 days"
@@ -231,24 +231,23 @@ namespace BusNova_System
         /// Shows the next service date, and says plainly when it has passed
         /// rather than leaving the reader to compare dates themselves.
         /// </summary>
-        protected string FormatServiceDate(object value)
+        protected CellText FormatServiceDate(object value)
         {
-            if (value == null || value == DBNull.Value) return "Not scheduled";
+            if (value == null || value == DBNull.Value) return CellText.Muted("Not scheduled");
 
             var date = Convert.ToDateTime(value);
-            var text = Server.HtmlEncode(date.ToString("dd MMM yyyy"));
+            var text = date.ToString("dd MMM yyyy");
 
             if (date.Date < DateTime.Today)
             {
                 var daysLate = (DateTime.Today - date.Date).Days;
-                // Class, not an inline style: this fragment was the one
-                // piece of styled HTML built in C# (AUD-024). The word
-                // "overdue" carries the meaning; the colour reinforces it.
-                return "<span class=\"rpt-flag-overdue\">" + text +
-                       " (overdue by " + daysLate + " day" + (daysLate == 1 ? "" : "s") + ")</span>";
+                // The word "overdue" carries the meaning; the colour only
+                // reinforces it.
+                return new CellText(text + " (overdue by " + daysLate + " day" + (daysLate == 1 ? "" : "s") + ")",
+                                    "rpt-flag-overdue");
             }
 
-            return text;
+            return new CellText(text);
         }
 
         /// <summary>

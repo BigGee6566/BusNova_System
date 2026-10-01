@@ -166,7 +166,7 @@ namespace BusNova_System
         protected string FixAgeText(object minutes, object hasFix)
         {
             if (!Convert.ToBoolean(hasFix)) return "No fix";
-            if (!HasValue(minutes)) return "—";
+            if (!HasValue(minutes)) return "\u2014";
 
             var m = Convert.ToInt32(minutes);
             return m <= 0 ? "just now" : m + " min ago";
@@ -184,7 +184,7 @@ namespace BusNova_System
 
         protected string RemainingText(object km)
         {
-            return HasValue(km) ? Convert.ToDouble(km).ToString("N1") + " km" : "—";
+            return HasValue(km) ? Convert.ToDouble(km).ToString("N1") + " km" : "\u2014";
         }
 
         protected bool HasEta(object earliest, object latest)
@@ -197,7 +197,7 @@ namespace BusNova_System
             if (!HasEta(earliest, latest)) return "No estimate";
             if (Convert.ToString(confidence) == "Arriving") return "Arriving now";
 
-            return Convert.ToDateTime(earliest).ToString("HH:mm") + "–" +
+            return Convert.ToDateTime(earliest).ToString("HH:mm") + "\u2013" +
                    Convert.ToDateTime(latest).ToString("HH:mm");
         }
 

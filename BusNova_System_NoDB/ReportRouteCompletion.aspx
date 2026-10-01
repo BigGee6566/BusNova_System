@@ -82,7 +82,10 @@
                                 </ItemTemplate>
                             </asp:TemplateField>
                             <asp:TemplateField HeaderText="Started" ItemStyle-CssClass="rpt-num" HeaderStyle-CssClass="rpt-num">
-                                <ItemTemplate><%# FormatDelay(Eval("StartDelayMinutes")) %></ItemTemplate>
+                                <ItemTemplate>
+                                    <asp:Label runat="server" CssClass='<%# FormatDelay(Eval("StartDelayMinutes")).Css %>'
+                                               Text='<%# Server.HtmlEncode(FormatDelay(Eval("StartDelayMinutes")).Text) %>' />
+                                </ItemTemplate>
                             </asp:TemplateField>
                             <asp:TemplateField HeaderText="Seats sold" ItemStyle-CssClass="rpt-num" HeaderStyle-CssClass="rpt-num">
                                 <ItemTemplate><%# Eval("SeatsSold") %> / <%# Eval("SeatingCapacity") %></ItemTemplate>

@@ -150,7 +150,8 @@
                             </asp:TemplateField>
                             <asp:TemplateField HeaderText="Next service" ItemStyle-CssClass="wrap">
                                 <ItemTemplate>
-                                    <%# FormatServiceDate(Eval("NextServiceDueDate")) %>
+                                    <asp:Label runat="server" CssClass='<%# FormatServiceDate(Eval("NextServiceDueDate")).Css %>'
+                                               Text='<%# Server.HtmlEncode(FormatServiceDate(Eval("NextServiceDueDate")).Text) %>' />
                                 </ItemTemplate>
                             </asp:TemplateField>
                         </Columns>
@@ -312,7 +313,10 @@
                                 </ItemTemplate>
                             </asp:TemplateField>
                             <asp:TemplateField HeaderText="Next service">
-                                <ItemTemplate><%# FormatServiceDate(Eval("NextServiceDueDate")) %></ItemTemplate>
+                                <ItemTemplate>
+                                    <asp:Label runat="server" CssClass='<%# FormatServiceDate(Eval("NextServiceDueDate")).Css %>'
+                                               Text='<%# Server.HtmlEncode(FormatServiceDate(Eval("NextServiceDueDate")).Text) %>' />
+                                </ItemTemplate>
                             </asp:TemplateField>
                         </Columns>
                     </asp:GridView>

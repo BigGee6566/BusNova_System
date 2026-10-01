@@ -67,7 +67,7 @@ namespace BusNova_System
                 : summary.CompletionRate.ToString("0.#") + "% of the day's trips";
 
             litOccupancy.Text = summary.SeatsOffered == 0
-                ? "&mdash;"
+                ? "\u2014"
                 : summary.OccupancyPercent.ToString("0.#") + "%";
             litOccupancyNote.Text = summary.SeatsOffered == 0
                 ? "No seats offered"
@@ -89,7 +89,7 @@ namespace BusNova_System
 
         protected string FormatTime(object value)
         {
-            if (value == null || value == DBNull.Value) return "&mdash;";
+            if (value == null || value == DBNull.Value) return "\u2014";
             var time = (TimeSpan)value;
             return time.Hours.ToString("00") + ":" + time.Minutes.ToString("00");
         }
@@ -100,20 +100,20 @@ namespace BusNova_System
         /// the text, so the meaning survives a greyscale print and a reader
         /// who cannot distinguish the two colours.
         /// </summary>
-        protected string FormatDelay(object value)
+        protected CellText FormatDelay(object value)
         {
-            if (value == null || value == DBNull.Value) return "<span class=\"rpt-muted\">Not started</span>";
+            if (value == null || value == DBNull.Value) return CellText.Muted("Not started");
 
             var minutes = Convert.ToInt32(value);
 
             if (minutes <= 0 && minutes > -60)
-                return "<span class=\"rpt-flag-ok\">On time</span>";
+                return new CellText("On time", "rpt-flag-ok");
             if (minutes <= -60)
-                return "<span class=\"rpt-flag-ok\">" + Math.Abs(minutes) + " min early</span>";
+                return new CellText(Math.Abs(minutes) + " min early", "rpt-flag-ok");
             if (minutes <= 10)
-                return "<span class=\"rpt-flag-ok\">On time (+" + minutes + " min)</span>";
+                return new CellText("On time (+" + minutes + " min)", "rpt-flag-ok");
 
-            return "<span class=\"rpt-flag-overdue\">" + minutes + " min late</span>";
+            return new CellText(minutes + " min late", "rpt-flag-overdue");
         }
 
         protected string StatusCss(object status)

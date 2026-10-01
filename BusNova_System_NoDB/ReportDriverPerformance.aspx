@@ -74,7 +74,8 @@
                             <asp:TemplateField HeaderText="Driver">
                                 <ItemTemplate>
                                     <%# Server.HtmlEncode(Convert.ToString(Eval("DriverName"))) %>
-                                    <%# ActiveFlag(Eval("IsActive")) %>
+                                    <asp:Label runat="server" CssClass="status-badge status-muted" Text="Inactive"
+                                               Visible='<%# IsInactive(Eval("IsActive")) %>' />
                                 </ItemTemplate>
                             </asp:TemplateField>
                             <asp:BoundField DataField="TripsAssigned" HeaderText="Assigned"
@@ -84,17 +85,27 @@
                             <asp:BoundField DataField="TripsCancelled" HeaderText="Cancelled"
                                             ItemStyle-CssClass="rpt-num" HeaderStyle-CssClass="rpt-num" />
                             <asp:TemplateField HeaderText="Completion" ItemStyle-CssClass="rpt-num" HeaderStyle-CssClass="rpt-num">
-                                <ItemTemplate><%# FormatRate(Eval("CompletionRate"), Eval("TripsAssigned")) %></ItemTemplate>
+                                <ItemTemplate>
+                                    <asp:Label runat="server" CssClass='<%# FormatRate(Eval("CompletionRate"), Eval("TripsAssigned")).Css %>'
+                                               Text='<%# Server.HtmlEncode(FormatRate(Eval("CompletionRate"), Eval("TripsAssigned")).Text) %>' />
+                                </ItemTemplate>
                             </asp:TemplateField>
                             <asp:TemplateField HeaderText="Punctuality" ItemStyle-CssClass="rpt-num" HeaderStyle-CssClass="rpt-num">
-                                <ItemTemplate><%# FormatPunctuality(Eval("PunctualityRate")) %></ItemTemplate>
+                                <ItemTemplate>
+                                    <asp:Label runat="server" CssClass='<%# FormatPunctuality(Eval("PunctualityRate")).Css %>'
+                                               ToolTip='<%# FormatPunctuality(Eval("PunctualityRate")).Title %>'
+                                               Text='<%# Server.HtmlEncode(FormatPunctuality(Eval("PunctualityRate")).Text) %>' />
+                                </ItemTemplate>
                             </asp:TemplateField>
                             <asp:BoundField DataField="PassengersCarried" HeaderText="Passengers" DataFormatString="{0:N0}"
                                             ItemStyle-CssClass="rpt-num" HeaderStyle-CssClass="rpt-num" />
                             <asp:BoundField DataField="FaultsReported" HeaderText="Faults"
                                             ItemStyle-CssClass="rpt-num" HeaderStyle-CssClass="rpt-num" />
                             <asp:TemplateField HeaderText="Licence">
-                                <ItemTemplate><%# FormatLicence(Eval("LicenseExpiryDate"), Eval("DaysUntilLicenceExpiry")) %></ItemTemplate>
+                                <ItemTemplate>
+                                    <asp:Label runat="server" CssClass='<%# FormatLicence(Eval("LicenseExpiryDate"), Eval("DaysUntilLicenceExpiry")).Css %>'
+                                               Text='<%# Server.HtmlEncode(FormatLicence(Eval("LicenseExpiryDate"), Eval("DaysUntilLicenceExpiry")).Text) %>' />
+                                </ItemTemplate>
                             </asp:TemplateField>
                         </Columns>
                     </asp:GridView>

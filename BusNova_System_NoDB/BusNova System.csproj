@@ -135,6 +135,7 @@
     <Compile Include="Helpers\SeatMapRenderer.cs" />
     <Compile Include="Helpers\UiColors.cs" />
     <Compile Include="Helpers\StatusTone.cs" />
+    <Compile Include="Helpers\CellText.cs" />
     <!-- Data access -->
     <Compile Include="DataAccess\Db.cs" />
     <!-- Security -->

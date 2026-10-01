@@ -157,7 +157,7 @@ namespace BusNova_System
 
         protected string FormatTime(object value)
         {
-            if (value == null || value == DBNull.Value) return "&mdash;";
+            if (value == null || value == DBNull.Value) return "\u2014";
             var time = (TimeSpan)value;
             return time.Hours.ToString("00") + ":" + time.Minutes.ToString("00");
         }

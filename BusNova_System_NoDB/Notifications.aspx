@@ -46,7 +46,14 @@
                             <ItemTemplate><%# TypeText(Eval("NotificationType")) %></ItemTemplate>
                         </asp:TemplateField>
                         <asp:TemplateField HeaderText="Message" ItemStyle-CssClass="wrap wrap--wide">
-                            <ItemTemplate><%# MessageCell(Eval("Subject"), Eval("Recipient")) %></ItemTemplate>
+                            <%-- The subject says what the message is; the address
+                                 under it says who it is for. --%>
+                            <ItemTemplate>
+                                <span class="cell-stack">
+                                    <span><%# Server.HtmlEncode(Convert.ToString(Eval("Subject"))) %></span>
+                                    <span class="cell-meta"><%# Server.HtmlEncode(Convert.ToString(Eval("Recipient"))) %></span>
+                                </span>
+                            </ItemTemplate>
                         </asp:TemplateField>
                         <%-- Status, attempts and the next retry are one fact -
                              where delivery stands - so they share a cell. As
@@ -61,13 +68,16 @@
                                     <span class="cell-meta">
                                         Attempt <%# Eval("AttemptCount") %> of <%# Eval("MaxAttempts") %>
                                     </span>
-                                    <%# NextAttempt(Eval("Status"), Eval("NextAttemptAt")) %>
+                                    <asp:Label runat="server" CssClass="cell-meta"
+                                               Visible='<%# NextAttempt(Eval("Status"), Eval("NextAttemptAt")).Length > 0 %>'
+                                               Text='<%# Server.HtmlEncode(NextAttempt(Eval("Status"), Eval("NextAttemptAt"))) %>' />
                                 </span>
                             </ItemTemplate>
                         </asp:TemplateField>
                         <asp:TemplateField HeaderText="Last error" ItemStyle-CssClass="wrap">
                             <ItemTemplate>
-                                <%# LastError(Eval("LastError")) %>
+                                <asp:Label runat="server" CssClass='<%# LastError(Eval("LastError")).Css %>'
+                                           Text='<%# Server.HtmlEncode(LastError(Eval("LastError")).Text) %>' />
                             </ItemTemplate>
                         </asp:TemplateField>
                     </Columns>

@@ -80,16 +80,16 @@
                                 <ItemTemplate><%# Convert.ToInt32(Eval("DistanceKm")).ToString("N0") %> km</ItemTemplate>
                             </asp:TemplateField>
                             <asp:TemplateField HeaderText="km / L" ItemStyle-CssClass="rpt-num" HeaderStyle-CssClass="rpt-num">
-                                <ItemTemplate><%# FormatEfficiency(Eval("KmPerLitre")) %></ItemTemplate>
+                                <ItemTemplate><asp:Label runat="server" CssClass='<%# FormatEfficiency(Eval("KmPerLitre")).Css %>' ToolTip='<%# FormatEfficiency(Eval("KmPerLitre")).Title %>' Text='<%# Server.HtmlEncode(FormatEfficiency(Eval("KmPerLitre")).Text) %>' /></ItemTemplate>
                             </asp:TemplateField>
                             <asp:TemplateField HeaderText="Cost / km" ItemStyle-CssClass="rpt-num" HeaderStyle-CssClass="rpt-num">
-                                <ItemTemplate><%# FormatMoneyOrDash(Eval("CostPerKm")) %></ItemTemplate>
+                                <ItemTemplate><asp:Label runat="server" CssClass='<%# FormatMoneyOrDash(Eval("CostPerKm")).Css %>' ToolTip='<%# FormatMoneyOrDash(Eval("CostPerKm")).Title %>' Text='<%# Server.HtmlEncode(FormatMoneyOrDash(Eval("CostPerKm")).Text) %>' /></ItemTemplate>
                             </asp:TemplateField>
                             <asp:TemplateField HeaderText="Cost / L" ItemStyle-CssClass="rpt-num" HeaderStyle-CssClass="rpt-num">
-                                <ItemTemplate><%# FormatMoneyOrDash(Eval("CostPerLitre")) %></ItemTemplate>
+                                <ItemTemplate><asp:Label runat="server" CssClass='<%# FormatMoneyOrDash(Eval("CostPerLitre")).Css %>' ToolTip='<%# FormatMoneyOrDash(Eval("CostPerLitre")).Title %>' Text='<%# Server.HtmlEncode(FormatMoneyOrDash(Eval("CostPerLitre")).Text) %>' /></ItemTemplate>
                             </asp:TemplateField>
                             <asp:TemplateField HeaderText="Total cost" ItemStyle-CssClass="rpt-num" HeaderStyle-CssClass="rpt-num">
-                                <ItemTemplate><%# FormatMoney(Eval("TotalCost")) %></ItemTemplate>
+                                <ItemTemplate><asp:Label runat="server" CssClass='<%# FormatMoney(Eval("TotalCost")).Css %>' ToolTip='<%# FormatMoney(Eval("TotalCost")).Title %>' Text='<%# Server.HtmlEncode(FormatMoney(Eval("TotalCost")).Text) %>' /></ItemTemplate>
                             </asp:TemplateField>
                         </Columns>
                     </asp:GridView>

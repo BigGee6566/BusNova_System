@@ -101,7 +101,7 @@ namespace BusNova_System
             litRoute.Text = Server.HtmlEncode(trip.RouteName);
             litDate.Text = trip.AssignmentDate.ToString("dd MMM yyyy");
             litDeparts.Text = Hhmm(trip.DepartureTime);
-            litBus.Text = bus == null ? "&mdash;" : Server.HtmlEncode(bus.RegistrationNumber);
+            litBus.Text = bus == null ? "\u2014" : Server.HtmlEncode(bus.RegistrationNumber);
             litDriver.Text = Server.HtmlEncode(trip.DriverName ?? string.Empty);
             litBooked.Text = rows.Count + (bus == null ? string.Empty : " of " + bus.SeatingCapacity);
             litPrinted.Text = AppClock.Now().ToString("dd MMM yyyy HH:mm");

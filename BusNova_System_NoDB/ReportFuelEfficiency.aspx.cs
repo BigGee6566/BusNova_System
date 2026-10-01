@@ -84,7 +84,7 @@ namespace BusNova_System
             // let a bus that did 40 km count as heavily as one that did 4000.
             litFleetKmL.Text = (litresForDistance > 0 && totalDistance > 0)
                 ? Math.Round(totalDistance / litresForDistance, 2).ToString("0.00")
-                : "&mdash;";
+                : "\u2014";
 
             pnlResults.Visible = rows.Count > 0;
             pnlEmpty.Visible = rows.Count == 0;
@@ -117,25 +117,24 @@ namespace BusNova_System
         /// than a fabricated 0.00, which would read as "extremely thirsty"
         /// and be acted on as though it were a measurement.
         /// </summary>
-        protected string FormatEfficiency(object value)
+        protected CellText FormatEfficiency(object value)
         {
             if (value == null || value == DBNull.Value)
-                return "<span class=\"rpt-muted\" title=\"Needs at least two fills in the period\">Not enough data</span>";
+                return CellText.Muted("Not enough data", "Needs at least two fills in the period");
 
-            return Convert.ToDecimal(value).ToString("0.00");
+            return new CellText(Convert.ToDecimal(value).ToString("0.00"));
         }
 
-        protected string FormatMoney(object value)
+        protected CellText FormatMoney(object value)
         {
-            if (value == null || value == DBNull.Value) return "&mdash;";
-            return Convert.ToDecimal(value).ToString("C", Money);
+            if (value == null || value == DBNull.Value) return new CellText("\u2014");
+            return new CellText(Convert.ToDecimal(value).ToString("C", Money));
         }
 
-        protected string FormatMoneyOrDash(object value)
+        protected CellText FormatMoneyOrDash(object value)
         {
-            if (value == null || value == DBNull.Value)
-                return "<span class=\"rpt-muted\">&mdash;</span>";
-            return Convert.ToDecimal(value).ToString("C", Money);
+            if (value == null || value == DBNull.Value) return CellText.Muted("\u2014");
+            return new CellText(Convert.ToDecimal(value).ToString("C", Money));
         }
 
         private void ShowError(string message)

@@ -112,52 +112,50 @@ namespace BusNova_System
 
         // ---------------- formatting helpers used by the markup ----------------
 
-        protected string ActiveFlag(object isActive)
+        protected bool IsInactive(object isActive)
         {
-            var active = !(isActive == null || isActive == DBNull.Value) && Convert.ToBoolean(isActive);
-            return active ? string.Empty : " <span class=\"status-badge status-muted\">Inactive</span>";
+            return (isActive == null || isActive == DBNull.Value) || !Convert.ToBoolean(isActive);
         }
 
         /// <summary>A rate over zero trips is not 0% - it is nothing to report.</summary>
-        protected string FormatRate(object rate, object assigned)
+        protected CellText FormatRate(object rate, object assigned)
         {
             var count = (assigned == null || assigned == DBNull.Value) ? 0 : Convert.ToInt32(assigned);
-            if (count == 0) return "<span class=\"rpt-muted\">No trips</span>";
+            if (count == 0) return CellText.Muted("No trips");
 
-            return Convert.ToDecimal(rate).ToString("0.#") + "%";
+            return new CellText(Convert.ToDecimal(rate).ToString("0.#") + "%");
         }
 
-        protected string FormatPunctuality(object value)
+        protected CellText FormatPunctuality(object value)
         {
             if (value == null || value == DBNull.Value)
-                return "<span class=\"rpt-muted\" title=\"No trip in this period has a recorded start time\">No data</span>";
+                return CellText.Muted("No data", "No trip in this period has a recorded start time");
 
             var rate = Convert.ToDecimal(value);
 
             // Text carries the verdict; the colour only reinforces it, so
             // this still reads correctly in greyscale.
             var css = rate >= 90m ? "rpt-flag-ok" : rate >= 75m ? "rpt-flag-soon" : "rpt-flag-overdue";
-            return "<span class=\"" + css + "\">" + rate.ToString("0.#") + "%</span>";
+            return new CellText(rate.ToString("0.#") + "%", css);
         }
 
-        protected string FormatLicence(object expiry, object daysLeft)
+        protected CellText FormatLicence(object expiry, object daysLeft)
         {
             if (expiry == null || expiry == DBNull.Value)
-                return "<span class=\"rpt-muted\">Not recorded</span>";
+                return CellText.Muted("Not recorded");
 
-            var date = Convert.ToDateTime(expiry);
-            var text = Server.HtmlEncode(date.ToString("dd MMM yyyy"));
+            var text = Convert.ToDateTime(expiry).ToString("dd MMM yyyy");
 
-            if (daysLeft == null || daysLeft == DBNull.Value) return text;
+            if (daysLeft == null || daysLeft == DBNull.Value) return new CellText(text);
 
             var days = Convert.ToInt32(daysLeft);
 
             if (days < 0)
-                return "<span class=\"rpt-flag-overdue\">" + text + " &mdash; expired</span>";
+                return new CellText(text + " \u2014 expired", "rpt-flag-overdue");
             if (days <= ExpiryWarningDays)
-                return "<span class=\"rpt-flag-soon\">" + text + " &mdash; " + days + " day" + (days == 1 ? "" : "s") + " left</span>";
+                return new CellText(text + " \u2014 " + days + " day" + (days == 1 ? "" : "s") + " left", "rpt-flag-soon");
 
-            return text;
+            return new CellText(text);
         }
 
         private void ShowError(string message)

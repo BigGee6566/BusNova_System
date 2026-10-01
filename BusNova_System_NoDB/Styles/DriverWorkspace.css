@@ -65,7 +65,7 @@
 .dw-count__label {
     display: block;
     margin-top: 4px;
-    font-size: var(--bn-text-sm);
+    font-size: 0.875rem;
     color: var(--bn-text-muted);
 }
 
