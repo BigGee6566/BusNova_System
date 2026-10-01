@@ -442,11 +442,11 @@ textarea.bn-field__control {
 
 .bn-subheading--sm { font-size: var(--bn-text-base); }
 
-/* 14px rather than the 13px --bn-text-sm: help text is read, not glanced
-   at, and on a laptop at arm's length 13px was a squint (UI-021). */
+/* Body size, not the 13px --bn-text-sm: help text is read, not glanced
+   at, and on a laptop at arm's length 13px was a squint (UI-021, UI-022). */
 .bn-note {
     display: block;
-    font-size: 0.875rem;
+    font-size: var(--bn-text-base);
     color: var(--bn-text-muted);
     margin-top: var(--bn-space-1);
 }
