@@ -312,13 +312,7 @@ namespace BusNova_System
         /// </summary>
         protected string BoardingText(object status)
         {
-            switch (Convert.ToString(status))
-            {
-                case "Used": return "Boarded";
-                case "Valid": return "Not boarded";
-                case "Cancelled": return "Cancelled";
-                default: return Convert.ToString(status);
-            }
+            return StatusTone.Boarding(status);
         }
 
         private static string Hhmm(TimeSpan time)

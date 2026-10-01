@@ -16,8 +16,8 @@
                 only be created here - never from the public Register page.
             </div>
 
-            <div class="row">
-                <div class="col-md-4 mb-3">
+            <div class="bn-cols-3">
+                <div class="bn-field">
                     <label for="<%= txtUsername.ClientID %>">Username<span class="required-mark">*</span></label>
                     <asp:TextBox ID="txtUsername" runat="server" CssClass="form-control" MaxLength="50" />
                     <asp:RequiredFieldValidator
@@ -25,7 +25,7 @@
                         ErrorMessage="Username is required." CssClass="field-error"
                         Display="Dynamic" ValidationGroup="CreateStaff" />
                 </div>
-                <div class="col-md-4 mb-3">
+                <div class="bn-field">
                     <label for="<%= txtPassword.ClientID %>">Temporary password<span class="required-mark">*</span></label>
                     <asp:TextBox ID="txtPassword" runat="server" CssClass="form-control" TextMode="Password" />
                     <asp:RequiredFieldValidator
@@ -33,7 +33,7 @@
                         ErrorMessage="Password is required." CssClass="field-error"
                         Display="Dynamic" ValidationGroup="CreateStaff" />
                 </div>
-                <div class="col-md-4 mb-3">
+                <div class="bn-field">
                     <label for="<%= ddlRole.ClientID %>">Role<span class="required-mark">*</span></label>
                     <asp:DropDownList ID="ddlRole" runat="server" CssClass="form-select">
                         <asp:ListItem Text="-- Select Role --" Value="" />
@@ -48,8 +48,8 @@
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-3 mb-3">
+            <div class="bn-cols-4">
+                <div class="bn-field">
                     <label for="<%= txtFirstName.ClientID %>">First name<span class="required-mark">*</span></label>
                     <asp:TextBox ID="txtFirstName" runat="server" CssClass="form-control" MaxLength="50" />
                     <asp:RequiredFieldValidator
@@ -57,7 +57,7 @@
                         ErrorMessage="First name is required." CssClass="field-error"
                         Display="Dynamic" ValidationGroup="CreateStaff" />
                 </div>
-                <div class="col-md-3 mb-3">
+                <div class="bn-field">
                     <label for="<%= txtLastName.ClientID %>">Last name<span class="required-mark">*</span></label>
                     <asp:TextBox ID="txtLastName" runat="server" CssClass="form-control" MaxLength="50" />
                     <asp:RequiredFieldValidator
@@ -65,7 +65,7 @@
                         ErrorMessage="Last name is required." CssClass="field-error"
                         Display="Dynamic" ValidationGroup="CreateStaff" />
                 </div>
-                <div class="col-md-3 mb-3">
+                <div class="bn-field">
                     <label for="<%= txtEmail.ClientID %>">Email<span class="required-mark">*</span></label>
                     <asp:TextBox ID="txtEmail" runat="server" CssClass="form-control" MaxLength="100" />
                     <asp:RequiredFieldValidator
@@ -78,7 +78,7 @@
                         ValidationExpression="^[^@\s]+@[^@\s]+\.[^@\s]+$"
                         CssClass="field-error" Display="Dynamic" ValidationGroup="CreateStaff" />
                 </div>
-                <div class="col-md-3 mb-3">
+                <div class="bn-field">
                     <label for="<%= txtPhone.ClientID %>">Phone<span class="required-mark">*</span></label>
                     <asp:TextBox ID="txtPhone" runat="server" CssClass="form-control" MaxLength="15" />
                     <asp:RequiredFieldValidator
@@ -88,16 +88,16 @@
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-4 mb-3">
+            <div class="bn-cols-3">
+                <div class="bn-field">
                     <label for="<%= txtLicenseNumber.ClientID %>">Driver's licence number <span class="empty-note">(Driver only)</span></label>
                     <asp:TextBox ID="txtLicenseNumber" runat="server" CssClass="form-control" MaxLength="20" />
                 </div>
-                <div class="col-md-4 mb-3">
+                <div class="bn-field">
                     <label for="<%= txtLicenseExpiry.ClientID %>">Licence expiry <span class="empty-note">(Driver only)</span></label>
                     <asp:TextBox ID="txtLicenseExpiry" runat="server" TextMode="Date" CssClass="form-control" />
                 </div>
-                <div class="col-md-4 mb-3">
+                <div class="bn-field">
                     <label for="<%= txtSpecialisation.ClientID %>">Specialisation <span class="empty-note">(Maintenance Staff only)</span></label>
                     <asp:TextBox ID="txtSpecialisation" runat="server" CssClass="form-control" MaxLength="50" />
                 </div>

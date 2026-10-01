@@ -2,7 +2,7 @@
 <%@ Import Namespace="BusNova_System.Helpers" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="Styles/Ops.css?v=9" rel="stylesheet" />
-    <link href="Styles/Manifest.css?v=4" rel="stylesheet" />
+    <link href="Styles/Manifest.css?v=5" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
@@ -72,7 +72,7 @@
                         <asp:TemplateField HeaderText="Status">
                             <ItemTemplate>
                                 <span class='<%# "status-badge " + StatusTone.ForTicket(Eval("TicketStatus")) %>'>
-                                    <%# Server.HtmlEncode(BusNova_System.Helpers.StatusTone.Label(Eval("TicketStatus"))) %>
+                                    <%# Server.HtmlEncode(StatusTone.Boarding(Eval("TicketStatus"))) %>
                                 </span>
                             </ItemTemplate>
                         </asp:TemplateField>

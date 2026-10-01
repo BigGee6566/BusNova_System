@@ -2,7 +2,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="Styles/style.css?v=8" rel="stylesheet" />
     <link href="Styles/Ops.css?v=9" rel="stylesheet" />
-    <link href="Styles/SeatMap.css?v=3" rel="stylesheet" />
+    <link href="Styles/SeatMap.css?v=4" rel="stylesheet" />
     <script src="Scripts/seat-map.js?v=2"></script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
@@ -17,13 +17,13 @@
                 Pick the trip you're working, find (or register) the passenger, then issue their ticket.
             </div>
 
-            <div class="row">
-                <div class="col-md-4 mb-3">
+            <div class="bn-cols-2">
+                <div class="bn-field">
                     <label for="<%= txtDate.ClientID %>">Date<span class="required-mark">*</span></label>
                     <asp:TextBox ID="txtDate" runat="server" TextMode="Date" CssClass="form-control"
                                  AutoPostBack="true" OnTextChanged="txtDate_TextChanged" />
                 </div>
-                <div class="col-md-8 mb-3">
+                <div class="bn-field">
                     <label for="<%= ddlTrip.ClientID %>">Trip<span class="required-mark">*</span></label>
                     <asp:DropDownList ID="ddlTrip" runat="server" CssClass="form-select"
                                        AutoPostBack="true" OnSelectedIndexChanged="ddlTrip_SelectedIndexChanged">
@@ -59,13 +59,13 @@
             <hr />
 
             <h3 class="bn-subheading bn-subheading--sm">Find or register the passenger</h3>
-            <div class="row">
-                <div class="col-md-8 mb-3">
+            <div class="bn-field-action">
+                <div class="bn-field">
                     <label for="<%= txtContact.ClientID %>">Passenger email or phone</label>
                     <asp:TextBox ID="txtContact" runat="server" CssClass="form-control"
                                  placeholder="e.g. name@example.com or 0821234567" />
                 </div>
-                <div class="col-md-4 mb-3 bn-align-end">
+                <div>
                     <asp:Button ID="btnFindPassenger" runat="server" Text="Find passenger"
                                 CssClass="btn-ops-secondary bn-w-full" CausesValidation="false"
                                 OnClick="btnFindPassenger_Click" />
@@ -81,20 +81,20 @@
                 <div class="empty-note bn-mb-3">
                     No account found for that email or phone. Register the passenger now so their ticket can be issued.
                 </div>
-                <div class="row">
-                    <div class="col-md-3 mb-3">
+                <div class="bn-cols-4">
+                    <div class="bn-field">
                         <label for="<%= txtRegFirstName.ClientID %>">First name<span class="required-mark">*</span></label>
                         <asp:TextBox ID="txtRegFirstName" runat="server" CssClass="form-control" MaxLength="50" />
                     </div>
-                    <div class="col-md-3 mb-3">
+                    <div class="bn-field">
                         <label for="<%= txtRegLastName.ClientID %>">Last name<span class="required-mark">*</span></label>
                         <asp:TextBox ID="txtRegLastName" runat="server" CssClass="form-control" MaxLength="50" />
                     </div>
-                    <div class="col-md-3 mb-3">
+                    <div class="bn-field">
                         <label for="<%= txtRegEmail.ClientID %>">Email<span class="required-mark">*</span></label>
                         <asp:TextBox ID="txtRegEmail" runat="server" CssClass="form-control" MaxLength="100" />
                     </div>
-                    <div class="col-md-3 mb-3">
+                    <div class="bn-field">
                         <label for="<%= txtRegPhone.ClientID %>">Phone<span class="required-mark">*</span></label>
                         <asp:TextBox ID="txtRegPhone" runat="server" CssClass="form-control" MaxLength="15" />
                     </div>
@@ -172,12 +172,12 @@
 
         <div class="ops-box bn-mt-6">
             <h2 class="ops-title bn-subheading">Validate a ticket</h2>
-            <div class="row">
-                <div class="col-md-8 mb-3">
+            <div class="bn-field-action">
+                <div class="bn-field">
                     <label for="<%= txtValidateNumber.ClientID %>">Ticket number</label>
                     <asp:TextBox ID="txtValidateNumber" runat="server" CssClass="form-control" placeholder="e.g. BN-000012" />
                 </div>
-                <div class="col-md-4 mb-3 bn-align-end">
+                <div>
                     <asp:Button ID="btnValidate" runat="server" Text="Look up"
                                 CssClass="btn-ops-secondary bn-w-full" CausesValidation="false"
                                 OnClick="btnValidate_Click" />

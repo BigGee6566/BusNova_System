@@ -7,9 +7,12 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
     <div class="ops-page">
-    <div class="ops-wrap ops-wrap--narrow">
+    <div class="ops-wrap">
 
         <a class="ops-back-link" href="BookTrip.aspx">&larr; Back to trip search</a>
+
+        <%-- What you are paying for on the left, how you pay on the right. --%>
+        <div class="bn-cols-2">
 
         <div class="ops-box">
 
@@ -35,7 +38,7 @@
                     <strong><asp:Literal ID="litTravellerCount" runat="server" /></strong>
                 </div>
 
-                <div class="ops-grid-wrap bn-mt-4 bn-mb-4">
+                <div class="ops-grid-wrap ops-grid-wrap--compact bn-mt-4 bn-mb-4">
                     <%-- OnRowDataBound puts the header into a real <thead> and
                          writes the data-label each cell needs to stay readable
                          once the table collapses into cards below 700px.
@@ -60,7 +63,11 @@
                 </div>
             </div>
 
-            <h3 class="bn-subheading bn-mt-6">Payment method</h3>
+        </div>
+
+        <div class="ops-box">
+
+            <h2 class="ops-title">Payment method</h2>
 
             <div class="payment-method-options" data-role="payment-method-options">
                 <label class="payment-method-option">
@@ -84,8 +91,8 @@
                  Values are validated for shape only and are never persisted anywhere;
                  TicketService.CreateBooking never receives them. --%>
             <asp:Panel ID="pnlCardFields" runat="server" CssClass="card-fields" data-role="card-fields">
-                <div class="row">
-                    <div class="col-md-12 mb-3">
+                <div>
+                    <div class="bn-field">
                         <label for="<%= txtCardName.ClientID %>">Cardholder name<span class="required-mark">*</span></label>
                         <asp:TextBox ID="txtCardName" runat="server" CssClass="form-control" MaxLength="100" autocomplete="cc-name" />
                         <asp:RequiredFieldValidator ID="rfvCardName"
@@ -94,8 +101,8 @@
                             Display="Dynamic" ValidationGroup="Payment" />
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
+                <div class="bn-cols-2">
+                    <div class="bn-field bn-span-full">
                         <label for="<%= txtCardNumber.ClientID %>">Card number<span class="required-mark">*</span></label>
                         <asp:TextBox ID="txtCardNumber" runat="server" CssClass="form-control"
                                      placeholder="4111 1111 1111 1111" MaxLength="19" autocomplete="cc-number" />
@@ -109,7 +116,7 @@
                             ValidationExpression="^\d{4}\s?\d{4}\s?\d{4}\s?\d{4}$"
                             CssClass="field-error" Display="Dynamic" ValidationGroup="Payment" />
                     </div>
-                    <div class="col-md-3 mb-3">
+                    <div class="bn-field">
                         <label for="<%= txtCardExpiry.ClientID %>">Expiry (MM/YY)<span class="required-mark">*</span></label>
                         <asp:TextBox ID="txtCardExpiry" runat="server" CssClass="form-control"
                                      placeholder="MM/YY" MaxLength="5" autocomplete="cc-exp" />
@@ -123,7 +130,7 @@
                             ValidationExpression="^(0[1-9]|1[0-2])\/\d{2}$"
                             CssClass="field-error" Display="Dynamic" ValidationGroup="Payment" />
                     </div>
-                    <div class="col-md-3 mb-3">
+                    <div class="bn-field">
                         <label for="<%= txtCardCvv.ClientID %>">CVV<span class="required-mark">*</span></label>
                         <asp:TextBox ID="txtCardCvv" runat="server" CssClass="form-control" TextMode="Password"
                                      placeholder="123" MaxLength="4" autocomplete="cc-csc" />
@@ -154,6 +161,8 @@
             </div>
 
             <asp:Label ID="lblMessage" runat="server" CssClass="ops-message" />
+
+        </div>
 
         </div>
     </div>

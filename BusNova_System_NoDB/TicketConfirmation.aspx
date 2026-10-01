@@ -2,20 +2,20 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="Styles/style.css?v=8" rel="stylesheet" />
     <link href="Styles/Ops.css?v=9" rel="stylesheet" />
-    <link href="Styles/Ticket.css?v=2" rel="stylesheet" />
+    <link href="Styles/Ticket.css?v=5" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="Scripts/ticket-confirmation.js?v=1"></script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
     <div class="ops-page">
-    <div class="ops-wrap ops-wrap--narrow">
+    <div class="ops-wrap">
 
         <a class="ops-back-link no-print" href="MyTickets.aspx">&larr; Back to My Tickets</a>
 
-        <asp:Panel ID="pnlConfirmed" runat="server" Visible="false">
+        <asp:Panel ID="pnlConfirmed" runat="server" Visible="false" CssClass="bn-cols-2">
 
-            <div class="ops-box no-print">
+            <div class="ops-box no-print bn-span-full">
                 <span class="bn-badge bn-badge--success">
                     <i class="fas fa-circle-check" aria-hidden="true"></i> Payment successful
                 </span>

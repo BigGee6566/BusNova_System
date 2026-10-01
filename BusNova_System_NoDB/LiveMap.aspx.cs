@@ -154,44 +154,62 @@ namespace BusNova_System
 
         // ---------------- formatting helpers used by the markup ----------------
 
-        protected string FixAge(object minutes, object hasFix)
-        {
-            if (!Convert.ToBoolean(hasFix))
-                return "<span class=\"rpt-muted\">No fix</span>";
+        // These return plain values. LiveMap.aspx owns the markup - which
+        // element, which badge - so the page can be restyled without
+        // touching C#, and nothing here can emit unencoded HTML (UI-021).
 
-            if (minutes == null || minutes == DBNull.Value) return "<span class=\"rpt-muted\">&mdash;</span>";
+        private static bool HasValue(object value)
+        {
+            return value != null && value != DBNull.Value;
+        }
+
+        protected string FixAgeText(object minutes, object hasFix)
+        {
+            if (!Convert.ToBoolean(hasFix)) return "No fix";
+            if (!HasValue(minutes)) return "—";
 
             var m = Convert.ToInt32(minutes);
-            var stale = m > TrackingService.StaleFixMinutes;
-
-            return "<span class=\"status-badge " + (stale ? "status-warning" : "status-completed") + "\">" +
-                   (m <= 0 ? "just now" : m + " min ago") + "</span>";
+            return m <= 0 ? "just now" : m + " min ago";
         }
 
-        protected string Remaining(object km)
+        /// <summary>A badge tone for a fix, or plain muted text when there is no fix to judge.</summary>
+        protected string FixAgeCss(object minutes, object hasFix)
         {
-            if (km == null || km == DBNull.Value) return "<span class=\"rpt-muted\">&mdash;</span>";
-            return Convert.ToDouble(km).ToString("N1") + " km";
+            if (!Convert.ToBoolean(hasFix) || !HasValue(minutes)) return "rpt-muted";
+
+            return Convert.ToInt32(minutes) > TrackingService.StaleFixMinutes
+                ? "status-badge status-warning"
+                : "status-badge status-completed";
         }
 
-        protected string Eta(object earliest, object latest, object confidence)
+        protected string RemainingText(object km)
         {
-            if (earliest == null || earliest == DBNull.Value || latest == null || latest == DBNull.Value)
-                return "<span class=\"rpt-muted\">No estimate</span>";
+            return HasValue(km) ? Convert.ToDouble(km).ToString("N1") + " km" : "—";
+        }
 
-            var from = Convert.ToDateTime(earliest);
-            var to = Convert.ToDateTime(latest);
-            var conf = Convert.ToString(confidence);
+        protected bool HasEta(object earliest, object latest)
+        {
+            return HasValue(earliest) && HasValue(latest);
+        }
 
-            var css = conf == "High" ? "status-completed"
-                    : conf == "Medium" ? "status-scheduled"
-                    : conf == "Arriving" ? "status-completed" : "status-warning";
+        protected string EtaRange(object earliest, object latest, object confidence)
+        {
+            if (!HasEta(earliest, latest)) return "No estimate";
+            if (Convert.ToString(confidence) == "Arriving") return "Arriving now";
 
-            var text = conf == "Arriving"
-                ? "Arriving now"
-                : from.ToString("HH:mm") + "&ndash;" + to.ToString("HH:mm");
+            return Convert.ToDateTime(earliest).ToString("HH:mm") + "–" +
+                   Convert.ToDateTime(latest).ToString("HH:mm");
+        }
 
-            return text + " <span class=\"status-badge " + css + "\">" + Server.HtmlEncode(conf) + "</span>";
+        protected string EtaCss(object confidence)
+        {
+            switch (Convert.ToString(confidence))
+            {
+                case "High":
+                case "Arriving": return "status-completed";
+                case "Medium": return "status-scheduled";
+                default: return "status-warning";
+            }
         }
 
         private void ShowSuccess(string message)

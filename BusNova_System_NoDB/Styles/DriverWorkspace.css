@@ -10,7 +10,7 @@
    practical minimum for a cold thumb is rather more.
    ============================================================= */
 
-.dw .bn-card { margin-bottom: var(--bn-space-4, 1rem); }
+.dw > .bn-card { margin-bottom: var(--bn-space-4, 1rem); }
 
 /* ---------- the trip itself ---------- */
 
@@ -65,9 +65,7 @@
 .dw-count__label {
     display: block;
     margin-top: 4px;
-    font-size: 0.78rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+    font-size: var(--bn-text-sm);
     color: var(--bn-text-muted);
 }
 
@@ -140,9 +138,23 @@
 @media (min-width: 768px) {
     .dw-actions { flex-direction: row; }
     .dw-btn { width: auto; min-width: 200px; }
-    .dw-counts { max-width: 420px; }
 }
 
 @media (prefers-reduced-motion: no-preference) {
     .dw-btn { transition: background-color 120ms ease-in-out; }
 }
+
+/* ---------- two columns on a desk (UI-020) ----------
+   The manifest spans the full width - it is the list the driver reads -
+   and dense packing lets "Report a delay" fill the space beside the
+   inspection instead of leaving a hole. On a phone the grid is one
+   column and the markup order is unchanged. */
+.dw .bn-cols-2 { grid-auto-flow: row dense; }
+
+/* The trip card's two halves (UI-021): details and action left, the
+   three numbers right, vertically centred against each other. The counts'
+   own 16px top and bottom margin was spacing for a stacked card; inside
+   the grid the gap does it. */
+.dw-trip__body { align-items: center; }
+.dw-trip__body > .dw-counts { margin: 0; }
+.dw-trip .dw-actions { margin-top: var(--bn-space-4); }

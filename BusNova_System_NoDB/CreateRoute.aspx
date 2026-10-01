@@ -13,8 +13,8 @@
             <h2 class="ops-title">Create Route</h2>
             <div class="ops-subtitle">Create a new bus route for the BusNova fleet management system.</div>
 
-            <div class="row">
-                <div class="col-md-6 mb-3">
+            <div class="bn-cols-2">
+                <div class="bn-field">
                     <label for="<%= txtRouteCode.ClientID %>">Route Code<span class="required-mark">*</span></label>
                     <asp:TextBox
                         ID="txtRouteCode"
@@ -43,7 +43,7 @@
                         ValidationGroup="CreateRoute" />
                 </div>
 
-                <div class="col-md-6 mb-3">
+                <div class="bn-field">
                     <label for="<%= txtRouteName.ClientID %>">Route Name<span class="required-mark">*</span></label>
                     <asp:TextBox
                         ID="txtRouteName"
@@ -62,9 +62,9 @@
                 </div>
             </div>
 
-            <div class="row">
+            <div class="bn-cols-2">
 
-                <div class="col-md-6 mb-3">
+                <div class="bn-field">
                     <label for="<%= txtOrigin.ClientID %>">Origin<span class="required-mark">*</span></label>
                     <asp:TextBox
                         ID="txtOrigin"
@@ -83,8 +83,8 @@
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-6 mb-3">
+            <div class="bn-cols-2">
+                <div class="bn-field">
                     <label for="<%= txtDestination.ClientID %>">Destination<span class="required-mark">*</span></label>
                     <asp:TextBox
                         ID="txtDestination"
@@ -102,7 +102,7 @@
                         ValidationGroup="CreateRoute" />
                 </div>
 
-                <div class="col-md-6 mb-3">
+                <div class="bn-field">
                     <label for="<%= txtDistanceKM.ClientID %>">Distance (KM)<span class="required-mark">*</span></label>
                     <asp:TextBox
                         ID="txtDistanceKM"

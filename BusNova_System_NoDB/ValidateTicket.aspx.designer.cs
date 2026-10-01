@@ -16,6 +16,7 @@ namespace BusNova_System
         protected global::System.Web.UI.WebControls.Button btnValidateNumber;
         protected global::System.Web.UI.WebControls.Label lblMessage;
         protected global::System.Web.UI.WebControls.Panel pnlResult;
+        protected global::System.Web.UI.WebControls.Panel pnlAwaiting;
         protected global::System.Web.UI.WebControls.Literal litOutcomeTitle;
         protected global::System.Web.UI.WebControls.Literal litTicketNumber;
         protected global::System.Web.UI.WebControls.Literal litTraveller;

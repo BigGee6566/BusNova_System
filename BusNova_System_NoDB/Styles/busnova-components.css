@@ -73,7 +73,9 @@
 
 .bn-card { margin-bottom: var(--bn-space-6); }
 
-@media (min-width: 768px) {
+/* The roomier 32px from 1200px. Below that - a small or scaled laptop -
+   the 8px each side goes to the tables inside the card instead. */
+@media (min-width: 1200px) {
     .bn-card,
     .ops-box,
     .dash-panel {
@@ -421,6 +423,10 @@ textarea.bn-field__control {
 .bn-mb-6 { margin-bottom: var(--bn-space-6); }
 .bn-w-full { width: 100%; }
 
+/* A single control inside a full-width card - Validate Ticket's trip
+   picker - keeps a readable width instead of running edge to edge. */
+.bn-measure { max-width: 36rem; }
+
 /* Aligns a control with the bottom of a labelled field beside it -
    the "button next to an input" row that appears on several forms. */
 .bn-align-end { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--bn-space-2); }
@@ -436,9 +442,11 @@ textarea.bn-field__control {
 
 .bn-subheading--sm { font-size: var(--bn-text-base); }
 
+/* 14px rather than the 13px --bn-text-sm: help text is read, not glanced
+   at, and on a laptop at arm's length 13px was a squint (UI-021). */
 .bn-note {
     display: block;
-    font-size: var(--bn-text-sm);
+    font-size: 0.875rem;
     color: var(--bn-text-muted);
     margin-top: var(--bn-space-1);
 }
@@ -482,7 +490,6 @@ textarea.bn-field__control {
    Pages set max-width inline, with five different values. These are
    the three that were actually meant. */
 
-.ops-wrap--narrow  { max-width: 760px; }
 .ops-wrap--default { max-width: 1000px; }
 .ops-wrap--wide    { max-width: 1180px; }
 
@@ -1009,8 +1016,15 @@ textarea.bn-field__control {
    tablets use, and only collapsed once the window itself fell below
    700px. .ops-grid-wrap is the container, so each table now switches
    on the space it is actually given, sidebar open, collapsed or absent.
+
+   560px, not larger: this system is demonstrated on a laptop, which is
+   the primary screen, and a laptop must always get the table layout. The
+   narrowest laptop case - a 1366 or 1280 screen at Windows' 125% scaling,
+   1024 CSS pixels - leaves a full-width table about 620px, so it stays a
+   table (a wide one scrolls inside its card). Only a tablet or a phone
+   gets the stacked cards.
    ============================================================ */
-@container bn-grid (max-width: 720px) {
+@container bn-grid (max-width: 560px) {
     .ops-grid,
     .ops-grid tbody,
     .ops-grid tr,
@@ -1070,6 +1084,188 @@ textarea.bn-field__control {
     }
 }
 
+/* A short table - three or four columns, like the driver's manifest or
+   the payment page's traveller list - fits comfortably in a half-width
+   column on a laptop, and stacking it there would turn seven passengers
+   into seven cards. .ops-grid-wrap--compact names its container
+   differently, with a 200px threshold, so even a half-width column on a
+   1024px laptop (231px of table on Payment) keeps the table. On a phone the
+   media rule below hands it back to the ordinary bn-grid container, so
+   a phone still gets labelled cards.
+
+   The rules repeat the block above rather than sharing it: a comma-joined
+   container condition is not supported everywhere, and a browser that
+   rejected it would drop the whole rule - and with it every table's
+   narrow-screen layout. */
+.ops-grid-wrap--compact {
+    container-name: bn-grid-compact;
+}
+
+@media (max-width: 575.98px) {
+    .ops-grid-wrap--compact {
+        container-name: bn-grid;
+    }
+}
+
+@container bn-grid-compact (max-width: 200px) {
+    .ops-grid,
+    .ops-grid tbody,
+    .ops-grid tr,
+    .ops-grid td {
+        display: block;
+        width: 100%;
+    }
+
+    .ops-grid thead {
+        display: none;
+    }
+
+    .ops-grid tr {
+        margin-bottom: var(--bn-space-3);
+        border: 1px solid var(--bn-border-strong);
+        border-radius: var(--bn-radius-md);
+        overflow: hidden;
+    }
+
+    .ops-grid td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--bn-space-3);
+        white-space: normal;
+        text-align: right;
+        border-bottom: 1px solid var(--bn-border);
+    }
+
+        .ops-grid td:last-child {
+            border-bottom: none;
+        }
+
+        .ops-grid td::before {
+            content: attr(data-label);
+            font-weight: 600;
+            color: var(--bn-text-secondary);
+            text-align: left;
+        }
+
+        .ops-grid td:only-child {
+            text-align: left;
+        }
+
+            .ops-grid td:only-child::before {
+                content: none;
+            }
+
+    .ops-grid td:not([data-label]) {
+        display: block;
+        text-align: left;
+    }
+}
+
+
+/* ============================================================
+   TWO-COLUMN PAGE LAYOUT                                (UI-020)
+   The four pages that used to sit in an 820px column - My Trip, Validate
+   Ticket, Payment and Ticket Confirmation - now fill the content area and
+   put their cards side by side. A single form stretched across a 1400px
+   screen is harder to use than a narrow one, so the answer to "too
+   narrow" is two readable columns, not one wide one.
+
+   The column count comes from the space, not a breakpoint: two columns
+   while each can be at least 18rem, otherwise one. min(100%, ...) stops
+   a phone overflowing, and max(..., half) stops a wide monitor making a
+   third column. The laptop is the primary screen, so the floor is set
+   low enough that every laptop width - down to 1024 CSS pixels, a
+   scaled 1366 screen - gets two columns; one column is for tablets and
+   phones only.
+   ============================================================ */
+.bn-cols-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,
+        minmax(min(100%, max(18rem, calc((100% - var(--bn-space-6)) / 2))), 1fr));
+    gap: var(--bn-space-6);
+    align-items: start;
+}
+
+/* Rows of form fields (UI-021). Eleven pages laid their fields out with
+   Bootstrap's row/col-md-*, which meant two field systems in one product.
+
+   These step at fixed widths rather than auto-fit like .bn-cols-2, because
+   auto-fit cannot skip from four columns to two: measured, a 1024px laptop
+   put four fields as 3 + 1 and three fields as 2 + 1, an orphan on its own
+   line. So four fields are 4 across from 1200px, 2 x 2 on a smaller laptop
+   or tablet, and stacked on a phone; three fields are 3 across from 992px
+   and stacked below. */
+.bn-cols-3,
+.bn-cols-4 {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--bn-space-6);
+    align-items: start;
+}
+
+@media (min-width: 576px) {
+    .bn-cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (min-width: 992px) {
+    .bn-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1200px) {
+    .bn-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+/* An input with its button beside it - "Passenger email or phone" and
+   Find, "Ticket number" and Look up. The input takes the room, the button
+   its label's width, both bottoms aligned. */
+.bn-field-action {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--bn-space-4);
+    align-items: end;
+}
+
+@media (max-width: 575.98px) {
+    .bn-field-action {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* The grid's gap is the spacing; a card's own bottom margin would add to
+   it unevenly. */
+.bn-cols-2 > *,
+.bn-cols-3 > *,
+.bn-cols-4 > *,
+.bn-field-action > * {
+    margin: 0;
+    min-width: 0;
+}
+
+/* Successive rows of fields keep the space Bootstrap's mb-3 gave them. */
+.bn-cols-2,
+.bn-cols-3,
+.bn-cols-4,
+.bn-field-action {
+    margin-bottom: var(--bn-space-4);
+}
+
+.bn-span-full {
+    grid-column: 1 / -1;
+}
+
+/* Cards stacked in one grid column - Validate Ticket's two ways to
+   present a ticket - at the same gap as the grid around them. */
+.bn-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--bn-space-6);
+}
+
+.bn-stack > * {
+    margin: 0;
+}
+
 
 /* ============================================================
    FILTER BAR                                        (AUD-070)
@@ -1104,13 +1300,13 @@ textarea.bn-field__control {
     flex: 1 1 220px;
 }
 
+/* Sentence case, not small caps: an all-caps label is slower to read and
+   wider for the same word (UI-021). Weight and colour carry the hierarchy. */
 .rpt-field label,
 .rpt-filters .bn-field > label {
-    font-size: var(--bn-text-xs);
+    font-size: var(--bn-text-sm);
     font-weight: 600;
     color: var(--bn-text-muted);
-    text-transform: uppercase;
-    letter-spacing: .04em;
 }
 
 /* Most filter bars are written with .bn-field rather than .rpt-field, and

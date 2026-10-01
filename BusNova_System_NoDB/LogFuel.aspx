@@ -16,8 +16,8 @@
                 if you're not on a scheduled trip right now.
             </div>
 
-            <div class="row">
-                <div class="col-md-6 mb-3">
+            <div class="bn-cols-2">
+                <div class="bn-field">
                     <label for="<%= ddlSource.ClientID %>">Trip or bus<span class="required-mark">*</span></label>
                     <asp:DropDownList
                         ID="ddlSource"
@@ -39,7 +39,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-6 mb-3">
+                <div class="bn-field">
                     <label for="<%= txtDate.ClientID %>">Date<span class="required-mark">*</span></label>
                     <asp:TextBox ID="txtDate" runat="server" TextMode="Date" CssClass="form-control" />
                     <asp:RequiredFieldValidator
@@ -52,8 +52,8 @@
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-4 mb-3">
+            <div class="bn-cols-3">
+                <div class="bn-field">
                     <label for="<%= txtLitres.ClientID %>">Fuel amount (litres)<span class="required-mark">*</span></label>
                     <asp:TextBox ID="txtLitres" runat="server" CssClass="form-control" placeholder="e.g. 120.5" />
                     <asp:RequiredFieldValidator
@@ -73,7 +73,7 @@
                         ValidationGroup="LogFuel" />
                 </div>
 
-                <div class="col-md-4 mb-3">
+                <div class="bn-field">
                     <label for="<%= txtCost.ClientID %>">Cost<span class="required-mark">*</span></label>
                     <asp:TextBox ID="txtCost" runat="server" CssClass="form-control" placeholder="e.g. 2150.00" />
                     <asp:RequiredFieldValidator
@@ -93,7 +93,7 @@
                         ValidationGroup="LogFuel" />
                 </div>
 
-                <div class="col-md-4 mb-3">
+                <div class="bn-field">
                     <label for="<%= txtOdometer.ClientID %>">Odometer reading (km)<span class="required-mark">*</span></label>
                     <asp:TextBox ID="txtOdometer" runat="server" CssClass="form-control" placeholder="e.g. 154200" />
                     <asp:RequiredFieldValidator

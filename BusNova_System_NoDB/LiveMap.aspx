@@ -83,13 +83,26 @@
                         <asp:BoundField DataField="BusRegistration" HeaderText="Bus" />
                         <asp:BoundField DataField="DriverName" HeaderText="Driver" />
                         <asp:TemplateField HeaderText="Last fix">
-                            <ItemTemplate><%# FixAge(Eval("FixAgeMinutes"), Eval("HasFix")) %></ItemTemplate>
+                            <ItemTemplate>
+                                <span class='<%# FixAgeCss(Eval("FixAgeMinutes"), Eval("HasFix")) %>'><%# Server.HtmlEncode(FixAgeText(Eval("FixAgeMinutes"), Eval("HasFix"))) %></span>
+                            </ItemTemplate>
                         </asp:TemplateField>
-                        <asp:TemplateField HeaderText="Remaining">
-                            <ItemTemplate><%# Remaining(Eval("RemainingKm")) %></ItemTemplate>
+                        <asp:TemplateField HeaderText="Remaining" ItemStyle-CssClass="num" HeaderStyle-CssClass="num">
+                            <ItemTemplate><%# Server.HtmlEncode(RemainingText(Eval("RemainingKm"))) %></ItemTemplate>
                         </asp:TemplateField>
+                        <%-- The time on one line and how sure it is on the
+                             next, so the cell reads as "when" first. "Arriving
+                             now" needs no confidence badge beside it. --%>
                         <asp:TemplateField HeaderText="Arrives">
-                            <ItemTemplate><%# Eta(Eval("EtaEarliest"), Eval("EtaLatest"), Eval("EtaConfidence")) %></ItemTemplate>
+                            <ItemTemplate>
+                                <span class="cell-stack">
+                                    <span class='<%# HasEta(Eval("EtaEarliest"), Eval("EtaLatest")) ? "" : "rpt-muted" %>'><%# Server.HtmlEncode(EtaRange(Eval("EtaEarliest"), Eval("EtaLatest"), Eval("EtaConfidence"))) %></span>
+                                    <asp:PlaceHolder runat="server"
+                                        Visible='<%# HasEta(Eval("EtaEarliest"), Eval("EtaLatest")) && Convert.ToString(Eval("EtaConfidence")) != "Arriving" %>'>
+                                        <span class='<%# "status-badge " + EtaCss(Eval("EtaConfidence")) %>'><%# Server.HtmlEncode(Convert.ToString(Eval("EtaConfidence"))) %> confidence</span>
+                                    </asp:PlaceHolder>
+                                </span>
+                            </ItemTemplate>
                         </asp:TemplateField>
                         <asp:TemplateField HeaderText="Basis">
                             <ItemTemplate><span class="lm-basis"><%# Server.HtmlEncode(Convert.ToString(Eval("EtaExplanation"))) %></span></ItemTemplate>

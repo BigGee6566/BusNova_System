@@ -10,8 +10,8 @@
         <h1 class="reg-title">Create an account</h1>
         <div class="reg-subtitle">Register as a Passenger.</div>
 
-        <div class="row">
-            <div class="col-md-6 mb-3">
+        <div class="bn-cols-2">
+            <div class="bn-field">
                 <label for="<%= txtFirstName.ClientID %>">First Name<span class="required-mark">*</span></label>
                 <asp:TextBox
                     ID="txtFirstName"
@@ -29,7 +29,7 @@
                     ValidationGroup="Register" />
             </div>
 
-            <div class="col-md-6 mb-3">
+            <div class="bn-field">
                 <label for="<%= txtLastName.ClientID %>">Last Name<span class="required-mark">*</span></label>
                 <asp:TextBox
                     ID="txtLastName"

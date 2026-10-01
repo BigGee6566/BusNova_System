@@ -157,13 +157,17 @@ namespace BusNova_System
 
         protected string OutcomeText(object outcome)
         {
-            var value = Convert.ToString(outcome);
-            if (string.IsNullOrEmpty(value)) return string.Empty;
+            return Server.HtmlEncode(StatusTone.Label(outcome));
+        }
 
-            var spaced = System.Text.RegularExpressions.Regex.Replace(
-                value, "(?<=[a-z])(?=[A-Z])", " ");
-
-            return Server.HtmlEncode(spaced);
+        // The right-hand column always has something in it: the last
+        // result, or before the first scan, a placeholder saying what will
+        // appear there. Set last, so it follows every path that shows or
+        // hides the result.
+        protected override void OnPreRender(EventArgs e)
+        {
+            base.OnPreRender(e);
+            pnlAwaiting.Visible = !pnlResult.Visible;
         }
     }
 }

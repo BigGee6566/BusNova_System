@@ -124,6 +124,22 @@ namespace BusNova_System.Helpers
         }
 
         /// <summary>
+        /// A ticket on a manifest, in the words of the person at the door.
+        /// "Valid" and "Used" are the stored states; on a list of who is on
+        /// the bus they read as "Not boarded" and "Boarded". Both manifests
+        /// use this, so the driver's and the depot's copies agree (UI-021).
+        /// </summary>
+        public static string Boarding(object ticketStatus)
+        {
+            switch (Text(ticketStatus))
+            {
+                case "Used": return "Boarded";
+                case "Valid": return "Not boarded";
+                default: return Label(ticketStatus);
+            }
+        }
+
+        /// <summary>
         /// The words a badge prints. Statuses are stored as PascalCase
         /// constants, and three pages printed them verbatim - "InProgress",
         /// "UnderMaintenance" - while two others split them with a private

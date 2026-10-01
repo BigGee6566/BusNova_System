@@ -4,10 +4,21 @@
     background: var(--bn-white);
     border: 1px solid rgba(var(--bn-navy-rgb),0.14);
     border-left: 4px solid var(--bn-blue);
-    border-radius: 14px;
+    border-radius: var(--bn-radius-lg);
     box-shadow: 0 8px 24px rgba(var(--bn-navy-rgb),0.10);
     margin-top: 20px;
     overflow: hidden;
+}
+
+/* Side by side on a wide screen, the grid's gap does the spacing. */
+.bn-cols-2 > .e-ticket {
+    margin-top: 0;
+}
+
+/* A booking with one traveller has one ticket; alone in half the row it
+   left the other half empty, so it takes the whole row. */
+.bn-cols-2 > .bn-span-full + .e-ticket:last-child {
+    grid-column: 1 / -1;
 }
 
 .e-ticket-header {
@@ -73,9 +84,7 @@
 }
 
 .e-ticket-route-label {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+    font-size: var(--bn-text-xs);
     color: var(--bn-text-muted);
 }
 
@@ -94,9 +103,7 @@
 
     .e-ticket-grid span {
         display: block;
-        font-size: 0.7rem;
-        text-transform: uppercase;
-        letter-spacing: 0.03em;
+        font-size: var(--bn-text-xs);
         color: var(--bn-text-muted);
         margin-bottom: 2px;
     }

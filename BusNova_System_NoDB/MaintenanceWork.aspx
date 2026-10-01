@@ -103,8 +103,8 @@
                                  placeholder="Optional" MaxLength="255" />
                 </div>
 
-                <div class="row">
-                    <div class="col-md-3 mb-3">
+                <div class="bn-cols-4">
+                    <div class="bn-field">
                         <label for="<%= txtServiceCost.ClientID %>">Cost</label>
                         <asp:TextBox ID="txtServiceCost" runat="server" CssClass="form-control" placeholder="Optional" />
                         <asp:RegularExpressionValidator
@@ -116,7 +116,7 @@
                             Display="Dynamic"
                             ValidationGroup="LogService" />
                     </div>
-                    <div class="col-md-3 mb-3">
+                    <div class="bn-field">
                         <label for="<%= txtServiceOdometer.ClientID %>">Odometer at service</label>
                         <asp:TextBox ID="txtServiceOdometer" runat="server" CssClass="form-control" placeholder="Optional" />
                         <asp:RegularExpressionValidator
@@ -128,7 +128,7 @@
                             Display="Dynamic"
                             ValidationGroup="LogService" />
                     </div>
-                    <div class="col-md-3 mb-3">
+                    <div class="bn-field">
                         <label for="<%= txtServiceDate.ClientID %>">Service date<span class="required-mark">*</span></label>
                         <asp:TextBox ID="txtServiceDate" runat="server" TextMode="Date" CssClass="form-control" />
                         <asp:RequiredFieldValidator
@@ -139,7 +139,7 @@
                             Display="Dynamic"
                             ValidationGroup="LogService" />
                     </div>
-                    <div class="col-md-3 mb-3">
+                    <div class="bn-field">
                         <label for="<%= txtNextServiceDue.ClientID %>">Next service due<span class="required-mark">*</span></label>
                         <asp:TextBox ID="txtNextServiceDue" runat="server" TextMode="Date" CssClass="form-control" />
                         <asp:RequiredFieldValidator

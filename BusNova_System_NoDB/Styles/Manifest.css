@@ -34,8 +34,6 @@
 
 .mf-meta span {
     font-size: var(--bn-text-xs);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
     color: var(--bn-text-muted);
 }
 

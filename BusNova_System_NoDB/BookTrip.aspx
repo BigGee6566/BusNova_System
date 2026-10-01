@@ -2,7 +2,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="Styles/style.css?v=8" rel="stylesheet" />
     <link href="Styles/Ops.css?v=9" rel="stylesheet" />
-    <link href="Styles/SeatMap.css?v=3" rel="stylesheet" />
+    <link href="Styles/SeatMap.css?v=4" rel="stylesheet" />
     <script src="Scripts/seat-map.js?v=2"></script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
@@ -18,16 +18,16 @@
                 other travellers. You'll review everything on a payment summary before anything is charged.
             </div>
 
-            <div class="row">
-                <div class="col-md-4 mb-3">
+            <div class="bn-cols-3">
+                <div class="bn-field">
                     <label for="<%= txtOrigin.ClientID %>">From</label>
                     <asp:TextBox ID="txtOrigin" runat="server" CssClass="form-control" placeholder="Any origin" />
                 </div>
-                <div class="col-md-4 mb-3">
+                <div class="bn-field">
                     <label for="<%= txtDestination.ClientID %>">To</label>
                     <asp:TextBox ID="txtDestination" runat="server" CssClass="form-control" placeholder="Any destination" />
                 </div>
-                <div class="col-md-4 mb-3">
+                <div class="bn-field">
                     <label for="<%= txtTravelDate.ClientID %>">Travel date</label>
                     <asp:TextBox ID="txtTravelDate" runat="server" TextMode="Date" CssClass="form-control" />
                 </div>
@@ -146,12 +146,12 @@
                      label as seats are picked above. --%>
                 <asp:Panel ID="pnlTraveller1" runat="server" CssClass="traveller-row" data-role="traveller-row" data-index="1">
                     <div class="traveller-row-title">Traveller 1 &mdash; seat <span data-role="traveller-seat-label"></span></div>
-                    <div class="row">
-                        <div class="col-md-7 mb-2">
+                    <div class="bn-cols-2">
+                        <div class="bn-field">
                             <label for="<%= txtTraveller1Name.ClientID %>">Full name<span class="required-mark">*</span></label>
                             <asp:TextBox ID="txtTraveller1Name" runat="server" CssClass="form-control" MaxLength="100" />
                         </div>
-                        <div class="col-md-5 mb-2">
+                        <div class="bn-field">
                             <label for="<%= txtTraveller1Reference.ClientID %>">Student / ID number <span class="empty-note">(optional)</span></label>
                             <asp:TextBox ID="txtTraveller1Reference" runat="server" CssClass="form-control" MaxLength="30" />
                         </div>
@@ -160,12 +160,12 @@
 
                 <asp:Panel ID="pnlTraveller2" runat="server" CssClass="traveller-row" data-role="traveller-row" data-index="2">
                     <div class="traveller-row-title">Traveller 2 &mdash; seat <span data-role="traveller-seat-label"></span></div>
-                    <div class="row">
-                        <div class="col-md-7 mb-2">
+                    <div class="bn-cols-2">
+                        <div class="bn-field">
                             <label for="<%= txtTraveller2Name.ClientID %>">Full name<span class="required-mark">*</span></label>
                             <asp:TextBox ID="txtTraveller2Name" runat="server" CssClass="form-control" MaxLength="100" />
                         </div>
-                        <div class="col-md-5 mb-2">
+                        <div class="bn-field">
                             <label for="<%= txtTraveller2Reference.ClientID %>">Student / ID number <span class="empty-note">(optional)</span></label>
                             <asp:TextBox ID="txtTraveller2Reference" runat="server" CssClass="form-control" MaxLength="30" />
                         </div>
@@ -174,12 +174,12 @@
 
                 <asp:Panel ID="pnlTraveller3" runat="server" CssClass="traveller-row" data-role="traveller-row" data-index="3">
                     <div class="traveller-row-title">Traveller 3 &mdash; seat <span data-role="traveller-seat-label"></span></div>
-                    <div class="row">
-                        <div class="col-md-7 mb-2">
+                    <div class="bn-cols-2">
+                        <div class="bn-field">
                             <label for="<%= txtTraveller3Name.ClientID %>">Full name<span class="required-mark">*</span></label>
                             <asp:TextBox ID="txtTraveller3Name" runat="server" CssClass="form-control" MaxLength="100" />
                         </div>
-                        <div class="col-md-5 mb-2">
+                        <div class="bn-field">
                             <label for="<%= txtTraveller3Reference.ClientID %>">Student / ID number <span class="empty-note">(optional)</span></label>
                             <asp:TextBox ID="txtTraveller3Reference" runat="server" CssClass="form-control" MaxLength="30" />
                         </div>
@@ -188,12 +188,12 @@
 
                 <asp:Panel ID="pnlTraveller4" runat="server" CssClass="traveller-row" data-role="traveller-row" data-index="4">
                     <div class="traveller-row-title">Traveller 4 &mdash; seat <span data-role="traveller-seat-label"></span></div>
-                    <div class="row">
-                        <div class="col-md-7 mb-2">
+                    <div class="bn-cols-2">
+                        <div class="bn-field">
                             <label for="<%= txtTraveller4Name.ClientID %>">Full name<span class="required-mark">*</span></label>
                             <asp:TextBox ID="txtTraveller4Name" runat="server" CssClass="form-control" MaxLength="100" />
                         </div>
-                        <div class="col-md-5 mb-2">
+                        <div class="bn-field">
                             <label for="<%= txtTraveller4Reference.ClientID %>">Student / ID number <span class="empty-note">(optional)</span></label>
                             <asp:TextBox ID="txtTraveller4Reference" runat="server" CssClass="form-control" MaxLength="30" />
                         </div>
@@ -202,12 +202,12 @@
 
                 <asp:Panel ID="pnlTraveller5" runat="server" CssClass="traveller-row" data-role="traveller-row" data-index="5">
                     <div class="traveller-row-title">Traveller 5 &mdash; seat <span data-role="traveller-seat-label"></span></div>
-                    <div class="row">
-                        <div class="col-md-7 mb-2">
+                    <div class="bn-cols-2">
+                        <div class="bn-field">
                             <label for="<%= txtTraveller5Name.ClientID %>">Full name<span class="required-mark">*</span></label>
                             <asp:TextBox ID="txtTraveller5Name" runat="server" CssClass="form-control" MaxLength="100" />
                         </div>
-                        <div class="col-md-5 mb-2">
+                        <div class="bn-field">
                             <label for="<%= txtTraveller5Reference.ClientID %>">Student / ID number <span class="empty-note">(optional)</span></label>
                             <asp:TextBox ID="txtTraveller5Reference" runat="server" CssClass="form-control" MaxLength="30" />
                         </div>

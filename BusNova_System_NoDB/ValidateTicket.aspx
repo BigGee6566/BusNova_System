@@ -4,55 +4,78 @@
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
-    <div class="ops-wrap ops-wrap--narrow">
+    <div class="ops-wrap">
 
         <%-- The page title is rendered once, by Site.Master's top bar. --%>
         <p class="bn-page-intro">
             Scan the passenger's QR code, or type the ticket number if the code will not scan.
         </p>
 
-        <div class="bn-card">
+        <%-- The outcome of the last attempt sits above the forms: it is the
+             first thing the person at the door needs after a scan. --%>
+        <asp:Label ID="lblMessage" runat="server" />
 
-            <div class="bn-field">
-                <label for="<%= ddlTrip.ClientID %>">Trip being boarded</label>
-                <asp:DropDownList ID="ddlTrip" runat="server" CssClass="form-control" />
-                <p class="bn-note">
-                    Leave as &ldquo;Any trip&rdquo; to accept a valid ticket for any departure. Choosing a
-                    trip means a ticket for a different departure is refused with its own message,
-                    rather than being boarded onto the wrong bus.
-                </p>
+        <%-- The trip applies to both ways of presenting a ticket, so it spans
+             the top; the two ways sit side by side beneath it. --%>
+        <div class="bn-cols-2 bn-mt-4">
+
+            <div class="bn-card bn-span-full">
+                <div class="bn-field bn-measure">
+                    <label for="<%= ddlTrip.ClientID %>">Trip being boarded</label>
+                    <asp:DropDownList ID="ddlTrip" runat="server" CssClass="form-control" />
+                    <p class="bn-note">
+                        Leave as &ldquo;Any trip&rdquo; to accept a valid ticket for any departure. Choosing a
+                        trip means a ticket for a different departure is refused with its own message,
+                        rather than being boarded onto the wrong bus.
+                    </p>
+                </div>
             </div>
 
-            <asp:Panel ID="pnlScan" runat="server" DefaultButton="btnValidateToken" CssClass="bn-field">
-                <label for="<%= txtToken.ClientID %>">Scan code</label>
-                <asp:TextBox ID="txtToken" runat="server" CssClass="form-control bn-scan-input"
-                             placeholder="Waiting for scan&hellip;" autocomplete="off"
-                             autocapitalize="off" spellcheck="false" />
-                <p class="bn-note">
-                    A hardware scanner types the code into this box and presses Enter.
-                </p>
-                <asp:Button ID="btnValidateToken" runat="server" Text="Validate scanned code"
-                            CssClass="bn-btn bn-btn--primary bn-w-full" OnClick="btnValidateToken_Click" />
+            <%-- Left: the two ways to present a ticket. Right: what came of
+                 the last one. On a laptop the result is beside the input,
+                 near the top of the screen, not below it. --%>
+            <div class="bn-stack">
+
+            <asp:Panel ID="pnlScan" runat="server" DefaultButton="btnValidateToken" CssClass="bn-card">
+                <h2 class="bn-subheading">Scan the code</h2>
+                <div class="bn-field">
+                    <label for="<%= txtToken.ClientID %>">Scanned code</label>
+                    <asp:TextBox ID="txtToken" runat="server" CssClass="form-control bn-scan-input"
+                                 placeholder="Waiting for scan&hellip;" autocomplete="off"
+                                 autocapitalize="off" spellcheck="false" />
+                    <p class="bn-note">
+                        A hardware scanner types the code into this box and presses Enter.
+                    </p>
+                    <asp:Button ID="btnValidateToken" runat="server" Text="Validate scanned code"
+                                CssClass="bn-btn bn-btn--primary bn-w-full" OnClick="btnValidateToken_Click" />
+                </div>
             </asp:Panel>
 
-            <div class="bn-callout">
-                <strong>Code will not scan?</strong>
-                Use the ticket number printed on the ticket.
+            <div class="bn-card">
+                <h2 class="bn-subheading">Code will not scan?</h2>
+                <div class="bn-field">
+                    <label for="<%= txtTicketNumber.ClientID %>">Ticket number printed on the ticket</label>
+                    <asp:TextBox ID="txtTicketNumber" runat="server" CssClass="form-control"
+                                 placeholder="BN-001009" autocomplete="off" MaxLength="20" />
+                    <asp:Button ID="btnValidateNumber" runat="server" Text="Validate ticket number"
+                                CssClass="bn-btn bn-btn--secondary bn-w-full" OnClick="btnValidateNumber_Click" />
+                </div>
             </div>
 
-            <div class="bn-field">
-                <label for="<%= txtTicketNumber.ClientID %>">Ticket number</label>
-                <asp:TextBox ID="txtTicketNumber" runat="server" CssClass="form-control"
-                             placeholder="BN-001009" autocomplete="off" MaxLength="20" />
-                <asp:Button ID="btnValidateNumber" runat="server" Text="Validate ticket number"
-                            CssClass="bn-btn bn-btn--secondary bn-w-full" OnClick="btnValidateNumber_Click" />
             </div>
 
-            <asp:Label ID="lblMessage" runat="server" />
+        <asp:Panel ID="pnlAwaiting" runat="server" CssClass="bn-card">
+            <div class="bn-state">
+                <i class="fas fa-qrcode bn-state__icon" aria-hidden="true"></i>
+                <h2 class="bn-state__title">Scan a ticket to see it here</h2>
+                <p class="bn-state__body">
+                    The result appears in this space: whether the passenger may board, their seat
+                    and trip, and any earlier attempts on the same ticket.
+                </p>
+            </div>
+        </asp:Panel>
 
-        </div>
-
-        <asp:Panel ID="pnlResult" runat="server" Visible="false" CssClass="bn-card bn-mt-3">
+        <asp:Panel ID="pnlResult" runat="server" Visible="false" CssClass="bn-card">
             <h2 class="bn-subheading">
                 <asp:Literal ID="litOutcomeTitle" runat="server" />
             </h2>
@@ -67,7 +90,7 @@
             </div>
 
             <h3 class="bn-subheading bn-mt-3">Recent attempts on this ticket</h3>
-            <div class="ops-grid-wrap">
+            <div class="ops-grid-wrap ops-grid-wrap--compact">
                 <asp:GridView ID="gvHistory" runat="server" AutoGenerateColumns="false"
                               CssClass="ops-grid" GridLines="None" UseAccessibleHeader="true"
                               OnRowDataBound="gvHistory_RowDataBound"
@@ -87,6 +110,8 @@
                 </asp:GridView>
             </div>
         </asp:Panel>
+
+        </div>
 
     </div>
 

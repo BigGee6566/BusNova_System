@@ -27,9 +27,9 @@
     <link href="Styles/Home.css?v=7" rel="stylesheet" />
     <%-- Must load after Home.css: its semantic tokens resolve against the
          brand tokens Home.css declares. --%>
-    <link href="Styles/busnova-design-system.css?v=6" rel="stylesheet" />
+    <link href="Styles/busnova-design-system.css?v=8" rel="stylesheet" />
     <%-- Components load after the tokens they consume. --%>
-    <link href="Styles/busnova-components.css?v=10" rel="stylesheet" />
+    <link href="Styles/busnova-components.css?v=17" rel="stylesheet" />
     <%-- Dashboard and shared page furniture (stat cards, tiles, panels).
          These were an inline <style> block inside Dashboard.aspx, which is
          why no other screen could look like the dashboard. Loaded for every

@@ -13,8 +13,8 @@
             <h2 class="ops-title">Register Bus</h2>
             <div class="ops-subtitle">Register a new bus into the BusNova fleet management system.</div>
 
-            <div class="row">
-                <div class="col-md-6 mb-3">
+            <div class="bn-cols-2">
+                <div class="bn-field">
                     <label for="<%= txtRegistrationNumber.ClientID %>">Registration Number<span class="required-mark">*</span></label>
                     <asp:TextBox
                         ID="txtRegistrationNumber"
@@ -32,7 +32,7 @@
                         ValidationGroup="RegisterBus" />
                 </div>
 
-                <div class="col-md-6 mb-3">
+                <div class="bn-field">
                     <label for="<%= txtModel.ClientID %>">Model<span class="required-mark">*</span></label>
                     <asp:TextBox
                         ID="txtModel"
@@ -51,8 +51,8 @@
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-6 mb-3">
+            <div class="bn-cols-2">
+                <div class="bn-field">
                     <label for="<%= txtManufacturer.ClientID %>">Manufacturer<span class="required-mark">*</span></label>
                     <asp:TextBox
                         ID="txtManufacturer"
@@ -70,7 +70,7 @@
                         ValidationGroup="RegisterBus" />
                 </div>
 
-                <div class="col-md-6 mb-3">
+                <div class="bn-field">
                     <label for="<%= txtSeatingCapacity.ClientID %>">Seating Capacity<span class="required-mark">*</span></label>
                     <asp:TextBox
                         ID="txtSeatingCapacity"
@@ -97,8 +97,8 @@
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-6 mb-3">
+            <div class="bn-cols-2">
+                <div class="bn-field">
                     <label for="<%= ddlFuelType.ClientID %>">Fuel Type<span class="required-mark">*</span></label>
                     <asp:DropDownList
                         ID="ddlFuelType"
@@ -120,7 +120,7 @@
                         ValidationGroup="RegisterBus" />
                 </div>
 
-                <div class="col-md-6 mb-3">
+                <div class="bn-field">
                     <label for="<%= txtYearOfManufacture.ClientID %>">Year of Manufacture<span class="required-mark">*</span></label>
                     <asp:TextBox
                         ID="txtYearOfManufacture"
@@ -147,8 +147,8 @@
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-6 mb-3">
+            <div class="bn-cols-2">
+                <div class="bn-field">
                     <label for="<%= txtFuelCapacity.ClientID %>">Fuel Capacity (litres)</label>
                     <asp:TextBox
                         ID="txtFuelCapacity"
@@ -168,7 +168,7 @@
                         ValidationGroup="RegisterBus" />
                 </div>
 
-                <div class="col-md-6 mb-3">
+                <div class="bn-field">
                     <label for="<%= txtOdometerReading.ClientID %>">Odometer Reading (km)</label>
                     <asp:TextBox
                         ID="txtOdometerReading"

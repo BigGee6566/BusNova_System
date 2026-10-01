@@ -13,8 +13,8 @@
             <h2 class="ops-title">Assign Route</h2>
             <div class="ops-subtitle">Assign an available bus and driver to a route and schedule.</div>
 
-            <div class="row">
-                <div class="col-md-4 mb-3">
+            <div class="bn-cols-3">
+                <div class="bn-field">
                     <label for="<%= ddlRoute.ClientID %>">Route<span class="required-mark">*</span></label>
                     <%-- Populated from dbo.Route in Page_Load. --%>
                     <asp:DropDownList
@@ -36,7 +36,7 @@
                         ValidationGroup="AssignRoute" />
                 </div>
 
-                <div class="col-md-4 mb-3">
+                <div class="bn-field">
                     <label for="<%= ddlBus.ClientID %>">Bus<span class="required-mark">*</span></label>
                     <%-- Active buses only - see FleetService.GetAssignableBuses. --%>
                     <asp:DropDownList
@@ -58,7 +58,7 @@
                         ValidationGroup="AssignRoute" />
                 </div>
 
-                <div class="col-md-4 mb-3">
+                <div class="bn-field">
                     <label for="<%= ddlDriver.ClientID %>">Driver<span class="required-mark">*</span></label>
                     <%-- Active drivers only - see FleetService.GetActiveDrivers. --%>
                     <asp:DropDownList
@@ -81,8 +81,8 @@
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-4 mb-3">
+            <div class="bn-cols-3">
+                <div class="bn-field">
                     <label for="<%= txtAssignmentDate.ClientID %>">Assignment Date<span class="required-mark">*</span></label>
                     <asp:TextBox
                         ID="txtAssignmentDate"
@@ -99,7 +99,7 @@
                         ValidationGroup="AssignRoute" />
                 </div>
 
-                <div class="col-md-4 mb-3">
+                <div class="bn-field">
                     <label for="<%= txtDepartureTime.ClientID %>">Departure Time<span class="required-mark">*</span></label>
                     <asp:TextBox
                         ID="txtDepartureTime"
@@ -116,7 +116,7 @@
                         ValidationGroup="AssignRoute" />
                 </div>
 
-                <div class="col-md-4 mb-3">
+                <div class="bn-field">
                     <label for="<%= txtArrivalTime.ClientID %>">Arrival Time</label>
                     <asp:TextBox
                         ID="txtArrivalTime"

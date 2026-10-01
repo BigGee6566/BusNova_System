@@ -1,14 +1,14 @@
 ﻿<%@ Page Title="My Trip" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="DriverWorkspace.aspx.cs" Inherits="BusNova_System.DriverWorkspace" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="Styles/Ops.css?v=9" rel="stylesheet" />
-    <link href="Styles/DriverWorkspace.css?v=2" rel="stylesheet" />
+    <link href="Styles/DriverWorkspace.css?v=5" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
     <%-- 360px first. Everything on this page is a single column that grows
          wider on a desk, rather than a desktop layout squeezed down. A
          driver reads this on a phone, at a bus, often in the dark. --%>
-    <div class="ops-wrap ops-wrap--narrow dw">
+    <div class="ops-wrap dw">
 
         <%-- The page title is rendered once, by Site.Master's top bar. --%>
         <p class="bn-page-intro">
@@ -31,36 +31,43 @@
         </asp:Panel>
 
         <%-- ---------------- the trip ---------------- --%>
-        <asp:Panel ID="pnlTrip" runat="server" Visible="false">
+        <asp:Panel ID="pnlTrip" runat="server" Visible="false" CssClass="bn-cols-2">
 
-            <div class="bn-card dw-trip">
-                <div class="dw-route"><asp:Literal ID="litRoute" runat="server" /></div>
-                <div class="dw-when"><asp:Literal ID="litWhen" runat="server" /></div>
-                <div class="dw-bus">
-                    <asp:Literal ID="litBus" runat="server" />
-                    <asp:Label ID="lblBusStatus" runat="server" CssClass="status-badge" />
-                </div>
+            <div class="bn-card dw-trip bn-span-full">
+                <%-- Trip and its action on the left, the three numbers on
+                     the right: on a laptop this card was a narrow column of
+                     text in a 1000px box. --%>
+                <div class="bn-cols-2 dw-trip__body">
+                    <div>
+                        <div class="dw-route"><asp:Literal ID="litRoute" runat="server" /></div>
+                        <div class="dw-when"><asp:Literal ID="litWhen" runat="server" /></div>
+                        <div class="dw-bus">
+                            <asp:Literal ID="litBus" runat="server" />
+                            <asp:Label ID="lblBusStatus" runat="server" CssClass="status-badge" />
+                        </div>
 
-                <div class="dw-counts">
-                    <div class="dw-count">
-                        <span class="dw-count__value"><asp:Literal ID="litBooked" runat="server" /></span>
-                        <span class="dw-count__label">Booked</span>
+                        <div class="dw-actions">
+                            <asp:Button ID="btnStart" runat="server" Text="Start trip"
+                                        CssClass="bn-btn bn-btn--primary dw-btn" OnClick="btnStart_Click" />
+                            <asp:Button ID="btnComplete" runat="server" Text="Complete trip"
+                                        CssClass="bn-btn bn-btn--primary dw-btn" OnClick="btnComplete_Click" Visible="false" />
+                        </div>
                     </div>
-                    <div class="dw-count">
-                        <span class="dw-count__value"><asp:Literal ID="litBoarded" runat="server" /></span>
-                        <span class="dw-count__label">Boarded</span>
-                    </div>
-                    <div class="dw-count">
-                        <span class="dw-count__value"><asp:Literal ID="litCapacity" runat="server" /></span>
-                        <span class="dw-count__label">Seats</span>
-                    </div>
-                </div>
 
-                <div class="dw-actions">
-                    <asp:Button ID="btnStart" runat="server" Text="Start trip"
-                                CssClass="bn-btn bn-btn--primary dw-btn" OnClick="btnStart_Click" />
-                    <asp:Button ID="btnComplete" runat="server" Text="Complete trip"
-                                CssClass="bn-btn bn-btn--primary dw-btn" OnClick="btnComplete_Click" Visible="false" />
+                    <div class="dw-counts">
+                        <div class="dw-count">
+                            <span class="dw-count__value"><asp:Literal ID="litBooked" runat="server" /></span>
+                            <span class="dw-count__label">Booked</span>
+                        </div>
+                        <div class="dw-count">
+                            <span class="dw-count__value"><asp:Literal ID="litBoarded" runat="server" /></span>
+                            <span class="dw-count__label">Boarded</span>
+                        </div>
+                        <div class="dw-count">
+                            <span class="dw-count__value"><asp:Literal ID="litCapacity" runat="server" /></span>
+                            <span class="dw-count__label">Seats</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -89,9 +96,9 @@
             </div>
 
             <%-- ---------------- manifest ---------------- --%>
-            <div class="bn-card">
+            <div class="bn-card bn-span-full">
                 <h2 class="bn-subheading">Passenger manifest</h2>
-                <div class="ops-grid-wrap">
+                <div class="ops-grid-wrap ops-grid-wrap--compact">
                     <asp:GridView ID="gvManifest" runat="server" AutoGenerateColumns="false"
                                   CssClass="ops-grid dw-manifest" GridLines="None" UseAccessibleHeader="true"
                                   OnRowDataBound="gvManifest_RowDataBound"
@@ -139,7 +146,7 @@
             </div>
 
             <%-- ---------------- emergency ---------------- --%>
-            <div class="bn-card dw-emergency">
+            <div class="bn-card dw-emergency bn-span-full">
                 <h2 class="bn-subheading">Emergency</h2>
                 <p class="bn-note">
                     Raises a critical fault against this bus immediately and takes it off the road.

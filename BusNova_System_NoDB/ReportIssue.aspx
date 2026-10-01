@@ -16,8 +16,8 @@
                 bus out of service immediately, so choose severity carefully.
             </div>
 
-            <div class="row">
-                <div class="col-md-6 mb-3">
+            <div class="bn-cols-2">
+                <div class="bn-field">
                     <label for="<%= ddlBus.ClientID %>">Bus<span class="required-mark">*</span></label>
                     <asp:DropDownList
                         ID="ddlBus"
@@ -38,7 +38,7 @@
                         ValidationGroup="ReportIssue" />
                 </div>
 
-                <div class="col-md-6 mb-3">
+                <div class="bn-field">
                     <label for="<%= ddlSeverity.ClientID %>">Severity<span class="required-mark">*</span></label>
                     <asp:DropDownList ID="ddlSeverity" runat="server" CssClass="form-select">
                         <asp:ListItem Text="-- Select Severity --" Value="" />
