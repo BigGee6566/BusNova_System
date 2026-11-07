@@ -8,6 +8,12 @@
 *.suo
 *.cache
 
+# JetBrains Rider
+.idea/
+
+# Word lock files
+~$*
+
 # NuGet
 packages/
 *.nupkg

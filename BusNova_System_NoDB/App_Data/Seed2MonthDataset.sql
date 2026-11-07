@@ -201,19 +201,19 @@ BEGIN TRY
         DECLARE @Bk1ID INT = SCOPE_IDENTITY();
 
         INSERT INTO dbo.Ticket (TicketNumber, AssignmentID, PassengerID, StudentNumber, SeatNumber, TicketPrice, PurchaseDate, PaymentStatus, TicketStatus, BookingID, TravellerName, TravellerReference)
-        VALUES ('BN-S28001', @PastAssign1ID, @PassSiphoID, 'STU2026001', '01', 185.00, DATEADD(DAY, -29, CAST(GETDATE() AS DATE)), 'Paid', 'Used', @Bk1ID, 'Sipho Nkosi', 'STU2026001');
+        VALUES ('BN-S28001', @PastAssign1ID, @PassSiphoID, 'STU2026001', '1', 185.00, DATEADD(DAY, -29, CAST(GETDATE() AS DATE)), 'Paid', 'Used', @Bk1ID, 'Sipho Nkosi', 'STU2026001');
 
         DECLARE @Tk1ID INT = SCOPE_IDENTITY();
 
         -- Ticket validation record for completed trip
-        IF NOT EXISTS (SELECT 1 FROM dbo.TicketValidationLog WHERE TicketNumber = 'BN-S28001')
-            INSERT INTO dbo.TicketValidationLog (TicketNumber, TicketID, AssignmentID, ValidatedByEmployeeID, ValidatedByRole, ValidationStatus, ValidationMessage, ValidatedAt, Latitude, Longitude)
-            VALUES ('BN-S28001', @Tk1ID, @PastAssign1ID, @Driver1ID, 'Driver', 'Valid', 'Validated at boarding', DATEADD(MINUTE, -15, DATEADD(HOUR, 7, CAST(DATEADD(DAY, -28, CAST(GETDATE() AS DATE)) AS DATETIME))), -32.7833, 26.8333);
+        IF NOT EXISTS (SELECT 1 FROM dbo.TicketValidationLog WHERE TicketID = @Tk1ID)
+            INSERT INTO dbo.TicketValidationLog (TicketID, Method, Outcome, Detail, ValidatedByUserID, ValidatedByRole, AssignmentID, OccurredAt)
+            VALUES (@Tk1ID, 'TicketNumber', 'Boarded', 'Validated at boarding', @Driver1ID, 'Driver', @PastAssign1ID, DATEADD(MINUTE, -15, DATEADD(HOUR, 7, CAST(DATEADD(DAY, -28, CAST(GETDATE() AS DATE)) AS DATETIME))));
 
         -- Payment Transaction
         IF NOT EXISTS (SELECT 1 FROM dbo.PaymentTransaction WHERE IdempotencyKey = 'SEED-PAY-28P1')
-            INSERT INTO dbo.PaymentTransaction (IdempotencyKey, PassengerID, AssignmentID, Amount, PaymentMethod, Status, ProviderTransactionRef, IsSandbox, CreatedAt, CapturedAt, ExistingBookingID)
-            VALUES ('SEED-PAY-28P1', @PassSiphoID, @PastAssign1ID, 185.00, 'Card', 'Captured', 'TXN-S28001', 1, DATEADD(DAY, -29, CAST(GETDATE() AS DATE)), DATEADD(DAY, -29, CAST(GETDATE() AS DATE)), @Bk1ID);
+            INSERT INTO dbo.PaymentTransaction (Reference, IdempotencyKey, PassengerID, AssignmentID, BookingID, Amount, Method, Status, GatewayReference, IsSandbox, CreatedAt, UpdatedAt)
+            VALUES ('PAY-SEED-28P1', 'SEED-PAY-28P1', @PassSiphoID, @PastAssign1ID, @Bk1ID, 185.00, 'Card', 'Captured', 'TXN-S28001', 1, DATEADD(DAY, -29, CAST(GETDATE() AS DATE)), DATEADD(DAY, -29, CAST(GETDATE() AS DATE)));
     END;
 
     -- Future Trip Assignment (Day +5)
@@ -229,11 +229,11 @@ BEGIN TRY
         DECLARE @BkFut1ID INT = SCOPE_IDENTITY();
 
         INSERT INTO dbo.Ticket (TicketNumber, AssignmentID, PassengerID, StudentNumber, SeatNumber, TicketPrice, PurchaseDate, PaymentStatus, TicketStatus, BookingID, TravellerName, TravellerReference)
-        VALUES ('BN-F05001', @FutureAssign1ID, @PassNomvulaID, 'STU2026002', '05', 185.00, DATEADD(DAY, -1, CAST(GETDATE() AS DATE)), 'Paid', 'Valid', @BkFut1ID, 'Nomvula Zulu', 'STU2026002');
+        VALUES ('BN-F05001', @FutureAssign1ID, @PassNomvulaID, 'STU2026002', '5', 185.00, DATEADD(DAY, -1, CAST(GETDATE() AS DATE)), 'Paid', 'Valid', @BkFut1ID, 'Nomvula Zulu', 'STU2026002');
 
         IF NOT EXISTS (SELECT 1 FROM dbo.PaymentTransaction WHERE IdempotencyKey = 'SEED-PAY-05F1')
-            INSERT INTO dbo.PaymentTransaction (IdempotencyKey, PassengerID, AssignmentID, Amount, PaymentMethod, Status, ProviderTransactionRef, IsSandbox, CreatedAt, CapturedAt, ExistingBookingID)
-            VALUES ('SEED-PAY-05F1', @PassNomvulaID, @FutureAssign1ID, 185.00, 'Card', 'Captured', 'TXN-F05001', 1, DATEADD(DAY, -1, CAST(GETDATE() AS DATE)), DATEADD(DAY, -1, CAST(GETDATE() AS DATE)), @BkFut1ID);
+            INSERT INTO dbo.PaymentTransaction (Reference, IdempotencyKey, PassengerID, AssignmentID, BookingID, Amount, Method, Status, GatewayReference, IsSandbox, CreatedAt, UpdatedAt)
+            VALUES ('PAY-SEED-05F1', 'SEED-PAY-05F1', @PassNomvulaID, @FutureAssign1ID, @BkFut1ID, 185.00, 'Card', 'Captured', 'TXN-F05001', 1, DATEADD(DAY, -1, CAST(GETDATE() AS DATE)), DATEADD(DAY, -1, CAST(GETDATE() AS DATE)));
     END;
 
 
@@ -280,11 +280,11 @@ BEGIN TRY
 
     IF NOT EXISTS (SELECT 1 FROM dbo.Notification WHERE Subject = 'Upcoming Trip Reminder BNB-SEED05F1')
         INSERT INTO dbo.Notification (Channel, Recipient, NotificationType, Subject, Body, Status, AttemptCount, MaxAttempts, CreatedAt, RecipientUserID, RecipientUserType)
-        VALUES ('Email', 'nomvula.zulu@example.co.za', 'TripReminder', 'Upcoming Trip Reminder BNB-SEED05F1', 'Your upcoming trip to East London departs in 5 days.', 'Pending', 0, 5, DATEADD(DAY, -1, CAST(GETDATE() AS DATE)), @PassNomvulaID, 'Passenger');
+        VALUES ('Email', 'nomvula.zulu@example.co.za', 'TripReminder', 'Upcoming Trip Reminder BNB-SEED05F1', 'Your upcoming trip to East London departs in 5 days.', 'Queued', 0, 5, DATEADD(DAY, -1, CAST(GETDATE() AS DATE)), @PassNomvulaID, 'Passenger');
 
     -- Audit Logs
     IF NOT EXISTS (SELECT 1 FROM dbo.AuditLog WHERE Action = 'SeedDatasetCompleted')
-        INSERT INTO dbo.AuditLog (OccurredAt, UserType, UserId, UserName, Action, EntityName, EntityKey, Detail, IpAddress)
+        INSERT INTO dbo.AuditLog (OccurredAt, UserType, UserId, UserName, Action, EntityName, EntityKey, Details, IpAddress)
         VALUES (GETDATE(), 'Employee', @ManagerID, 'admin', 'SeedDatasetCompleted', 'BusNovaDB', 'SystemSeed', 'Non-destructive 2-month dataset seeded successfully.', '127.0.0.1');
 
     COMMIT TRANSACTION;
