@@ -107,8 +107,8 @@ namespace BusNova_System
 
             if (result.Success)
             {
-                ShowSuccess("Maintenance schedule updated for bus.");
                 ShowBusDetails(busId);
+                ShowSuccess("Maintenance schedule updated for bus.");
             }
             else
             {

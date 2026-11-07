@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Web;
 using System.Web.UI;
 using BusNova_System.Models;
 using BusNova_System.Security;
@@ -100,6 +101,17 @@ namespace BusNova_System
         private string CurrentPage
         {
             get { return System.IO.Path.GetFileName(Request.Path); }
+        }
+
+        /// <summary>
+        /// Stops the browser keeping a copy of any page. Without this, Back
+        /// after signing out redraws a signed-in page from the browser's
+        /// cache, and Back to Login.aspx can restore what was typed there.
+        /// </summary>
+        protected void Page_Init(object sender, EventArgs e)
+        {
+            Response.Cache.SetCacheability(HttpCacheability.NoCache);
+            Response.Cache.SetNoStore();
         }
 
         /// <summary>

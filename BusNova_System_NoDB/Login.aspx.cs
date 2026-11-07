@@ -18,11 +18,6 @@ namespace BusNova_System
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            // Without this the browser can restore the page, typed values
-            // included, when the user comes Back to it after signing in.
-            Response.Cache.SetCacheability(HttpCacheability.NoCache);
-            Response.Cache.SetNoStore();
-
             if (IsPostBack) return;
 
             // Somebody who is already signed in has no business on the login
