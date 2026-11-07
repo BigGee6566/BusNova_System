@@ -18,6 +18,11 @@ namespace BusNova_System
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            // Without this the browser can restore the page, typed values
+            // included, when the user comes Back to it after signing in.
+            Response.Cache.SetCacheability(HttpCacheability.NoCache);
+            Response.Cache.SetNoStore();
+
             if (IsPostBack) return;
 
             // Somebody who is already signed in has no business on the login
@@ -66,6 +71,7 @@ namespace BusNova_System
                 // The password box is cleared but the email is kept, so a
                 // genuine user who mistyped does not retype everything.
                 txtPassword.Text = string.Empty;
+                txtEmail.Attributes["data-keep-email"] = "true";
                 ShowError(result.FailureMessage);
                 return;
             }

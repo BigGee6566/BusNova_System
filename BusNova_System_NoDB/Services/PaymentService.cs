@@ -121,8 +121,7 @@ namespace BusNova_System.Services
         /// from unpredictable pass/fail, and a test that passes four times
         /// out of five is not a test.
         ///
-        /// All four numbers below are Luhn-valid so they pass the same
-        /// server-side validation a real number would.
+        /// Any other 16-digit number is approved.
         ///
         ///   4111 1111 1111 1111  - approved (Visa)
         ///   5555 5555 5555 4444  - approved (Mastercard)
@@ -572,13 +571,12 @@ WHERE PaymentTransactionID = @id AND Status = @captured;", connection, transacti
 
             if (card == null) return "Enter your card details.";
 
-            var digits = new string((card.Number ?? string.Empty).Where(char.IsDigit).ToArray());
+            var digits = new string((card.Number ?? string.Empty).Where(c => !char.IsWhiteSpace(c)).ToArray());
 
-            if (digits.Length < 13 || digits.Length > 19)
-                return "That card number does not look right. Check it and try again.";
-
-            if (!PassesLuhn(digits))
-                return "That card number does not look right. Check it and try again.";
+            // Sandbox only: any 16 digits will do, so there is deliberately
+            // no check-digit test on the number.
+            if (digits.Length != 16 || !digits.All(c => c >= '0' && c <= '9'))
+                return "Enter the 16-digit card number.";
 
             string expiryError = ValidateExpiry(card.Expiry);
             if (expiryError != null) return expiryError;
@@ -617,28 +615,6 @@ WHERE PaymentTransactionID = @id AND Status = @captured;", connection, transacti
                 return "That card has expired. Use a different card.";
 
             return null;
-        }
-
-        internal static bool PassesLuhn(string digits)
-        {
-            if (string.IsNullOrEmpty(digits)) return false;
-
-            var sum = 0;
-            var doubling = false;
-
-            for (var i = digits.Length - 1; i >= 0; i--)
-            {
-                var d = digits[i] - '0';
-                if (doubling)
-                {
-                    d *= 2;
-                    if (d > 9) d -= 9;
-                }
-                sum += d;
-                doubling = !doubling;
-            }
-
-            return sum % 10 == 0;
         }
 
         internal static string BrandFor(string digits)

@@ -2,7 +2,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="Styles/style.css?v=8" rel="stylesheet" />
     <link href="Styles/Ops.css?v=9" rel="stylesheet" />
-    <script src="Scripts/payment-simulation.js?v=3"></script>
+    <script src="Scripts/payment-simulation.js?v=4"></script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
@@ -105,7 +105,8 @@
                     <div class="bn-field bn-span-full">
                         <label for="<%= txtCardNumber.ClientID %>">Card number<span class="required-mark">*</span></label>
                         <asp:TextBox ID="txtCardNumber" runat="server" CssClass="form-control"
-                                     placeholder="4111 1111 1111 1111" MaxLength="19" autocomplete="cc-number" />
+                                     placeholder="1234 5678 9012 3456" MaxLength="19" autocomplete="cc-number"
+                                     inputmode="numeric" data-role="card-number" />
                         <asp:RequiredFieldValidator ID="rfvCardNumber"
                             runat="server" ControlToValidate="txtCardNumber"
                             ErrorMessage="Card number is required." CssClass="field-error"
@@ -113,7 +114,7 @@
                         <asp:RegularExpressionValidator ID="revCardNumber"
                             runat="server" ControlToValidate="txtCardNumber"
                             ErrorMessage="Enter a 16-digit demo card number."
-                            ValidationExpression="^\d{4}\s?\d{4}\s?\d{4}\s?\d{4}$"
+                            ValidationExpression="^\s*([0-9]\s*){16}$"
                             CssClass="field-error" Display="Dynamic" ValidationGroup="Payment" />
                     </div>
                     <div class="bn-field">

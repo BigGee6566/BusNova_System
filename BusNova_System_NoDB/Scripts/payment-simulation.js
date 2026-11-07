@@ -17,11 +17,45 @@
  *                                                      pointing at the
  *                                                      fields to reveal
  *   [data-role="card-fields"]                         the panel to show/hide
+ *   [data-role="card-number"]                         the input to auto-space
  */
 (function () {
     'use strict';
 
+    var CARD_DIGITS = 16;
+
+    function formatCardNumber(digits) {
+        return digits.replace(/(\d{4})(?=\d)/g, '$1 ');
+    }
+
+    function digitsIn(text) {
+        return text.replace(/\D/g, '');
+    }
+
+    function wireCardNumber(input) {
+        input.addEventListener('input', function () {
+            var cursor = input.selectionStart;
+            var digitsBeforeCursor = digitsIn(input.value.slice(0, cursor)).length;
+
+            var formatted = formatCardNumber(digitsIn(input.value).slice(0, CARD_DIGITS));
+            input.value = formatted;
+
+            // Rewriting the value sends the caret to the end, so put it back
+            // after the same digit or editing mid-number becomes impossible.
+            var position = 0;
+            var seen = 0;
+            while (position < formatted.length && seen < digitsBeforeCursor) {
+                if (formatted.charAt(position) !== ' ') seen++;
+                position++;
+            }
+            input.setSelectionRange(position, position);
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
+        var cardNumber = document.querySelector('[data-role="card-number"]');
+        if (cardNumber) wireCardNumber(cardNumber);
+
         var markers = document.querySelectorAll('[data-role="payment-method-radio"]');
         var cardFields = document.querySelector('[data-role="card-fields"]');
         if (markers.length === 0 || !cardFields) return;

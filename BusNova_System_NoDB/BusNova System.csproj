@@ -124,6 +124,7 @@
     <Content Include="Scripts\seat-map.js" />
     <Content Include="Scripts\password-strength.js" />
     <Content Include="Scripts\payment-simulation.js" />
+    <Content Include="Scripts\login-form.js" />
     <Content Include="Scripts\ticket-confirmation.js" />
     <Content Include="Web.config" />
   </ItemGroup>

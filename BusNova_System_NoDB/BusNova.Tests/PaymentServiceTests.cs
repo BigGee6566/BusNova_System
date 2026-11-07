@@ -89,32 +89,54 @@ namespace BusNova.Tests
             Assert.IsTrue(decision.Approved);
         }
 
-        // ---------------- Luhn ----------------
-
-        [TestMethod]
-        public void Luhn_AcceptsTheDocumentedTestCards()
-        {
-            Assert.IsTrue(PaymentService.PassesLuhn("4111111111111111"));
-            Assert.IsTrue(PaymentService.PassesLuhn("5555555555554444"));
-            Assert.IsTrue(PaymentService.PassesLuhn("4000000000000002"));
-            Assert.IsTrue(PaymentService.PassesLuhn("4000000000000069"));
-            Assert.IsTrue(PaymentService.PassesLuhn("4000000000000119"));
-        }
-
-        [TestMethod]
-        public void Luhn_RejectsATransposedDigit()
-        {
-            Assert.IsFalse(PaymentService.PassesLuhn("4111111111111112"));
-        }
-
-        [TestMethod]
-        public void Luhn_RejectsEmpty()
-        {
-            Assert.IsFalse(PaymentService.PassesLuhn(string.Empty));
-            Assert.IsFalse(PaymentService.PassesLuhn(null));
-        }
-
         // ---------------- card validation ----------------
+
+        private static string ValidateNumber(string number, out string last4)
+        {
+            string brand;
+            return PaymentService.ValidateCard(new CardDetails
+            {
+                NameOnCard = "T Mabaso",
+                Number = number,
+                Expiry = NextYearExpiry(),
+                Cvv = "123"
+            }, out brand, out last4);
+        }
+
+        [TestMethod]
+        public void AnySixteenDigits_AreAccepted()
+        {
+            // 1234 5678 9012 3456 fails a Luhn check, and that must not matter.
+            string last4;
+            Assert.IsNull(ValidateNumber("1234567890123456", out last4));
+            Assert.AreEqual("3456", last4);
+        }
+
+        [TestMethod]
+        public void SpacingDoesNotChangeTheResult()
+        {
+            string last4;
+            Assert.IsNull(ValidateNumber("1234 5678 9012 3456", out last4));
+            Assert.IsNull(ValidateNumber("12345678 90123456", out last4));
+            Assert.IsNull(ValidateNumber(" 1234567890123456 ", out last4));
+            Assert.AreEqual("3456", last4);
+        }
+
+        [TestMethod]
+        public void FifteenOrSeventeenDigits_AreRejected()
+        {
+            string last4;
+            Assert.IsNotNull(ValidateNumber("123456789012345", out last4));
+            Assert.IsNotNull(ValidateNumber("12345678901234567", out last4));
+        }
+
+        [TestMethod]
+        public void LettersInTheNumber_AreRejected()
+        {
+            string last4;
+            Assert.IsNotNull(ValidateNumber("1234abcd5678901234567", out last4));
+            Assert.IsNotNull(ValidateNumber("1234-5678-9012-3456", out last4));
+        }
 
         [TestMethod]
         public void ValidCard_YieldsOnlyBrandAndLastFour()

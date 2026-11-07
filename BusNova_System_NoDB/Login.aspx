@@ -1,6 +1,7 @@
 ﻿<%@ Page Title="Login" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Login.aspx.cs" Inherits="BusNova_System.Login" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="Styles/style.css?v=8" rel="stylesheet" />
+    <script src="Scripts/login-form.js?v=1"></script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
      <div class="login-wrap">
@@ -19,6 +20,8 @@
                  ID="txtEmail"
                  runat="server"
                  CssClass="form-control"
+                 autocomplete="off"
+                 data-role="login-email"
                  placeholder="you@example.com">
              </asp:TextBox>
              <asp:RequiredFieldValidator
@@ -37,6 +40,8 @@
                  runat="server"
                  TextMode="Password"
                  CssClass="form-control"
+                 autocomplete="new-password"
+                 data-role="login-password"
                  placeholder="Enter your password">
              </asp:TextBox>
              <asp:RequiredFieldValidator
