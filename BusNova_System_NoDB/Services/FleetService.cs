@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using BusNova_System.DataAccess;
+using BusNova_System.Helpers;
 using BusNova_System.Models;
 using BusNova_System.Security;
 
@@ -130,6 +131,71 @@ SELECT CAST(SCOPE_IDENTITY() AS INT);";
             const string sql = "UPDATE dbo.Bus SET Status = @status WHERE BusID = @id;";
             Db.Execute(sql, Db.P("@status", status), Db.P("@id", busId));
             AuditService.Write("BusStatusChanged", "Bus", busId.ToString(), "New status: " + status);
+        }
+
+        /// <summary>
+        /// Updates a bus's next service due date and optionally grounds it for maintenance,
+        /// creating or updating an open MaintenanceLog work item so Maintenance Staff see it.
+        /// </summary>
+        public static OperationResult UpdateMaintenanceSchedule(int busId, DateTime newNextDue, bool putUnderMaintenance, string notes, int managerEmployeeId)
+        {
+            var bus = GetBusById(busId);
+            if (bus == null) return OperationResult.Fail("That bus no longer exists.");
+
+            notes = (notes ?? string.Empty).Trim();
+
+            Db.InTransaction((connection, transaction) =>
+            {
+                Db.ExecuteIn(connection, transaction,
+                    "UPDATE dbo.Bus SET NextServiceDueDate = @nextDue WHERE BusID = @busId;",
+                    Db.P("@nextDue", newNextDue.Date), Db.P("@busId", busId));
+
+                if (putUnderMaintenance)
+                {
+                    Db.ExecuteIn(connection, transaction,
+                        "UPDATE dbo.Bus SET Status = @status WHERE BusID = @busId;",
+                        Db.P("@status", BusStatus.UnderMaintenance), Db.P("@busId", busId));
+
+                    var openLogId = Db.ScalarIntIn(connection, transaction, @"
+SELECT TOP 1 MaintenanceLogID FROM dbo.MaintenanceLog
+WHERE BusID = @busId AND Status IN ('Reported', 'InProgress')
+ORDER BY MaintenanceLogID DESC;", Db.P("@busId", busId));
+
+                    var issueText = "Scheduled maintenance" + (string.IsNullOrEmpty(notes) ? "" : " - " + notes);
+
+                    if (openLogId > 0)
+                    {
+                        if (!string.IsNullOrEmpty(notes))
+                        {
+                            Db.ExecuteIn(connection, transaction, @"
+UPDATE dbo.MaintenanceLog
+SET IssueDescription = @issue
+WHERE MaintenanceLogID = @id;",
+                                Db.P("@issue", issueText), Db.P("@id", openLogId));
+                        }
+                    }
+                    else
+                    {
+                        Db.ExecuteIn(connection, transaction, @"
+INSERT INTO dbo.MaintenanceLog
+    (BusID, EmployeeID, IssueDescription, Severity, Status, DateReported, VehicleCondition)
+VALUES
+    (@busId, @employeeId, @issue, 'Medium', 'Reported', @today, 'Under maintenance');",
+                            Db.P("@busId", busId),
+                            Db.P("@employeeId", managerEmployeeId),
+                            Db.P("@issue", issueText),
+                            Db.P("@today", AppClock.Today()));
+                    }
+                }
+
+                return true;
+            });
+
+            AuditService.Write("MaintenanceScheduled", "Bus", busId.ToString(),
+                bus.RegistrationNumber + ": Next service due " + newNextDue.ToString("yyyy-MM-dd") +
+                (putUnderMaintenance ? " (placed under maintenance)" : ""));
+
+            return OperationResult.Ok(busId);
         }
 
         private static int ServiceIntervalMonths()

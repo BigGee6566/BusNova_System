@@ -200,11 +200,13 @@ SELECT
         /// simply by choosing it on a public form.
         /// </summary>
         public static int RegisterPassenger(string firstName, string lastName, string email,
-                                            string phoneNumber, string password)
+                                            string phoneNumber, string password, string studentNumber = null)
         {
+            studentNumber = string.IsNullOrWhiteSpace(studentNumber) ? null : studentNumber.Trim().ToUpperInvariant();
+
             const string sql = @"
-INSERT INTO dbo.Passenger (PasswordHash, FirstName, LastName, Email, PhoneNumber)
-VALUES (@hash, @firstName, @lastName, @email, @phone);
+INSERT INTO dbo.Passenger (PasswordHash, FirstName, LastName, Email, PhoneNumber, StudentNumber)
+VALUES (@hash, @firstName, @lastName, @email, @phone, @studentNumber);
 SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
             var newId = Convert.ToInt32(Db.Scalar(sql,
@@ -212,7 +214,8 @@ SELECT CAST(SCOPE_IDENTITY() AS INT);";
                 Db.P("@firstName", (firstName ?? string.Empty).Trim()),
                 Db.P("@lastName", (lastName ?? string.Empty).Trim()),
                 Db.P("@email", (email ?? string.Empty).Trim()),
-                Db.P("@phone", (phoneNumber ?? string.Empty).Trim())));
+                Db.P("@phone", (phoneNumber ?? string.Empty).Trim()),
+                Db.P("@studentNumber", (object)studentNumber ?? DBNull.Value)));
 
             AuditService.WriteLogin("PassengerRegistered", SessionHelper.UserTypePassenger, newId,
                 (email ?? string.Empty).Trim(), null);
@@ -241,24 +244,23 @@ SELECT CAST(SCOPE_IDENTITY() AS INT);";
         /// to embed in that link - the only time it exists outside a hash.
         /// </summary>
         public static int RegisterPassengerPendingSetup(string firstName, string lastName, string email,
-                                                         string phoneNumber, out string plaintextToken)
+                                                         string phoneNumber, string studentNumber, out string plaintextToken)
         {
             var token = PasswordSetupToken.GenerateToken();
             var tokenHash = PasswordSetupToken.HashToken(token);
             var expiresAt = DateTime.UtcNow.Add(PasswordSetupToken.ValidityWindow);
 
+            studentNumber = string.IsNullOrWhiteSpace(studentNumber) ? null : studentNumber.Trim().ToUpperInvariant();
+
             const string sql = @"
 INSERT INTO dbo.Passenger
-    (PasswordHash, FirstName, LastName, Email, PhoneNumber,
+    (PasswordHash, FirstName, LastName, Email, PhoneNumber, StudentNumber,
      PasswordSetupTokenHash, PasswordSetupExpiresAt, PasswordSetupRequired, PasswordSetupIssuedAt)
 VALUES
-    (@hash, @firstName, @lastName, @email, @phone,
+    (@hash, @firstName, @lastName, @email, @phone, @studentNumber,
      @tokenHash, @expiresAt, 1, GETUTCDATE());
 SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
-            // A random, never-recorded password - nobody, including this
-            // method's own caller, ever learns it. The passenger's real
-            // credential is whatever they choose via the setup link.
             var placeholderHash = PasswordHasher.Hash(Guid.NewGuid().ToString("N"));
 
             var newId = Convert.ToInt32(Db.Scalar(sql,
@@ -267,16 +269,21 @@ SELECT CAST(SCOPE_IDENTITY() AS INT);";
                 Db.P("@lastName", (lastName ?? string.Empty).Trim()),
                 Db.P("@email", (email ?? string.Empty).Trim()),
                 Db.P("@phone", (phoneNumber ?? string.Empty).Trim()),
+                Db.P("@studentNumber", (object)studentNumber ?? DBNull.Value),
                 Db.P("@tokenHash", tokenHash),
                 Db.P("@expiresAt", expiresAt)));
 
-            // The token itself never appears in the audit trail - only the
-            // fact that a link was issued.
             AuditService.WriteLogin("PassengerRegisteredPendingSetup", SessionHelper.UserTypePassenger, newId,
                 (email ?? string.Empty).Trim(), null);
 
             plaintextToken = token;
             return newId;
+        }
+
+        public static int RegisterPassengerPendingSetup(string firstName, string lastName, string email,
+                                                         string phoneNumber, out string plaintextToken)
+        {
+            return RegisterPassengerPendingSetup(firstName, lastName, email, phoneNumber, null, out plaintextToken);
         }
 
         /// <summary>

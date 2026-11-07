@@ -40,6 +40,8 @@ namespace BusNova_System
 
         protected global::System.Web.UI.WebControls.TextBox txtRegPhone;
 
+        protected global::System.Web.UI.WebControls.TextBox txtRegStudentNumber;
+
         protected global::System.Web.UI.WebControls.Button btnRegisterPassenger;
 
         protected global::System.Web.UI.WebControls.Panel pnlPasswordSetup;
@@ -49,6 +51,8 @@ namespace BusNova_System
         protected global::System.Web.UI.WebControls.HyperLink hlSetupLink;
 
         protected global::System.Web.UI.WebControls.Panel pnlIssue;
+
+        protected global::System.Web.UI.WebControls.TextBox txtIssueStudentNumber;
 
         protected global::System.Web.UI.WebControls.Literal litSeatCapacity;
 

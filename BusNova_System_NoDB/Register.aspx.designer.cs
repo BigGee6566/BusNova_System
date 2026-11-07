@@ -51,6 +51,15 @@ namespace BusNova_System
         protected global::System.Web.UI.WebControls.TextBox txtContactNumber;
 
         /// <summary>
+        /// txtStudentNumber control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtStudentNumber;
+
+        /// <summary>
         /// txtRegPassword control.
         /// </summary>
         /// <remarks>

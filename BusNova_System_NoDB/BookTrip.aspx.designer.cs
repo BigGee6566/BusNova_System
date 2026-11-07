@@ -40,6 +40,8 @@ namespace BusNova_System
 
         protected global::System.Web.UI.WebControls.Literal litSeatMap;
 
+        protected global::System.Web.UI.WebControls.TextBox txtBookerStudentNumber;
+
         protected global::System.Web.UI.WebControls.Panel pnlTraveller1;
 
         protected global::System.Web.UI.WebControls.TextBox txtTraveller1Name;

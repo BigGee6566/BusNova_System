@@ -182,10 +182,18 @@ namespace BusNova_System
             var lastName = (txtRegLastName.Text ?? string.Empty).Trim();
             var email = (txtRegEmail.Text ?? string.Empty).Trim();
             var phone = (txtRegPhone.Text ?? string.Empty).Trim();
+            var studentNumber = (txtRegStudentNumber.Text ?? string.Empty).Trim().ToUpperInvariant();
 
-            if (firstName.Length == 0 || lastName.Length == 0 || email.Length == 0 || phone.Length == 0)
+            if (firstName.Length == 0 || lastName.Length == 0 || email.Length == 0 || phone.Length == 0 || studentNumber.Length == 0)
             {
-                ShowError("Please complete the passenger's name, email, and phone number.");
+                ShowError("Please complete the passenger's name, email, phone, and student number.");
+                return;
+            }
+
+            var stdErr = TicketService.ValidateStudentNumber(studentNumber);
+            if (stdErr != null)
+            {
+                ShowError(stdErr);
                 return;
             }
 
@@ -211,7 +219,7 @@ namespace BusNova_System
             string setupToken;
             try
             {
-                newId = AuthService.RegisterPassengerPendingSetup(firstName, lastName, email, phone, out setupToken);
+                newId = AuthService.RegisterPassengerPendingSetup(firstName, lastName, email, phone, studentNumber, out setupToken);
             }
             catch (System.Data.SqlClient.SqlException ex)
             {
@@ -226,11 +234,6 @@ namespace BusNova_System
             SelectPassenger(newId, (firstName + " " + lastName).Trim());
             pnlRegister.Visible = false;
 
-            // The token goes in the FRAGMENT, after the '#', not the query
-            // string. A query string reaches IIS request logs, browser
-            // history and the Referer header sent to the CDN this site
-            // loads assets from; a fragment is never sent to any server.
-            // (AUD-022)
             var link = ResolveUrl("~/SetPassword.aspx") + "?pid=" + newId +
                        "#t=" + Uri.EscapeDataString(setupToken);
             var absoluteLink = new Uri(Request.Url, link).ToString();
@@ -238,9 +241,6 @@ namespace BusNova_System
             hlSetupLink.NavigateUrl = absoluteLink;
             pnlPasswordSetup.Visible = true;
 
-            // Also queued, so the passenger has a copy that does not depend
-            // on them keeping the piece of paper. The on-screen link stays:
-            // this is a walk-up counter and the passenger is standing here.
             NotificationService.Queue(
                 NotificationChannels.Email,
                 email,
@@ -263,6 +263,12 @@ namespace BusNova_System
             hfPassengerName.Value = fullName;
             pnlFound.Visible = true;
             litFoundName.Text = Server.HtmlEncode(fullName);
+
+            var passenger = AdminService.GetPassengerById(passengerId);
+            if (passenger != null && !string.IsNullOrWhiteSpace(passenger.StudentNumber))
+            {
+                txtIssueStudentNumber.Text = passenger.StudentNumber;
+            }
         }
 
         private void UpdateIssuePanelVisibility()
@@ -290,8 +296,18 @@ namespace BusNova_System
                 return;
             }
 
+            var studentNumber = (txtIssueStudentNumber.Text ?? string.Empty).Trim().ToUpperInvariant();
+            var stdErr = TicketService.ValidateStudentNumber(studentNumber);
+            if (stdErr != null)
+            {
+                ShowError(stdErr);
+                return;
+            }
+
+            AdminService.EnsurePassengerStudentNumber(passengerId, studentNumber);
+
             var seatNumber = hfSelectedSeat.Value;
-            var result = TicketService.PurchaseTicket(assignmentId, passengerId, seatNumber, "Paid");
+            var result = TicketService.PurchaseTicket(assignmentId, passengerId, studentNumber, seatNumber, "Paid");
 
             if (result.Success)
             {

@@ -140,6 +140,7 @@ namespace BusNova_System.Models
         public string LastName { get; set; }
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
+        public string StudentNumber { get; set; }
         public DateTime DateRegistered { get; set; }
         public bool IsActive { get; set; }
 
@@ -272,6 +273,7 @@ namespace BusNova_System.Models
         public string TicketNumber { get; set; }
         public int AssignmentId { get; set; }
         public int PassengerId { get; set; }
+        public string StudentNumber { get; set; }
         public string SeatNumber { get; set; }
         public decimal TicketPrice { get; set; }
         public DateTime PurchaseDate { get; set; }
@@ -313,6 +315,7 @@ namespace BusNova_System.Models
         public int BookingId { get; set; }
         public string BookingReference { get; set; }
         public int PassengerId { get; set; }
+        public string StudentNumber { get; set; }
         public int AssignmentId { get; set; }
         public decimal TotalAmount { get; set; }
         public string PaymentStatus { get; set; }
@@ -335,5 +338,6 @@ namespace BusNova_System.Models
         public string FullName { get; set; }
         public string Reference { get; set; }
         public string SeatNumber { get; set; }
+        public string StudentNumber { get; set; }
     }
 }

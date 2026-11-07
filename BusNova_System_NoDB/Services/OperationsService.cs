@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using BusNova_System.DataAccess;
 using BusNova_System.Helpers;
 using BusNova_System.Models;
@@ -253,6 +254,119 @@ ORDER BY m.DateReported DESC;";
             return Db.Query(sql, MapMaintenance, Db.P("@busId", busId));
         }
 
+        /// <summary>Search criteria for maintenance work items.</summary>
+        public class MaintenanceSearchCriteria
+        {
+            public int? BusId { get; set; }
+            public DateTime? FromDate { get; set; }
+            public DateTime? ToDate { get; set; }
+            public string Status { get; set; }
+        }
+
+        /// <summary>Filter open or all maintenance logs based on search criteria using parameterized SQL.</summary>
+        public static List<MaintenanceLog> SearchMaintenance(MaintenanceSearchCriteria criteria)
+        {
+            if (criteria == null) criteria = new MaintenanceSearchCriteria();
+
+            var sql = MaintenanceSelect + " WHERE 1=1";
+            var paramsList = new List<SqlParameter>();
+
+            if (criteria.BusId.HasValue && criteria.BusId.Value > 0)
+            {
+                sql += " AND m.BusID = @busId";
+                paramsList.Add(Db.P("@busId", criteria.BusId.Value));
+            }
+
+            if (criteria.FromDate.HasValue)
+            {
+                sql += " AND m.DateReported >= @fromDate";
+                paramsList.Add(Db.P("@fromDate", criteria.FromDate.Value.Date));
+            }
+
+            if (criteria.ToDate.HasValue)
+            {
+                sql += " AND m.DateReported <= @toDate";
+                paramsList.Add(Db.P("@toDate", criteria.ToDate.Value.Date));
+            }
+
+            if (!string.IsNullOrWhiteSpace(criteria.Status) && !string.Equals(criteria.Status, "All", StringComparison.OrdinalIgnoreCase))
+            {
+                if (string.Equals(criteria.Status, "Overdue", StringComparison.OrdinalIgnoreCase))
+                {
+                    sql += " AND m.Status NOT IN ('Completed', 'Cancelled') AND (m.NextServiceDueDate < @today OR b.NextServiceDueDate < @today)";
+                    paramsList.Add(Db.P("@today", AppClock.Today()));
+                }
+                else
+                {
+                    sql += " AND m.Status = @status";
+                    paramsList.Add(Db.P("@status", criteria.Status.Trim()));
+                }
+            }
+
+            sql += @" ORDER BY
+    CASE m.Severity WHEN 'Critical' THEN 1 WHEN 'High' THEN 2
+                    WHEN 'Medium'   THEN 3 ELSE 4 END,
+    m.DateReported DESC, m.MaintenanceLogID DESC;";
+
+            return Db.Query(sql, MapMaintenance, paramsList.ToArray());
+        }
+
+        /// <summary>Search criteria for driver-reported issues.</summary>
+        public class DriverIssueCriteria
+        {
+            public int? BusId { get; set; }
+            public DateTime? FromDate { get; set; }
+            public DateTime? ToDate { get; set; }
+            public string Severity { get; set; }
+            public string Status { get; set; }
+        }
+
+        /// <summary>Retrieves maintenance logs reported by drivers with optional filters.</summary>
+        public static List<MaintenanceLog> GetDriverReportedIssues(DriverIssueCriteria criteria)
+        {
+            if (criteria == null) criteria = new DriverIssueCriteria();
+
+            var sql = MaintenanceSelect + @"
+INNER JOIN dbo.Employee repEmp ON repEmp.EmployeeID = m.EmployeeID
+WHERE repEmp.Role = 'Driver'";
+
+            var paramsList = new List<SqlParameter>();
+
+            if (criteria.BusId.HasValue && criteria.BusId.Value > 0)
+            {
+                sql += " AND m.BusID = @busId";
+                paramsList.Add(Db.P("@busId", criteria.BusId.Value));
+            }
+
+            if (criteria.FromDate.HasValue)
+            {
+                sql += " AND m.DateReported >= @fromDate";
+                paramsList.Add(Db.P("@fromDate", criteria.FromDate.Value.Date));
+            }
+
+            if (criteria.ToDate.HasValue)
+            {
+                sql += " AND m.DateReported <= @toDate";
+                paramsList.Add(Db.P("@toDate", criteria.ToDate.Value.Date));
+            }
+
+            if (!string.IsNullOrWhiteSpace(criteria.Severity) && !string.Equals(criteria.Severity, "All", StringComparison.OrdinalIgnoreCase))
+            {
+                sql += " AND m.Severity = @severity";
+                paramsList.Add(Db.P("@severity", criteria.Severity.Trim()));
+            }
+
+            if (!string.IsNullOrWhiteSpace(criteria.Status) && !string.Equals(criteria.Status, "All", StringComparison.OrdinalIgnoreCase))
+            {
+                sql += " AND m.Status = @status";
+                paramsList.Add(Db.P("@status", criteria.Status.Trim()));
+            }
+
+            sql += " ORDER BY m.DateReported DESC, m.MaintenanceLogID DESC;";
+
+            return Db.Query(sql, MapMaintenance, paramsList.ToArray());
+        }
+
         /// <summary>
         /// UC11: a driver reports a fault.
         ///
@@ -447,6 +561,82 @@ WHERE BusID = @busId AND Status IN ('Reported','InProgress')
                           " cannot return to service yet because another critical fault is still open on it.";
 
             return new OperationResult { Success = true, NewId = maintenanceLogId, Message = message };
+        }
+
+        /// <summary>Updates an overdue maintenance service record and associated bus details.</summary>
+        public static OperationResult UpdateMaintenanceService(int maintenanceLogId, int employeeId,
+                                                               string workPerformed, string partsUsed,
+                                                               decimal? cost, DateTime serviceDate,
+                                                               DateTime nextServiceDueDate, int? odometerAtService,
+                                                               string vehicleCondition)
+        {
+            var record = GetMaintenanceById(maintenanceLogId);
+            if (record == null) return OperationResult.Fail("That maintenance record no longer exists.");
+
+            if (record.Status == MaintenanceStatus.Cancelled)
+                return OperationResult.Fail("A cancelled maintenance record cannot be edited.");
+
+            if (string.IsNullOrWhiteSpace(workPerformed))
+                return OperationResult.Fail("Please describe the work that was carried out.");
+
+            if (serviceDate.Date > DateTime.Today)
+                return OperationResult.Fail("The service date cannot be in the future.");
+
+            if (nextServiceDueDate.Date <= serviceDate.Date)
+                return OperationResult.Fail("The next service date must be after the service date.");
+
+            if (cost.HasValue && cost.Value < 0)
+                return OperationResult.Fail("Cost cannot be negative.");
+
+            if (odometerAtService.HasValue && odometerAtService.Value < 0)
+                return OperationResult.Fail("Odometer reading cannot be negative.");
+
+            if (string.IsNullOrWhiteSpace(vehicleCondition))
+                return OperationResult.Fail("Please record the condition of the bus.");
+
+            Db.InTransaction((connection, transaction) =>
+            {
+                const string updateSql = @"
+UPDATE dbo.MaintenanceLog
+SET ServicedByEmployeeID = @servicedBy,
+    WorkPerformed        = @work,
+    PartsUsed            = @parts,
+    Cost                 = @cost,
+    ServiceDate          = @serviceDate,
+    NextServiceDueDate   = @nextDue,
+    OdometerAtService    = @odometer,
+    VehicleCondition     = @condition
+WHERE MaintenanceLogID = @id;";
+
+                Db.ExecuteIn(connection, transaction, updateSql,
+                    Db.P("@servicedBy", employeeId),
+                    Db.P("@work", workPerformed.Trim()),
+                    Db.P("@parts", string.IsNullOrWhiteSpace(partsUsed) ? null : partsUsed.Trim()),
+                    Db.P("@cost", cost),
+                    Db.P("@serviceDate", serviceDate.Date),
+                    Db.P("@nextDue", nextServiceDueDate.Date),
+                    Db.P("@odometer", odometerAtService),
+                    Db.P("@condition", vehicleCondition.Trim()),
+                    Db.P("@id", maintenanceLogId));
+
+                Db.ExecuteIn(connection, transaction,
+                    "UPDATE dbo.Bus SET NextServiceDueDate = @nextDue WHERE BusID = @busId;",
+                    Db.P("@nextDue", nextServiceDueDate.Date), Db.P("@busId", record.BusId));
+
+                if (odometerAtService.HasValue)
+                {
+                    Db.ExecuteIn(connection, transaction,
+                        "UPDATE dbo.Bus SET OdometerReading = @odometer WHERE BusID = @busId AND OdometerReading < @odometer;",
+                        Db.P("@odometer", odometerAtService.Value), Db.P("@busId", record.BusId));
+                }
+
+                return true;
+            });
+
+            AuditService.Write("MaintenanceUpdated", "MaintenanceLog", maintenanceLogId.ToString(),
+                record.BusRegistration + ": Updated service record (" + workPerformed.Trim() + ")");
+
+            return OperationResult.Ok(maintenanceLogId);
         }
 
         /// <summary>Moves a reported fault to InProgress when work starts.</summary>

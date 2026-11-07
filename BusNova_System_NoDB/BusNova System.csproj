@@ -96,6 +96,8 @@
     <Content Include="LogFuel.aspx" />
     <Content Include="ReportIssue.aspx" />
     <Content Include="MaintenanceWork.aspx" />
+    <Content Include="ManageMaintenance.aspx" />
+    <Content Include="DriverIssues.aspx" />
     <Content Include="ReportRouteCompletion.aspx" />
     <Content Include="ReportFuelEfficiency.aspx" />
     <Content Include="ReportDriverPerformance.aspx" />
@@ -379,6 +381,20 @@
     </Compile>
     <Compile Include="MaintenanceWork.aspx.designer.cs">
       <DependentUpon>MaintenanceWork.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ManageMaintenance.aspx.cs">
+      <DependentUpon>ManageMaintenance.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ManageMaintenance.aspx.designer.cs">
+      <DependentUpon>ManageMaintenance.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="DriverIssues.aspx.cs">
+      <DependentUpon>DriverIssues.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="DriverIssues.aspx.designer.cs">
+      <DependentUpon>DriverIssues.aspx</DependentUpon>
     </Compile>
     <Compile Include="ManageUsers.aspx.cs">
       <DependentUpon>ManageUsers.aspx</DependentUpon>

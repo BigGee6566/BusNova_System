@@ -202,7 +202,7 @@ ORDER BY FirstName, LastName;";
             if (contact.Length == 0) return null;
 
             const string sql = @"
-SELECT TOP 1 PassengerID, FirstName, LastName, Email, PhoneNumber, DateRegistered, IsActive
+SELECT TOP 1 PassengerID, FirstName, LastName, Email, PhoneNumber, StudentNumber, DateRegistered, IsActive
 FROM dbo.Passenger
 WHERE LOWER(Email) = LOWER(@contact) OR PhoneNumber = @contact
 ORDER BY PassengerID;";
@@ -214,11 +214,44 @@ ORDER BY PassengerID;";
                 LastName = Db.GetString(r, "LastName"),
                 Email = Db.GetString(r, "Email"),
                 PhoneNumber = Db.GetString(r, "PhoneNumber"),
+                StudentNumber = Db.GetString(r, "StudentNumber"),
                 DateRegistered = Db.GetDateTime(r, "DateRegistered"),
                 IsActive = Db.GetBool(r, "IsActive")
             }, Db.P("@contact", contact));
 
             return matches.Count > 0 ? matches[0] : null;
+        }
+
+        public static Passenger GetPassengerById(int passengerId)
+        {
+            const string sql = @"
+SELECT PassengerID, FirstName, LastName, Email, PhoneNumber, StudentNumber, DateRegistered, IsActive
+FROM dbo.Passenger WHERE PassengerID = @id;";
+
+            return Db.QuerySingle(sql, r => new Passenger
+            {
+                PassengerId = Db.GetInt(r, "PassengerID"),
+                FirstName = Db.GetString(r, "FirstName"),
+                LastName = Db.GetString(r, "LastName"),
+                Email = Db.GetString(r, "Email"),
+                PhoneNumber = Db.GetString(r, "PhoneNumber"),
+                StudentNumber = Db.GetString(r, "StudentNumber"),
+                DateRegistered = Db.GetDateTime(r, "DateRegistered"),
+                IsActive = Db.GetBool(r, "IsActive")
+            }, Db.P("@id", passengerId));
+        }
+
+        public static void EnsurePassengerStudentNumber(int passengerId, string studentNumber)
+        {
+            if (passengerId <= 0 || string.IsNullOrWhiteSpace(studentNumber)) return;
+            studentNumber = studentNumber.Trim().ToUpperInvariant();
+
+            const string sql = @"
+UPDATE dbo.Passenger
+SET StudentNumber = @studentNumber
+WHERE PassengerID = @id AND (StudentNumber IS NULL OR StudentNumber = '');";
+
+            Db.Execute(sql, Db.P("@studentNumber", studentNumber), Db.P("@id", passengerId));
         }
 
         public static bool SetPassengerActive(int passengerId, bool isActive)

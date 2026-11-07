@@ -100,7 +100,31 @@
                 ValidationGroup="Register" />
         </div>
 
-        
+        <div class="mb-3">
+            <label for="<%= txtStudentNumber.ClientID %>">Student Number<span class="required-mark">*</span></label>
+            <asp:TextBox
+                ID="txtStudentNumber"
+                runat="server"
+                CssClass="form-control"
+                MaxLength="30"
+                placeholder="e.g. 12345678 or STU-1234">
+            </asp:TextBox>
+            <asp:RequiredFieldValidator
+                runat="server"
+                ControlToValidate="txtStudentNumber"
+                ErrorMessage="Student number is required."
+                CssClass="field-error"
+                Display="Dynamic"
+                ValidationGroup="Register" />
+            <asp:RegularExpressionValidator
+                runat="server"
+                ControlToValidate="txtStudentNumber"
+                ErrorMessage="Student number must be 6 to 20 alphanumeric characters (e.g. 12345678 or STU-1234)."
+                ValidationExpression="^[A-Za-z0-9-]{6,20}$"
+                CssClass="field-error"
+                Display="Dynamic"
+                ValidationGroup="Register" />
+        </div>
 
         <div class="mb-3">
             <label for="<%= txtRegPassword.ClientID %>">Password<span class="required-mark">*</span></label>

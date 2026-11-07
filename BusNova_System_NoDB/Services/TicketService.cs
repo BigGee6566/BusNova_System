@@ -50,7 +50,7 @@ namespace BusNova_System.Services
         public const int MaxTravellersPerBooking = 5;
 
         private const string TicketSelect = @"
-SELECT t.TicketID, t.TicketNumber, t.AssignmentID, t.PassengerID, t.SeatNumber,
+SELECT t.TicketID, t.TicketNumber, t.AssignmentID, t.PassengerID, t.StudentNumber, t.SeatNumber,
        t.TicketPrice, t.PurchaseDate, t.PaymentStatus, t.TicketStatus,
        t.BookingID, t.TravellerName, t.TravellerReference,
        r.RouteName, r.Origin, r.Destination, b.RegistrationNumber,
@@ -70,6 +70,7 @@ INNER JOIN dbo.Passenger p ON p.PassengerID = t.PassengerID";
                 TicketNumber = Db.GetString(r, "TicketNumber"),
                 AssignmentId = Db.GetInt(r, "AssignmentID"),
                 PassengerId = Db.GetInt(r, "PassengerID"),
+                StudentNumber = Db.GetString(r, "StudentNumber"),
                 SeatNumber = Db.GetString(r, "SeatNumber"),
                 TicketPrice = Db.GetDecimal(r, "TicketPrice"),
                 PurchaseDate = Db.GetDateTime(r, "PurchaseDate"),
@@ -89,7 +90,7 @@ INNER JOIN dbo.Passenger p ON p.PassengerID = t.PassengerID";
         }
 
         private const string BookingSelect = @"
-SELECT bk.BookingID, bk.BookingReference, bk.PassengerID, bk.AssignmentID,
+SELECT bk.BookingID, bk.BookingReference, bk.PassengerID, bk.StudentNumber, bk.AssignmentID,
        bk.TotalAmount, bk.PaymentStatus, bk.PaymentMethod, bk.CreatedAt,
        r.RouteName, ra.AssignmentDate, ra.DepartureTime
 FROM dbo.Booking bk
@@ -103,6 +104,7 @@ INNER JOIN dbo.Route r ON r.RouteCode = ra.RouteCode";
                 BookingId = Db.GetInt(r, "BookingID"),
                 BookingReference = Db.GetString(r, "BookingReference"),
                 PassengerId = Db.GetInt(r, "PassengerID"),
+                StudentNumber = Db.GetString(r, "StudentNumber"),
                 AssignmentId = Db.GetInt(r, "AssignmentID"),
                 TotalAmount = Db.GetDecimal(r, "TotalAmount"),
                 PaymentStatus = Db.GetString(r, "PaymentStatus"),
@@ -277,15 +279,113 @@ WHERE AssignmentID = @id AND TicketStatus <> 'Cancelled';";
                    : 185.00m;
         }
 
+        /// <summary>Validates student number format: 6 to 20 alphanumeric/hyphen characters.</summary>
+        public static string ValidateStudentNumber(string studentNumber)
+        {
+            if (string.IsNullOrWhiteSpace(studentNumber))
+                return "Student number is required.";
+
+            studentNumber = studentNumber.Trim();
+            if (!System.Text.RegularExpressions.Regex.IsMatch(studentNumber, @"^[A-Za-z0-9-]{6,20}$"))
+                return "Student number must be 6 to 20 alphanumeric characters (e.g. 12345678 or STU-1234).";
+
+            return null;
+        }
+
+        private class ActiveTicketInfo
+        {
+            public string Origin { get; set; }
+            public string Destination { get; set; }
+            public DateTime AssignmentDate { get; set; }
+            public TimeSpan DepartureTime { get; set; }
+        }
+
+        /// <summary>
+        /// Checks whether a student number has an active ticket on a trip in Scheduled or InProgress status.
+        /// When connection and transaction are provided, queries with WITH (UPDLOCK, HOLDLOCK) to prevent race conditions.
+        /// </summary>
+        public static bool HasActiveTicketForStudent(string studentNumber, out string activeTripDetail,
+                                                     System.Data.SqlClient.SqlConnection connection = null,
+                                                     System.Data.SqlClient.SqlTransaction transaction = null)
+        {
+            activeTripDetail = null;
+            if (string.IsNullOrWhiteSpace(studentNumber)) return false;
+
+            studentNumber = studentNumber.Trim().ToUpperInvariant();
+
+            var tableHint = transaction != null ? " WITH (UPDLOCK, HOLDLOCK)" : "";
+
+            var sql = @"
+SELECT TOP 1 t.TicketNumber, t.SeatNumber, r.Origin, r.Destination, r.RouteName, ra.AssignmentDate, ra.DepartureTime
+FROM dbo.Ticket" + tableHint + @" t
+INNER JOIN dbo.RouteAssignment ra ON ra.AssignmentID = t.AssignmentID
+INNER JOIN dbo.Route r ON r.RouteCode = ra.RouteCode
+WHERE t.StudentNumber = @studentNumber
+  AND t.TicketStatus <> 'Cancelled'
+  AND ra.TripStatus IN ('Scheduled', 'InProgress')
+ORDER BY ra.AssignmentDate, ra.DepartureTime;";
+
+            ActiveTicketInfo info = null;
+
+            if (connection != null && transaction != null)
+            {
+                using (var cmd = new System.Data.SqlClient.SqlCommand(sql, connection, transaction))
+                {
+                    cmd.Parameters.AddWithValue("@studentNumber", studentNumber);
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            info = new ActiveTicketInfo
+                            {
+                                Origin = Db.GetString(reader, "Origin"),
+                                Destination = Db.GetString(reader, "Destination"),
+                                AssignmentDate = Db.GetDateTime(reader, "AssignmentDate"),
+                                DepartureTime = Db.GetTimeSpan(reader, "DepartureTime")
+                            };
+                        }
+                    }
+                }
+            }
+            else
+            {
+                info = Db.QuerySingle(sql, r => new ActiveTicketInfo
+                {
+                    Origin = Db.GetString(r, "Origin"),
+                    Destination = Db.GetString(r, "Destination"),
+                    AssignmentDate = Db.GetDateTime(r, "AssignmentDate"),
+                    DepartureTime = Db.GetTimeSpan(r, "DepartureTime")
+                }, Db.P("@studentNumber", studentNumber));
+            }
+
+            if (info == null) return false;
+
+            var depMoment = info.AssignmentDate.Date.Add(info.DepartureTime);
+            activeTripDetail = info.Origin + " → " + info.Destination + ", " + depMoment.ToString("dd MMM yyyy HH:mm");
+            return true;
+        }
+
         /// <summary>
         /// UC15: books a seat.
-        ///
         /// Everything is checked inside one transaction, and the unique
         /// constraint on (AssignmentID, SeatNumber) is the final arbiter.
         /// </summary>
         public static OperationResult PurchaseTicket(int assignmentId, int passengerId,
                                                      string seatNumber, string paymentStatus)
         {
+            return PurchaseTicket(assignmentId, passengerId, null, seatNumber, paymentStatus);
+        }
+
+        public static OperationResult PurchaseTicket(int assignmentId, int passengerId, string studentNumber,
+                                                     string seatNumber, string paymentStatus)
+        {
+            if (!string.IsNullOrWhiteSpace(studentNumber))
+            {
+                var stdErr = ValidateStudentNumber(studentNumber);
+                if (stdErr != null) return OperationResult.Fail(stdErr);
+                studentNumber = studentNumber.Trim().ToUpperInvariant();
+            }
+
             if (string.IsNullOrWhiteSpace(seatNumber))
                 return OperationResult.Fail("Please choose a seat.");
 
@@ -295,11 +395,6 @@ WHERE AssignmentID = @id AND TicketStatus <> 'Cancelled';";
             if (trip == null)
                 return OperationResult.Fail("That trip no longer exists.");
 
-            // Same rule as CreateBooking. The counter screen renders its seat
-            // map through SeatMapRenderer exactly as the passenger screen
-            // does, so a seat that screen could not produce is not a seat.
-            // This replaces a bare length check, which let a seat like 99 on
-            // a 45-seater through to be sold. (AUD-006)
             var seatError = ValidateSeat(seatNumber, trip.SeatingCapacity);
             if (seatError != null)
                 return OperationResult.Fail(seatError);
@@ -326,19 +421,29 @@ WHERE AssignmentID = @id AND TicketStatus <> 'Cancelled';";
             {
                 try
                 {
+                    string activeTripDetail;
+                    if (!string.IsNullOrWhiteSpace(studentNumber) &&
+                        HasActiveTicketForStudent(studentNumber, out activeTripDetail, connection, transaction))
+                    {
+                        transaction.Rollback();
+                        return OperationResult.Fail("Student " + studentNumber + " already has a ticket for an active trip (" +
+                            activeTripDetail + "). A student can book again once that trip is completed or cancelled.");
+                    }
+
                     var ticketNumber = NextTicketNumber(connection, transaction);
 
                     int newId;
                     using (var insertCmd = new System.Data.SqlClient.SqlCommand(@"
 INSERT INTO dbo.Ticket
-    (TicketNumber, AssignmentID, PassengerID, SeatNumber, TicketPrice, PaymentStatus, TicketStatus)
+    (TicketNumber, AssignmentID, PassengerID, StudentNumber, SeatNumber, TicketPrice, PaymentStatus, TicketStatus)
 VALUES
-    (@ticketNumber, @assignmentId, @passengerId, @seat, @price, @paymentStatus, 'Valid');
+    (@ticketNumber, @assignmentId, @passengerId, @studentNumber, @seat, @price, @paymentStatus, 'Valid');
 SELECT CAST(SCOPE_IDENTITY() AS INT);", connection, transaction))
                     {
                         insertCmd.Parameters.AddWithValue("@ticketNumber", ticketNumber);
                         insertCmd.Parameters.AddWithValue("@assignmentId", assignmentId);
                         insertCmd.Parameters.AddWithValue("@passengerId", passengerId);
+                        insertCmd.Parameters.AddWithValue("@studentNumber", (object)studentNumber ?? DBNull.Value);
                         insertCmd.Parameters.AddWithValue("@seat", seatNumber);
                         insertCmd.Parameters.AddWithValue("@price", price);
                         insertCmd.Parameters.AddWithValue("@paymentStatus", paymentStatus ?? "Paid");
@@ -369,19 +474,13 @@ SELECT CAST(SCOPE_IDENTITY() AS INT);", connection, transaction))
             }
         }
 
-        /// <summary>
-        /// Books 1-5 seats on one trip for one simulated payment
-        /// (BookTrip.aspx -&gt; PaymentSimulation.aspx). Every traveller needs
-        /// a name and a seat, no two travellers in the same booking may be
-        /// the same person, and no two may share a seat.
-        ///
-        /// Deliberately called only once the caller already knows payment
-        /// succeeded - see the comment on dbo.Booking in
-        /// App_Data/BusNova_Database_Script.sql for why there is no
-        /// separate "reserve now, pay later" step. Everything below is one
-        /// transaction: either every ticket is created or none are.
-        /// </summary>
         public static BookingResult CreateBooking(int passengerId, int assignmentId,
+                                                   List<BookingTraveller> travellers, string paymentMethod)
+        {
+            return CreateBooking(passengerId, null, assignmentId, travellers, paymentMethod);
+        }
+
+        public static BookingResult CreateBooking(int passengerId, string bookerStudentNumber, int assignmentId,
                                                    List<BookingTraveller> travellers, string paymentMethod)
         {
             if (travellers == null || travellers.Count == 0)
@@ -391,12 +490,27 @@ SELECT CAST(SCOPE_IDENTITY() AS INT);", connection, transaction))
                 return BookingResult.Fail(
                     "A single booking cannot have more than " + MaxTravellersPerBooking + " travellers.");
 
+            if (!string.IsNullOrWhiteSpace(bookerStudentNumber))
+            {
+                var bookerStdErr = ValidateStudentNumber(bookerStudentNumber);
+                if (bookerStdErr != null) return BookingResult.Fail("Booker: " + bookerStdErr);
+                bookerStudentNumber = bookerStudentNumber.Trim().ToUpperInvariant();
+            }
+
             foreach (var traveller in travellers)
             {
                 if (traveller == null || string.IsNullOrWhiteSpace(traveller.FullName))
                     return BookingResult.Fail("Every traveller needs a name.");
                 if (string.IsNullOrWhiteSpace(traveller.SeatNumber))
                     return BookingResult.Fail("Every traveller needs a seat.");
+
+                if (!string.IsNullOrWhiteSpace(traveller.StudentNumber))
+                {
+                    var stdErr = ValidateStudentNumber(traveller.StudentNumber);
+                    if (stdErr != null)
+                        return BookingResult.Fail("Traveller (" + traveller.FullName + "): " + stdErr);
+                    traveller.StudentNumber = traveller.StudentNumber.Trim().ToUpperInvariant();
+                }
             }
 
             var normalizedNames = travellers.Select(t => t.FullName.Trim().ToUpperInvariant()).ToList();
@@ -406,6 +520,14 @@ SELECT CAST(SCOPE_IDENTITY() AS INT);", connection, transaction))
             var seatNumbers = travellers.Select(t => t.SeatNumber.Trim().ToUpperInvariant()).ToList();
             if (seatNumbers.Distinct().Count() != seatNumbers.Count)
                 return BookingResult.Fail("Each traveller must have a different seat.");
+
+            var studentNumbers = travellers
+                .Where(t => !string.IsNullOrWhiteSpace(t.StudentNumber))
+                .Select(t => t.StudentNumber.Trim().ToUpperInvariant())
+                .ToList();
+
+            if (studentNumbers.Distinct().Count() != studentNumbers.Count)
+                return BookingResult.Fail("Each traveller in a booking must have a unique student number.");
 
             var trip = AssignmentService.GetById(assignmentId);
             if (trip == null)
@@ -421,10 +543,6 @@ SELECT CAST(SCOPE_IDENTITY() AS INT);", connection, transaction))
             if (trip.SeatsAvailable < travellers.Count)
                 return BookingResult.Fail("Only " + trip.SeatsAvailable + " seat(s) are left on this trip.");
 
-            // Validated here, after the trip is loaded, because the capacity
-            // a seat must fall inside is a property of the bus on this trip.
-            // PurchaseTicket checked seat length from the start; CreateBooking
-            // never checked anything, which is what AUD-006 recorded.
             foreach (var seat in seatNumbers)
             {
                 var seatError = ValidateSeat(seat, trip.SeatingCapacity);
@@ -444,16 +562,39 @@ SELECT CAST(SCOPE_IDENTITY() AS INT);", connection, transaction))
             {
                 try
                 {
+                    string activeTripDetail;
+
+                    if (!string.IsNullOrWhiteSpace(bookerStudentNumber) &&
+                        HasActiveTicketForStudent(bookerStudentNumber, out activeTripDetail, connection, transaction))
+                    {
+                        transaction.Rollback();
+                        return BookingResult.Fail("Student " + bookerStudentNumber + " already has a ticket for an active trip (" +
+                            activeTripDetail + "). A student can book again once that trip is completed or cancelled.");
+                    }
+
+                    foreach (var traveller in travellers)
+                    {
+                        if (!string.IsNullOrWhiteSpace(traveller.StudentNumber) &&
+                            HasActiveTicketForStudent(traveller.StudentNumber, out activeTripDetail, connection, transaction))
+                        {
+                            transaction.Rollback();
+                            return BookingResult.Fail("Student " + traveller.StudentNumber + " (" + traveller.FullName +
+                                ") already has a ticket for an active trip (" + activeTripDetail +
+                                "). A student can book again once that trip is completed or cancelled.");
+                        }
+                    }
+
                     var bookingReference = NextBookingReference(connection, transaction);
 
                     int bookingId;
                     using (var bookingCmd = new System.Data.SqlClient.SqlCommand(@"
-INSERT INTO dbo.Booking (BookingReference, PassengerID, AssignmentID, TotalAmount, PaymentStatus, PaymentMethod)
-VALUES (@reference, @passengerId, @assignmentId, @total, 'Paid', @method);
+INSERT INTO dbo.Booking (BookingReference, PassengerID, StudentNumber, AssignmentID, TotalAmount, PaymentStatus, PaymentMethod)
+VALUES (@reference, @passengerId, @studentNumber, @assignmentId, @total, 'Paid', @method);
 SELECT CAST(SCOPE_IDENTITY() AS INT);", connection, transaction))
                     {
                         bookingCmd.Parameters.AddWithValue("@reference", bookingReference);
                         bookingCmd.Parameters.AddWithValue("@passengerId", passengerId);
+                        bookingCmd.Parameters.AddWithValue("@studentNumber", (object)bookerStudentNumber ?? DBNull.Value);
                         bookingCmd.Parameters.AddWithValue("@assignmentId", assignmentId);
                         bookingCmd.Parameters.AddWithValue("@total", totalAmount);
                         bookingCmd.Parameters.AddWithValue("@method", (object)paymentMethod ?? DBNull.Value);
@@ -467,15 +608,16 @@ SELECT CAST(SCOPE_IDENTITY() AS INT);", connection, transaction))
 
                         using (var insertCmd = new System.Data.SqlClient.SqlCommand(@"
 INSERT INTO dbo.Ticket
-    (TicketNumber, AssignmentID, PassengerID, SeatNumber, TicketPrice, PaymentStatus, TicketStatus,
+    (TicketNumber, AssignmentID, PassengerID, StudentNumber, SeatNumber, TicketPrice, PaymentStatus, TicketStatus,
      BookingID, TravellerName, TravellerReference)
 VALUES
-    (@ticketNumber, @assignmentId, @passengerId, @seat, @price, 'Paid', 'Valid',
+    (@ticketNumber, @assignmentId, @passengerId, @studentNumber, @seat, @price, 'Paid', 'Valid',
      @bookingId, @travellerName, @travellerReference);", connection, transaction))
                         {
                             insertCmd.Parameters.AddWithValue("@ticketNumber", ticketNumber);
                             insertCmd.Parameters.AddWithValue("@assignmentId", assignmentId);
                             insertCmd.Parameters.AddWithValue("@passengerId", passengerId);
+                            insertCmd.Parameters.AddWithValue("@studentNumber", (object)traveller.StudentNumber ?? DBNull.Value);
                             insertCmd.Parameters.AddWithValue("@seat", traveller.SeatNumber.Trim().ToUpperInvariant());
                             insertCmd.Parameters.AddWithValue("@price", price);
                             insertCmd.Parameters.AddWithValue("@bookingId", bookingId);

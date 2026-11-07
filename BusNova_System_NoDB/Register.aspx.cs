@@ -43,19 +43,23 @@ namespace BusNova_System
             var lastName = txtLastName.Text.Trim();
             var email = txtRegEmail.Text.Trim();
             var phone = txtContactNumber.Text.Trim();
+            var studentNumber = txtStudentNumber.Text.Trim().ToUpperInvariant();
             var password = txtRegPassword.Text;
 
-            // Server-side re-check of the things the validators cover, so the
-            // rules hold even if the markup changes or script is bypassed.
             if (firstName.Length == 0 || lastName.Length == 0 ||
-                email.Length == 0 || phone.Length == 0)
+                email.Length == 0 || phone.Length == 0 || studentNumber.Length == 0)
             {
                 ShowError("Please complete every field.");
                 return;
             }
 
-            // Same policy and the same wording as the staff and walk-up
-            // paths - the message now comes from one place. (AUD-011)
+            var stdErr = TicketService.ValidateStudentNumber(studentNumber);
+            if (stdErr != null)
+            {
+                ShowError(stdErr);
+                return;
+            }
+
             if (!PasswordPolicy.IsValid(password))
             {
                 ShowError(PasswordPolicy.RequirementsMessage);
@@ -70,16 +74,13 @@ namespace BusNova_System
 
             if (AuthService.EmailExists(email))
             {
-                // This one message does reveal that an address is taken, but
-                // registration cannot work without telling the user that -
-                // otherwise they would be stuck retrying forever.
                 ShowError("An account already exists for that email address. Try signing in instead.");
                 return;
             }
 
             try
             {
-                AuthService.RegisterPassenger(firstName, lastName, email, phone, password);
+                AuthService.RegisterPassenger(firstName, lastName, email, phone, password, studentNumber);
             }
             catch (System.Data.SqlClient.SqlException ex)
             {

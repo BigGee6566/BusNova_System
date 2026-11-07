@@ -139,7 +139,7 @@ $precompileOut = Join-Path $env:TEMP ('bnout-' + [Guid]::NewGuid().ToString('N')
 
 try {
     $null = robocopy $repo $stage /MIR /NFL /NDL /NJH /NJS /NP /R:1 /W:1 `
-        /XD '.vs' '.git' 'obj' 'packages' 'App_Data\Logs' 'BusNova.Tests'
+        /XD '.vs' '.git' '.claude' '.artifacts' '.idea' 'obj' 'packages' 'App_Data\Logs' 'BusNova.Tests'
 
     # robocopy uses exit codes 0-7 for success; 8+ is a real failure.
     #

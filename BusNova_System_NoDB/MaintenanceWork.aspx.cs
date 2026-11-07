@@ -20,20 +20,98 @@ namespace BusNova_System
     /// </summary>
     public partial class MaintenanceWork : Page
     {
+        /// <summary>
+        /// Managers review maintenance here and schedule it on
+        /// ManageMaintenance.aspx. Only Maintenance Staff change these records.
+        /// </summary>
+        protected bool CanEditRecords
+        {
+            get { return SessionHelper.Role == Roles.MaintenanceStaff; }
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (!SessionHelper.RequireRole(this, Roles.MaintenanceStaff)) return;
+            if (!SessionHelper.RequireRole(this, Roles.MaintenanceStaff, Roles.Manager)) return;
 
             if (!IsPostBack)
             {
+                pnlStaffIntro.Visible = CanEditRecords;
+                pnlManagerIntro.Visible = !CanEditRecords;
+
+                BindBusDropdown();
+                BindUpcoming();
                 BindOpen();
                 BindCompleted();
             }
         }
 
+        private void BindUpcoming()
+        {
+            gvUpcoming.DataSource = ReportingService.GetMaintenanceDue()
+                .Where(r => r.NextServiceDueDate.HasValue && r.BusStatus != BusStatus.Retired)
+                .OrderBy(r => r.NextServiceDueDate.Value)
+                .ToList();
+            gvUpcoming.DataBind();
+        }
+
+        protected string DueCss(object isOverdue, object isDueSoon)
+        {
+            if (Convert.ToBoolean(isOverdue)) return "status-danger";
+            return Convert.ToBoolean(isDueSoon) ? "status-scheduled" : "status-completed";
+        }
+
+        protected string DueLabel(object isOverdue, object isDueSoon)
+        {
+            if (Convert.ToBoolean(isOverdue)) return "Overdue";
+            return Convert.ToBoolean(isDueSoon) ? "Due soon" : "Scheduled";
+        }
+
+        private void BindBusDropdown()
+        {
+            ddlFilterBus.Items.Clear();
+            ddlFilterBus.Items.Add(new ListItem("All buses", "0"));
+
+            var buses = FleetService.GetAllBuses();
+            foreach (var bus in buses)
+            {
+                ddlFilterBus.Items.Add(new ListItem(bus.DisplayName, bus.BusId.ToString()));
+            }
+        }
+
+        private OperationsService.MaintenanceSearchCriteria BuildCriteria()
+        {
+            var criteria = new OperationsService.MaintenanceSearchCriteria();
+
+            int busId;
+            if (int.TryParse(ddlFilterBus.SelectedValue, out busId) && busId > 0)
+            {
+                criteria.BusId = busId;
+            }
+
+            DateTime fromDate;
+            if (DateTime.TryParse(txtFilterFromDate.Text, out fromDate))
+            {
+                criteria.FromDate = fromDate.Date;
+            }
+
+            DateTime toDate;
+            if (DateTime.TryParse(txtFilterToDate.Text, out toDate))
+            {
+                criteria.ToDate = toDate.Date;
+            }
+
+            if (!string.IsNullOrWhiteSpace(ddlFilterStatus.SelectedValue))
+            {
+                criteria.Status = ddlFilterStatus.SelectedValue;
+            }
+
+            return criteria;
+        }
+
         private void BindOpen()
         {
-            gvOpen.DataSource = OperationsService.GetOpenMaintenance();
+            var criteria = BuildCriteria();
+            gvOpen.DataSource = OperationsService.SearchMaintenance(criteria);
             gvOpen.DataBind();
         }
 
@@ -46,19 +124,61 @@ namespace BusNova_System
             gvCompleted.DataBind();
         }
 
+        protected void btnFilter_Click(object sender, EventArgs e)
+        {
+            pnlDetails.Visible = false;
+            pnlService.Visible = false;
+            lblMessage.Text = string.Empty;
+            BindOpen();
+        }
+
+        protected void btnResetFilter_Click(object sender, EventArgs e)
+        {
+            ddlFilterBus.SelectedValue = "0";
+            txtFilterFromDate.Text = string.Empty;
+            txtFilterToDate.Text = string.Empty;
+            ddlFilterStatus.SelectedValue = "All";
+
+            pnlDetails.Visible = false;
+            pnlService.Visible = false;
+            lblMessage.Text = string.Empty;
+            BindOpen();
+        }
+
         protected void gvOpen_RowCommand(object sender, GridViewCommandEventArgs e)
         {
-            if (!AntiForgery.IsValid(((Site)Master).CsrfToken))
+            HandleRowCommand(e);
+        }
+
+        protected void gvCompleted_RowCommand(object sender, GridViewCommandEventArgs e)
+        {
+            HandleRowCommand(e);
+        }
+
+        private void HandleRowCommand(GridViewCommandEventArgs e)
+        {
+            if (e.CommandName == "ViewDetails")
             {
-                ShowError("Your session has expired. Please refresh the page and try again.");
-                return;
+                int maintenanceId;
+                if (!int.TryParse(Convert.ToString(e.CommandArgument), out maintenanceId)) return;
+
+                ShowRecordDetails(maintenanceId);
             }
-
-            int maintenanceId;
-            if (!int.TryParse(Convert.ToString(e.CommandArgument), out maintenanceId)) return;
-
-            if (e.CommandName == "StartWork")
+            else if (!CanEditRecords)
             {
+                ShowError("Only maintenance staff can change maintenance records.");
+            }
+            else if (e.CommandName == "StartWork")
+            {
+                if (!AntiForgery.IsValid(((Site)Master).CsrfToken))
+                {
+                    ShowError("Your session has expired. Please refresh the page and try again.");
+                    return;
+                }
+
+                int maintenanceId;
+                if (!int.TryParse(Convert.ToString(e.CommandArgument), out maintenanceId)) return;
+
                 if (OperationsService.StartWork(maintenanceId, SessionHelper.UserId))
                 {
                     ShowSuccess("Marked as in progress.");
@@ -69,37 +189,118 @@ namespace BusNova_System
                 }
 
                 pnlService.Visible = false;
+                pnlDetails.Visible = false;
                 BindOpen();
             }
             else if (e.CommandName == "LogService")
             {
-                var record = OperationsService.GetMaintenanceById(maintenanceId);
-                if (record == null)
+                if (!AntiForgery.IsValid(((Site)Master).CsrfToken))
                 {
-                    ShowError("That maintenance record no longer exists.");
+                    ShowError("Your session has expired. Please refresh the page and try again.");
                     return;
                 }
 
-                hfServiceMaintenanceId.Value = maintenanceId.ToString();
-                litServiceFault.Text = Server.HtmlEncode(
-                    record.BusRegistration + ": " + record.IssueDescription);
+                int maintenanceId;
+                if (!int.TryParse(Convert.ToString(e.CommandArgument), out maintenanceId)) return;
 
-                txtWorkPerformed.Text = string.Empty;
-                txtPartsUsed.Text = string.Empty;
-                txtServiceCost.Text = string.Empty;
-                txtServiceOdometer.Text = string.Empty;
-                txtServiceDate.Text = DateTime.Today.ToString("yyyy-MM-dd");
-                txtNextServiceDue.Text = string.Empty;
-                txtServiceCondition.Text = string.Empty;
-                chkReturnToService.Checked = true;
-
-                pnlService.Visible = true;
-                lblMessage.Text = string.Empty;
+                OpenLogServicePanel(maintenanceId, false);
             }
+            else if (e.CommandName == "EditOverdue")
+            {
+                if (!AntiForgery.IsValid(((Site)Master).CsrfToken))
+                {
+                    ShowError("Your session has expired. Please refresh the page and try again.");
+                    return;
+                }
+
+                int maintenanceId;
+                if (!int.TryParse(Convert.ToString(e.CommandArgument), out maintenanceId)) return;
+
+                OpenLogServicePanel(maintenanceId, true);
+            }
+        }
+
+        private void ShowRecordDetails(int maintenanceId)
+        {
+            var record = OperationsService.GetMaintenanceById(maintenanceId);
+            if (record == null)
+            {
+                ShowError("That maintenance record no longer exists.");
+                return;
+            }
+
+            litDetailBus.Text = Server.HtmlEncode(record.BusRegistration ?? string.Empty);
+            litDetailReportedBy.Text = Server.HtmlEncode(record.ReportedByName ?? string.Empty);
+            litDetailDateReported.Text = record.DateReported.ToString("dd MMM yyyy");
+            litDetailSeverity.Text = Server.HtmlEncode(record.Severity ?? string.Empty);
+            litDetailStatus.Text = Server.HtmlEncode(StatusTone.Label(record.Status));
+            litDetailCondition.Text = Server.HtmlEncode(record.VehicleCondition ?? "Not recorded");
+            litDetailIssue.Text = Server.HtmlEncode(record.IssueDescription ?? string.Empty);
+
+            litDetailServicedBy.Text = Server.HtmlEncode(record.ServicedByName ?? "Pending");
+            litDetailServiceDate.Text = record.ServiceDate.HasValue ? record.ServiceDate.Value.ToString("dd MMM yyyy") : "Pending";
+            litDetailNextDue.Text = record.NextServiceDueDate.HasValue ? record.NextServiceDueDate.Value.ToString("dd MMM yyyy") : "Not scheduled";
+            litDetailOdometer.Text = record.OdometerAtService.HasValue ? record.OdometerAtService.Value.ToString("N0") + " km" : "Not recorded";
+            litDetailCost.Text = record.Cost.HasValue ? FormatMoney(record.Cost.Value) : "Not recorded";
+            litDetailWorkPerformed.Text = Server.HtmlEncode(string.IsNullOrWhiteSpace(record.WorkPerformed) ? "None recorded" : record.WorkPerformed);
+            litDetailPartsUsed.Text = Server.HtmlEncode(string.IsNullOrWhiteSpace(record.PartsUsed) ? "None recorded" : record.PartsUsed);
+
+            var partsList = MaintenancePartsService.GetForLog(maintenanceId);
+            gvDetailParts.DataSource = partsList;
+            gvDetailParts.DataBind();
+
+            pnlDetails.Visible = true;
+            pnlService.Visible = false;
+            lblMessage.Text = string.Empty;
+        }
+
+        private void OpenLogServicePanel(int maintenanceId, bool isEditMode)
+        {
+            var record = OperationsService.GetMaintenanceById(maintenanceId);
+            if (record == null)
+            {
+                ShowError("That maintenance record no longer exists.");
+                return;
+            }
+
+            hfServiceMaintenanceId.Value = maintenanceId.ToString();
+            hfIsEditMode.Value = isEditMode ? "1" : "0";
+
+            litServiceTitle.Text = isEditMode ? "Edit overdue maintenance service record" : "Log completed service";
+            litServiceFault.Text = Server.HtmlEncode(record.BusRegistration + ": " + record.IssueDescription);
+
+            txtWorkPerformed.Text = isEditMode ? (record.WorkPerformed ?? string.Empty) : string.Empty;
+            txtPartsUsed.Text = isEditMode ? (record.PartsUsed ?? string.Empty) : string.Empty;
+            txtServiceCost.Text = isEditMode && record.Cost.HasValue ? record.Cost.Value.ToString("0.00", CultureInfo.InvariantCulture) : string.Empty;
+            txtServiceOdometer.Text = isEditMode && record.OdometerAtService.HasValue ? record.OdometerAtService.Value.ToString() : string.Empty;
+            txtServiceDate.Text = isEditMode && record.ServiceDate.HasValue ? record.ServiceDate.Value.ToString("yyyy-MM-dd") : DateTime.Today.ToString("yyyy-MM-dd");
+            txtNextServiceDue.Text = isEditMode && record.NextServiceDueDate.HasValue ? record.NextServiceDueDate.Value.ToString("yyyy-MM-dd") : string.Empty;
+            txtServiceCondition.Text = isEditMode ? (record.VehicleCondition ?? string.Empty) : string.Empty;
+
+            pnlReturnToService.Visible = !isEditMode;
+            chkReturnToService.Checked = true;
+
+            btnConfirmService.Text = isEditMode ? "Save changes" : "Save and close fault";
+
+            pnlService.Visible = true;
+            pnlDetails.Visible = false;
+            lblMessage.Text = string.Empty;
+        }
+
+        protected void btnCloseDetails_Click(object sender, EventArgs e)
+        {
+            pnlDetails.Visible = false;
         }
 
         protected void btnConfirmService_Click(object sender, EventArgs e)
         {
+            if (!CanEditRecords)
+            {
+                ShowError("Only maintenance staff can change maintenance records.");
+                pnlService.Visible = false;
+                return;
+            }
+
             if (!AntiForgery.IsValid(((Site)Master).CsrfToken))
             {
                 ShowError("Your session has expired. Please refresh the page and try again.");
@@ -150,23 +351,38 @@ namespace BusNova_System
                 odometer = parsedOdometer;
             }
 
-            var result = OperationsService.LogService(maintenanceId, SessionHelper.UserId,
-                txtWorkPerformed.Text, txtPartsUsed.Text, cost, serviceDate, nextServiceDue,
-                odometer, txtServiceCondition.Text, chkReturnToService.Checked);
+            bool isEditMode = hfIsEditMode.Value == "1";
+            OperationResult result;
 
-            if (result.Success)
+            if (isEditMode)
             {
-                // The message says what actually happened, including
-                // whether the bus went back on the road. LogService used to
-                // report failure in the case where the work saved but the
-                // bus had to stay grounded, and this page carried a comment
-                // explaining that contradiction rather than the service
-                // fixing it.
-                ShowSuccess(result.Message);
+                result = OperationsService.UpdateMaintenanceService(maintenanceId, SessionHelper.UserId,
+                    txtWorkPerformed.Text, txtPartsUsed.Text, cost, serviceDate, nextServiceDue,
+                    odometer, txtServiceCondition.Text);
+
+                if (result.Success)
+                {
+                    ShowSuccess("Maintenance service record updated.");
+                }
+                else
+                {
+                    ShowError(result.ErrorMessage);
+                }
             }
             else
             {
-                ShowError(result.ErrorMessage);
+                result = OperationsService.LogService(maintenanceId, SessionHelper.UserId,
+                    txtWorkPerformed.Text, txtPartsUsed.Text, cost, serviceDate, nextServiceDue,
+                    odometer, txtServiceCondition.Text, chkReturnToService.Checked);
+
+                if (result.Success)
+                {
+                    ShowSuccess(result.Message);
+                }
+                else
+                {
+                    ShowError(result.ErrorMessage);
+                }
             }
 
             pnlService.Visible = false;
@@ -185,9 +401,33 @@ namespace BusNova_System
             GridViewHelpers.ApplyResponsiveLabels(e, gvOpen);
         }
 
+        protected void gvUpcoming_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            GridViewHelpers.ApplyResponsiveLabels(e, gvUpcoming);
+        }
+
         protected void gvCompleted_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             GridViewHelpers.ApplyResponsiveLabels(e, gvCompleted);
+        }
+
+        protected void gvDetailParts_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            GridViewHelpers.ApplyResponsiveLabels(e, gvDetailParts);
+        }
+
+        protected bool IsOverdueAndNotCancelled(object nextDueObj, object statusObj)
+        {
+            var status = Convert.ToString(statusObj);
+            if (status == MaintenanceStatus.Cancelled) return false;
+
+            if (nextDueObj != null && nextDueObj != DBNull.Value)
+            {
+                var dt = Convert.ToDateTime(nextDueObj);
+                if (dt.Date < DateTime.Today) return true;
+            }
+
+            return false;
         }
 
         // ---------------- formatting helpers used by the markup ----------------

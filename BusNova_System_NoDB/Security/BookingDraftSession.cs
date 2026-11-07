@@ -23,15 +23,17 @@ namespace BusNova_System.Security
     {
         private const string KeyAssignmentId = "BusNova.BookingDraft.AssignmentId";
         private const string KeyTravellers = "BusNova.BookingDraft.Travellers";
+        private const string KeyBookerStudentNumber = "BusNova.BookingDraft.BookerStudentNumber";
         private const string KeyAttemptId = "BusNova.BookingDraft.AttemptId";
 
-        public static void Save(int assignmentId, List<BookingTraveller> travellers)
+        public static void Save(int assignmentId, List<BookingTraveller> travellers, string bookerStudentNumber = null)
         {
             var session = HttpContext.Current.Session;
             if (session == null) return;
 
             session[KeyAssignmentId] = assignmentId;
             session[KeyTravellers] = travellers;
+            session[KeyBookerStudentNumber] = bookerStudentNumber;
 
             // A fresh attempt id per draft. It is what makes the payment
             // idempotency key change between two genuinely separate booking
@@ -39,6 +41,16 @@ namespace BusNova_System.Security
             // double-click or a refresh of the same attempt. Server-side, so
             // the browser cannot vary it to force a second charge.
             session[KeyAttemptId] = System.Guid.NewGuid().ToString("N");
+        }
+
+        public static string BookerStudentNumber
+        {
+            get
+            {
+                var session = HttpContext.Current.Session;
+                if (session == null) return null;
+                return session[KeyBookerStudentNumber] as string;
+            }
         }
 
         /// <summary>
@@ -104,6 +116,7 @@ namespace BusNova_System.Security
 
             session.Remove(KeyAssignmentId);
             session.Remove(KeyTravellers);
+            session.Remove(KeyBookerStudentNumber);
             session.Remove(KeyAttemptId);
         }
     }

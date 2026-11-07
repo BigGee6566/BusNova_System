@@ -1,13 +1,10 @@
 /* =============================================================
    Driver workspace (WP-7)
-
-   360px first. Every rule here is written for the narrow case and
-   then relaxed upward, rather than written wide and patched with
-   max-width overrides - a driver reads this on a phone, at a bus,
-   often before dawn, sometimes in gloves.
-
-   Targets are deliberately large: the WCAG minimum is 24px and the
-   practical minimum for a cold thumb is rather more.
+    since the system will be presented using a laptop the layout 
+    must be responsive and adapt to different screen sizes. The driver workspace
+    must show the screen size of the latop first and then adapt to smaller screen sizes. 
+    The driver workspace must be designed to be user-friendly and easy to navigate.
+    The driver workspace must be designed to be responsive and adapt to different screen sizes.
    ============================================================= */
 
 .dw > .bn-card { margin-bottom: var(--bn-space-4, 1rem); }

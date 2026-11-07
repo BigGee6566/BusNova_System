@@ -164,6 +164,27 @@
                                             <span class="bn-sidebar__nav-text">Assign Route</span>
                                         </a>
                                     </li>
+                                    <li>
+                                        <a class="<%= GetSidebarNavClass("ManageMaintenance.aspx") %>" href="ManageMaintenance.aspx"
+                                           data-label="Manage Maintenance" aria-label="Manage Maintenance"<%= GetAriaCurrent("ManageMaintenance.aspx") %>>
+                                            <i class="fas fa-wrench bn-sidebar__nav-icon" aria-hidden="true"></i>
+                                            <span class="bn-sidebar__nav-text">Manage Maintenance</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="<%= GetSidebarNavClass("MaintenanceWork.aspx") %>" href="MaintenanceWork.aspx"
+                                           data-label="Maintenance Records" aria-label="Maintenance Records"<%= GetAriaCurrent("MaintenanceWork.aspx") %>>
+                                            <i class="fas fa-screwdriver-wrench bn-sidebar__nav-icon" aria-hidden="true"></i>
+                                            <span class="bn-sidebar__nav-text">Maintenance Records</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="<%= GetSidebarNavClass("DriverIssues.aspx") %>" href="DriverIssues.aspx"
+                                           data-label="Driver Issues" aria-label="Driver Issues"<%= GetAriaCurrent("DriverIssues.aspx") %>>
+                                            <i class="fas fa-triangle-exclamation bn-sidebar__nav-icon" aria-hidden="true"></i>
+                                            <span class="bn-sidebar__nav-text">Driver Issues</span>
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
 
@@ -358,6 +379,25 @@
                                     </a>
                                 </li>
                             </ul>
+                            <div class="bn-sidebar__section">
+                                <div class="bn-sidebar__section-label">Reports</div>
+                                <ul class="bn-sidebar__list">
+                                    <li>
+                                        <a class="<%= GetSidebarNavClass("ReportMaintenanceDue.aspx") %>" href="ReportMaintenanceDue.aspx"
+                                           data-label="Maintenance Due" aria-label="Maintenance Due report"<%= GetAriaCurrent("ReportMaintenanceDue.aspx") %>>
+                                            <i class="fas fa-wrench bn-sidebar__nav-icon" aria-hidden="true"></i>
+                                            <span class="bn-sidebar__nav-text">Maintenance Due</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="<%= GetSidebarNavClass("ReportMaintenanceSchedule.aspx") %>" href="ReportMaintenanceSchedule.aspx"
+                                           data-label="Maintenance Schedule" aria-label="Maintenance Schedule"<%= GetAriaCurrent("ReportMaintenanceSchedule.aspx") %>>
+                                            <i class="fas fa-screwdriver-wrench bn-sidebar__nav-icon" aria-hidden="true"></i>
+                                            <span class="bn-sidebar__nav-text">Maintenance Schedule</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
                         </asp:PlaceHolder>
 
                         <%-- Passenger --%>
@@ -514,6 +554,12 @@
                                     <a class="<%= GetNavClass("ManageUsers.aspx") %>" href="ManageUsers.aspx">
                                         <i class="fas fa-users-gear"></i>
                                         Manage Users
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="<%= GetNavClass("MaintenanceWork.aspx") %>" href="MaintenanceWork.aspx">
+                                        <i class="fas fa-screwdriver-wrench"></i>
+                                        Maintenance Records
                                     </a>
                                 </li>
                                 <li class="nav-item">

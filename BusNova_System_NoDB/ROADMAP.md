@@ -968,4 +968,20 @@ Per item, all of the following:
 | **B — Additive edit** | Added markup, CSS classes, optional overloads, new `appSettings`, new columns on new tables | Allowed; must not alter existing behaviour, output or signatures |
 | **C — Behavioural change** | Edits to existing service logic, existing columns, existing signatures, existing page flows | **Stop and ask first**, with a written proposal |
 
+---
+
+## 12. Maintenance, Manager Control, and Student Number Work Package (Delivered)
+
+- **Migration 018 (`018_MaintenanceAndStudentNumber.sql`)**: Idempotent script adding `StudentNumber` column to `Passenger`, `Booking`, and `Ticket` tables, plus supporting non-unique indexes.
+- **Maintenance Workspace (`MaintenanceWork.aspx`)**: Bus/date/status filtering, in-page details view with itemised parts and costs, and overdue record editing.
+- **Manager Maintenance Control**:
+  - `ManageMaintenance.aspx`: Manage bus service due dates, ground buses for maintenance, and update scheduled maintenance notes.
+  - `DriverIssues.aspx`: Read-only view of driver-reported issues with filters and full details.
+- **Expanded Report Access**: MaintenanceStaff role allowed on `ReportMaintenanceDue.aspx` and `ReportMaintenanceSchedule.aspx` with sidebar links added.
+- **Mandatory Student Number & Active-Trip Duplicate Prevention**:
+  - Required student number fields in `Register.aspx`, `BookTrip.aspx` (booker + all 1-5 travellers), and `IssueTicket.aspx`.
+  - Format validation (`^[A-Za-z0-9-]{6,20}$`), trimming, and uppercasing.
+  - Atomic active-trip duplicate prevention across all travellers using `UPDLOCK, HOLDLOCK` transactional locks in `TicketService.cs`.
+
+
 **Nine of the eleven Phase 0 fixes are Tier C.** That is expected, not a delay — Phase 0 exists precisely to change behaviour that is currently wrong. Expect a written proposal before each, with FIX-008 and FIX-009 warranting the most scrutiny: one rewrites existing data, the other rewrites the authentication path.

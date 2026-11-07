@@ -136,6 +136,12 @@
 
                 <hr />
 
+                <h3 class="bn-subheading bn-subheading--sm">Booker details</h3>
+                <div class="mb-3">
+                    <label for="<%= txtBookerStudentNumber.ClientID %>">Your student number<span class="required-mark">*</span></label>
+                    <asp:TextBox ID="txtBookerStudentNumber" runat="server" CssClass="form-control" MaxLength="30" placeholder="e.g. 12345678 or STU-1234" />
+                </div>
+
                 <h3 class="bn-subheading bn-subheading--sm">Traveller details</h3>
 
                 <%-- Five fixed rows - simpler and more in keeping with this app's
@@ -152,8 +158,8 @@
                             <asp:TextBox ID="txtTraveller1Name" runat="server" CssClass="form-control" MaxLength="100" />
                         </div>
                         <div class="bn-field">
-                            <label for="<%= txtTraveller1Reference.ClientID %>">Student / ID number <span class="empty-note">(optional)</span></label>
-                            <asp:TextBox ID="txtTraveller1Reference" runat="server" CssClass="form-control" MaxLength="30" />
+                            <label for="<%= txtTraveller1Reference.ClientID %>">Student number<span class="required-mark">*</span></label>
+                            <asp:TextBox ID="txtTraveller1Reference" runat="server" CssClass="form-control" MaxLength="30" placeholder="e.g. 12345678 or STU-1234" />
                         </div>
                     </div>
                 </asp:Panel>
@@ -166,8 +172,8 @@
                             <asp:TextBox ID="txtTraveller2Name" runat="server" CssClass="form-control" MaxLength="100" />
                         </div>
                         <div class="bn-field">
-                            <label for="<%= txtTraveller2Reference.ClientID %>">Student / ID number <span class="empty-note">(optional)</span></label>
-                            <asp:TextBox ID="txtTraveller2Reference" runat="server" CssClass="form-control" MaxLength="30" />
+                            <label for="<%= txtTraveller2Reference.ClientID %>">Student number<span class="required-mark">*</span></label>
+                            <asp:TextBox ID="txtTraveller2Reference" runat="server" CssClass="form-control" MaxLength="30" placeholder="e.g. 12345678 or STU-1234" />
                         </div>
                     </div>
                 </asp:Panel>
@@ -180,8 +186,8 @@
                             <asp:TextBox ID="txtTraveller3Name" runat="server" CssClass="form-control" MaxLength="100" />
                         </div>
                         <div class="bn-field">
-                            <label for="<%= txtTraveller3Reference.ClientID %>">Student / ID number <span class="empty-note">(optional)</span></label>
-                            <asp:TextBox ID="txtTraveller3Reference" runat="server" CssClass="form-control" MaxLength="30" />
+                            <label for="<%= txtTraveller3Reference.ClientID %>">Student number<span class="required-mark">*</span></label>
+                            <asp:TextBox ID="txtTraveller3Reference" runat="server" CssClass="form-control" MaxLength="30" placeholder="e.g. 12345678 or STU-1234" />
                         </div>
                     </div>
                 </asp:Panel>
@@ -194,8 +200,8 @@
                             <asp:TextBox ID="txtTraveller4Name" runat="server" CssClass="form-control" MaxLength="100" />
                         </div>
                         <div class="bn-field">
-                            <label for="<%= txtTraveller4Reference.ClientID %>">Student / ID number <span class="empty-note">(optional)</span></label>
-                            <asp:TextBox ID="txtTraveller4Reference" runat="server" CssClass="form-control" MaxLength="30" />
+                            <label for="<%= txtTraveller4Reference.ClientID %>">Student number<span class="required-mark">*</span></label>
+                            <asp:TextBox ID="txtTraveller4Reference" runat="server" CssClass="form-control" MaxLength="30" placeholder="e.g. 12345678 or STU-1234" />
                         </div>
                     </div>
                 </asp:Panel>
@@ -208,8 +214,8 @@
                             <asp:TextBox ID="txtTraveller5Name" runat="server" CssClass="form-control" MaxLength="100" />
                         </div>
                         <div class="bn-field">
-                            <label for="<%= txtTraveller5Reference.ClientID %>">Student / ID number <span class="empty-note">(optional)</span></label>
-                            <asp:TextBox ID="txtTraveller5Reference" runat="server" CssClass="form-control" MaxLength="30" />
+                            <label for="<%= txtTraveller5Reference.ClientID %>">Student number<span class="required-mark">*</span></label>
+                            <asp:TextBox ID="txtTraveller5Reference" runat="server" CssClass="form-control" MaxLength="30" placeholder="e.g. 12345678 or STU-1234" />
                         </div>
                     </div>
                 </asp:Panel>

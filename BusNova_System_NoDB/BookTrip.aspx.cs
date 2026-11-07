@@ -107,6 +107,14 @@ namespace BusNova_System
             foreach (var box in TravellerNameBoxes) box.Text = string.Empty;
             foreach (var box in TravellerReferenceBoxes) box.Text = string.Empty;
 
+            var currentPassenger = AdminService.GetPassengerById(SessionHelper.UserId);
+            if (currentPassenger != null)
+            {
+                txtBookerStudentNumber.Text = currentPassenger.StudentNumber ?? string.Empty;
+                txtTraveller1Reference.Text = currentPassenger.StudentNumber ?? string.Empty;
+                txtTraveller1Name.Text = currentPassenger.FullName ?? string.Empty;
+            }
+
             RenderSeatMap(assignmentId, null);
 
             pnlSeat.Visible = true;
@@ -155,6 +163,16 @@ namespace BusNova_System
                 return;
             }
 
+            var bookerStudentNumber = (txtBookerStudentNumber.Text ?? string.Empty).Trim().ToUpperInvariant();
+            var bookerStdErr = TicketService.ValidateStudentNumber(bookerStudentNumber);
+            if (bookerStdErr != null)
+            {
+                ShowError("Booker: " + bookerStdErr);
+                return;
+            }
+
+            AdminService.EnsurePassengerStudentNumber(SessionHelper.UserId, bookerStudentNumber);
+
             var selectedSeats = (hfSelectedSeats.Value ?? string.Empty)
                 .Split(',')
                 .Select(s => s.Trim().ToUpperInvariant())
@@ -168,14 +186,6 @@ namespace BusNova_System
                 return;
             }
 
-            // hfSelectedSeats is a hidden field, so its contents are whatever
-            // the browser chose to post - the seat map's own limit is client
-            // side and proves nothing. Without this guard the loop below
-            // indexes a fixed five-element TextBox[] with a caller-controlled
-            // count and throws IndexOutOfRangeException, which lands the
-            // passenger on the error page instead of telling them what is
-            // wrong. The service enforces the same cap, but it is never
-            // reached. (AUD-005)
             if (selectedSeats.Count > TicketService.MaxTravellersPerBooking)
             {
                 ShowError("You can book at most " + TicketService.MaxTravellersPerBooking +
@@ -186,8 +196,6 @@ namespace BusNova_System
                 return;
             }
 
-            // Two travellers cannot occupy one seat. The seat map cannot
-            // produce this, but a posted field can.
             if (selectedSeats.Distinct(StringComparer.Ordinal).Count() != selectedSeats.Count)
             {
                 ShowError("The same seat was selected more than once. Please choose again.");
@@ -199,7 +207,7 @@ namespace BusNova_System
             for (var i = 0; i < selectedSeats.Count; i++)
             {
                 var name = (TravellerNameBoxes[i].Text ?? string.Empty).Trim();
-                var reference = (TravellerReferenceBoxes[i].Text ?? string.Empty).Trim();
+                var stdNum = (TravellerReferenceBoxes[i].Text ?? string.Empty).Trim().ToUpperInvariant();
 
                 if (name.Length == 0)
                 {
@@ -208,11 +216,27 @@ namespace BusNova_System
                     return;
                 }
 
+                if (stdNum.Length == 0)
+                {
+                    ShowError("Please enter a student number for traveller " + (i + 1) + ".");
+                    RenderSeatMap(assignmentId, selectedSeats);
+                    return;
+                }
+
+                var stdErr = TicketService.ValidateStudentNumber(stdNum);
+                if (stdErr != null)
+                {
+                    ShowError("Traveller " + (i + 1) + ": " + stdErr);
+                    RenderSeatMap(assignmentId, selectedSeats);
+                    return;
+                }
+
                 travellers.Add(new BookingTraveller
                 {
                     FullName = name,
-                    Reference = reference.Length == 0 ? null : reference,
-                    SeatNumber = selectedSeats[i]
+                    Reference = stdNum,
+                    SeatNumber = selectedSeats[i],
+                    StudentNumber = stdNum
                 });
             }
 
@@ -226,7 +250,17 @@ namespace BusNova_System
                 return;
             }
 
-            BookingDraftSession.Save(assignmentId, travellers);
+            var duplicateStudentNumbers = travellers
+                .GroupBy(t => t.StudentNumber)
+                .Any(g => g.Count() > 1);
+            if (duplicateStudentNumbers)
+            {
+                ShowError("Each traveller in a booking must have a unique student number.");
+                RenderSeatMap(assignmentId, selectedSeats);
+                return;
+            }
+
+            BookingDraftSession.Save(assignmentId, travellers, bookerStudentNumber);
             Response.Redirect("~/PaymentSimulation.aspx");
         }
 

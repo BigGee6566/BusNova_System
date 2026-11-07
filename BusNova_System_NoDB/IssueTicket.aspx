@@ -99,6 +99,10 @@
                         <asp:TextBox ID="txtRegPhone" runat="server" CssClass="form-control" MaxLength="15" />
                     </div>
                 </div>
+                <div class="mb-3 bn-mt-3">
+                    <label for="<%= txtRegStudentNumber.ClientID %>">Student number<span class="required-mark">*</span></label>
+                    <asp:TextBox ID="txtRegStudentNumber" runat="server" CssClass="form-control" MaxLength="30" placeholder="e.g. 12345678 or STU-1234" />
+                </div>
                 <asp:Button ID="btnRegisterPassenger" runat="server" Text="Register passenger"
                             CssClass="btn-ops-secondary" CausesValidation="false"
                             OnClick="btnRegisterPassenger_Click" />
@@ -119,6 +123,11 @@
             <asp:Panel ID="pnlIssue" runat="server" Visible="false" data-role="seat-form">
                 <hr />
                 <h3 class="bn-subheading bn-subheading--sm">Issue the ticket</h3>
+
+                <div class="mb-3">
+                    <label for="<%= txtIssueStudentNumber.ClientID %>">Passenger student number<span class="required-mark">*</span></label>
+                    <asp:TextBox ID="txtIssueStudentNumber" runat="server" CssClass="form-control" MaxLength="30" placeholder="e.g. 12345678 or STU-1234" />
+                </div>
 
                 <div class="seat-summary">
                     <div class="seat-summary-item">

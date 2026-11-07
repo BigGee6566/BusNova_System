@@ -203,7 +203,8 @@ namespace BusNova_System
                 return;
             }
 
-            var result = TicketService.CreateBooking(passengerId, assignmentId, travellers, method);
+            var bookerStudentNumber = BookingDraftSession.BookerStudentNumber;
+            var result = TicketService.CreateBooking(passengerId, bookerStudentNumber, assignmentId, travellers, method);
 
             if (!result.Success)
             {

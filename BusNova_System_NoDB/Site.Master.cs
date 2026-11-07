@@ -42,7 +42,8 @@ namespace BusNova_System
             "ValidateTicket.aspx", "Notifications.aspx", "Manifest.aspx", "LiveMap.aspx",
             "DriverWorkspace.aspx",
             "ReportRouteList.aspx", "ReportTicketSales.aspx",
-            "ReportDriverSchedule.aspx", "ReportMaintenanceSchedule.aspx"
+            "ReportDriverSchedule.aspx", "ReportMaintenanceSchedule.aspx",
+            "ManageMaintenance.aspx", "DriverIssues.aspx"
         };
 
         /// <summary>
@@ -70,6 +71,8 @@ namespace BusNova_System
             { "ReportFuelEfficiency.aspx", "Fuel Efficiency" },
             { "ReportDriverPerformance.aspx", "Driver Performance" },
             { "ReportMaintenanceDue.aspx", "Maintenance Due" },
+            { "ManageMaintenance.aspx", "Manage Maintenance" },
+            { "DriverIssues.aspx", "Driver Issues" },
 
             // AUD-061, the same nine. These titles match the wording the
             // sidebar uses for each link, so the top bar confirms where you
