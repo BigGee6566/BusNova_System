@@ -204,7 +204,21 @@ namespace BusNova_System
             }
 
             var bookerStudentNumber = BookingDraftSession.BookerStudentNumber;
-            var result = TicketService.CreateBooking(passengerId, bookerStudentNumber, assignmentId, travellers, method);
+
+            BookingResult result;
+            try
+            {
+                result = TicketService.CreateBooking(passengerId, bookerStudentNumber, assignmentId, travellers, method);
+            }
+            catch
+            {
+                // Same rule as a failed booking below: never leave a held
+                // authorisation behind. The new attempt id lets a retry reach
+                // the gateway instead of replaying the voided result.
+                PaymentService.Void(payment.PaymentTransactionId, "Booking failed with an unexpected error.");
+                BookingDraftSession.NewAttempt();
+                throw;
+            }
 
             if (!result.Success)
             {

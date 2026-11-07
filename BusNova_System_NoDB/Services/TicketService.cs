@@ -317,7 +317,7 @@ WHERE AssignmentID = @id AND TicketStatus <> 'Cancelled';";
 
             var sql = @"
 SELECT TOP 1 t.TicketNumber, t.SeatNumber, r.Origin, r.Destination, r.RouteName, ra.AssignmentDate, ra.DepartureTime
-FROM dbo.Ticket" + tableHint + @" t
+FROM dbo.Ticket t" + tableHint + @"
 INNER JOIN dbo.RouteAssignment ra ON ra.AssignmentID = t.AssignmentID
 INNER JOIN dbo.Route r ON r.RouteCode = ra.RouteCode
 WHERE t.StudentNumber = @studentNumber

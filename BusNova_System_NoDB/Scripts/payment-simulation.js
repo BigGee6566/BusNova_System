@@ -109,20 +109,25 @@
          * nothing is shown. The button did nothing, silently, and the correct
          * server-side logic never ran.
          *
-         * ValidatorEnable is ASP.NET's own API for this, so the client now
-         * makes exactly the decision the server would: no validator is
-         * bypassed, they are disabled precisely when Card is not selected.
-         * Card stays fully validated whenever Card IS selected, and the
-         * server re-checks regardless, so scripting off loses nothing.
+         * The client now makes exactly the decision the server would: no
+         * validator is bypassed, they are disabled precisely when Card is
+         * not selected. Card stays fully validated whenever Card IS selected,
+         * and the server re-checks regardless, so scripting off loses nothing.
+         *
+         * The flags are set directly rather than through ValidatorEnable
+         * because that call also validates, which showed every "required"
+         * error on a form the passenger had not touched yet.
          */
         function setCardValidatorsEnabled(enabled) {
-            if (typeof window.ValidatorEnable !== 'function') return;
+            if (typeof window.ValidatorUpdateDisplay !== 'function') return;
             if (!window.Page_Validators) return;
 
             for (var i = 0; i < window.Page_Validators.length; i++) {
                 var validator = window.Page_Validators[i];
                 if (cardFields.contains(validator)) {
-                    window.ValidatorEnable(validator, enabled);
+                    validator.enabled = enabled;
+                    validator.isvalid = true;
+                    window.ValidatorUpdateDisplay(validator);
                 }
             }
         }
