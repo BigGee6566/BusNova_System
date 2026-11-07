@@ -202,11 +202,9 @@ ORDER BY ra.AssignmentDate, ra.DepartureTime, DriverName;";
                     BusRegistration = schedule.BusRegistration,
                     BusStatus = string.Empty,
                     ScheduleName = schedule.ScheduleName,
-                    Interval = DescribeInterval(schedule),
+                    Interval = schedule.IntervalDescription,
                     CurrentOdometer = schedule.CurrentOdometer,
-                    LastServiced = schedule.LastServicedOn.HasValue
-                        ? schedule.LastServicedOn.Value.ToString("dd MMM yyyy")
-                        : "Never recorded",
+                    LastServiced = schedule.LastServicedDescription,
                     Status = due.IsOverdue ? "Overdue" : due.IsDue ? "Due soon" : "Scheduled",
                     Detail = due.Explanation
                 });
@@ -226,17 +224,6 @@ ORDER BY ra.AssignmentDate, ra.DepartureTime, DriverName;";
                 case "Due soon": return 1;
                 default: return 2;
             }
-        }
-
-        private static string DescribeInterval(BusServiceSchedule s)
-        {
-            if (s.IntervalKm.HasValue && s.IntervalMonths.HasValue)
-                return s.IntervalKm.Value.ToString("N0") + " km or " + s.IntervalMonths.Value + " months";
-
-            if (s.IntervalKm.HasValue) return s.IntervalKm.Value.ToString("N0") + " km";
-            if (s.IntervalMonths.HasValue) return s.IntervalMonths.Value + " months";
-
-            return "No interval";
         }
     }
 }

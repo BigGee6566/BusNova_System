@@ -44,6 +44,7 @@ namespace BusNova_System
             else
             {
                 pnlBusDetails.Visible = false;
+                pnlSchedules.Visible = false;
                 lblMessage.Text = string.Empty;
             }
         }
@@ -54,6 +55,7 @@ namespace BusNova_System
             if (bus == null)
             {
                 pnlBusDetails.Visible = false;
+                pnlSchedules.Visible = false;
                 ShowError("That bus no longer exists.");
                 return;
             }
@@ -72,6 +74,119 @@ namespace BusNova_System
 
             pnlBusDetails.Visible = true;
             lblMessage.Text = string.Empty;
+
+            BindSchedules(busId);
+            ClearScheduleForm();
+        }
+
+        private void BindSchedules(int busId)
+        {
+            gvSchedules.DataSource = MaintenanceScheduleService.GetForBus(busId);
+            gvSchedules.DataBind();
+            pnlSchedules.Visible = true;
+        }
+
+        private void ClearScheduleForm()
+        {
+            txtScheduleName.Text = string.Empty;
+            txtIntervalKm.Text = string.Empty;
+            txtIntervalMonths.Text = string.Empty;
+            txtLastServicedKm.Text = string.Empty;
+            txtLastServicedOn.Text = string.Empty;
+        }
+
+        private static bool TryParseOptionalInt(string text, out int? value)
+        {
+            value = null;
+            if (string.IsNullOrWhiteSpace(text)) return true;
+
+            int parsed;
+            if (!int.TryParse(text.Trim(), out parsed)) return false;
+
+            value = parsed;
+            return true;
+        }
+
+        protected void btnAddSchedule_Click(object sender, EventArgs e)
+        {
+            if (!AntiForgery.IsValid(((Site)Master).CsrfToken))
+            {
+                ShowError("Your session has expired. Please refresh the page and try again.");
+                return;
+            }
+
+            if (!Page.IsValid) return;
+
+            int busId;
+            if (!int.TryParse(ddlBus.SelectedValue, out busId) || busId <= 0)
+            {
+                ShowError("Please select a bus.");
+                return;
+            }
+
+            int? intervalKm, intervalMonths, lastServicedKm;
+            if (!TryParseOptionalInt(txtIntervalKm.Text, out intervalKm) ||
+                !TryParseOptionalInt(txtIntervalMonths.Text, out intervalMonths) ||
+                !TryParseOptionalInt(txtLastServicedKm.Text, out lastServicedKm))
+            {
+                ShowError("Please check the numbers entered for this schedule.");
+                return;
+            }
+
+            DateTime? lastServicedOn = null;
+            DateTime parsedDate;
+            if (DateTime.TryParse(txtLastServicedOn.Text, out parsedDate))
+            {
+                lastServicedOn = parsedDate;
+            }
+
+            var result = MaintenanceScheduleService.Create(busId, txtScheduleName.Text, intervalKm,
+                intervalMonths, lastServicedKm, lastServicedOn);
+
+            if (result.Success)
+            {
+                BindSchedules(busId);
+                ClearScheduleForm();
+                ShowSuccess("Schedule added.");
+            }
+            else
+            {
+                ShowError(result.ErrorMessage);
+            }
+        }
+
+        protected void gvSchedules_RowCommand(object sender, GridViewCommandEventArgs e)
+        {
+            if (e.CommandName != "RetireSchedule") return;
+
+            if (!AntiForgery.IsValid(((Site)Master).CsrfToken))
+            {
+                ShowError("Your session has expired. Please refresh the page and try again.");
+                return;
+            }
+
+            int scheduleId, busId;
+            if (!int.TryParse(Convert.ToString(e.CommandArgument), out scheduleId) ||
+                !int.TryParse(ddlBus.SelectedValue, out busId))
+            {
+                return;
+            }
+
+            if (MaintenanceScheduleService.Deactivate(scheduleId))
+            {
+                ShowSuccess("Schedule retired.");
+            }
+            else
+            {
+                ShowError("That schedule no longer exists.");
+            }
+
+            BindSchedules(busId);
+        }
+
+        protected void gvSchedules_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            GridViewHelpers.ApplyResponsiveLabels(e, gvSchedules);
         }
 
         protected void btnSave_Click(object sender, EventArgs e)
@@ -108,7 +223,7 @@ namespace BusNova_System
             if (result.Success)
             {
                 ShowBusDetails(busId);
-                ShowSuccess("Maintenance schedule updated for bus.");
+                ShowSuccess("Next service date saved.");
             }
             else
             {

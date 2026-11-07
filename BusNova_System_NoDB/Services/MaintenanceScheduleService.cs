@@ -20,6 +20,30 @@ namespace BusNova_System.Services
 
         /// <summary>The bus's current odometer, carried along so due-ness can be worked out.</summary>
         public int CurrentOdometer { get; set; }
+
+        public string IntervalDescription
+        {
+            get
+            {
+                if (IntervalKm.HasValue && IntervalMonths.HasValue)
+                    return IntervalKm.Value.ToString("N0") + " km or " + IntervalMonths.Value + " months";
+
+                if (IntervalKm.HasValue) return IntervalKm.Value.ToString("N0") + " km";
+                if (IntervalMonths.HasValue) return IntervalMonths.Value + " months";
+
+                return "No interval";
+            }
+        }
+
+        public string LastServicedDescription
+        {
+            get
+            {
+                return LastServicedOn.HasValue
+                    ? LastServicedOn.Value.ToString("dd MMM yyyy")
+                    : "Never recorded";
+            }
+        }
     }
 
     /// <summary>What a schedule's status is right now, and why.</summary>
@@ -225,6 +249,9 @@ ORDER BY s.ScheduleName;", Map, Db.P("@busId", busId));
             if (intervalMonths.HasValue && intervalMonths.Value <= 0)
                 return OperationResult.Fail("The month interval must be greater than zero.");
 
+            if (lastServicedAtKm.HasValue && lastServicedAtKm.Value < 0)
+                return OperationResult.Fail("The last service odometer reading cannot be negative.");
+
             if (lastServicedOn.HasValue && lastServicedOn.Value.Date > AppClock.Today())
                 return OperationResult.Fail("The last service date cannot be in the future.");
 
@@ -258,19 +285,29 @@ SELECT CAST(SCOPE_IDENTITY() AS INT);";
         /// <summary>
         /// Moves a schedule's baseline forward after work is done. Called
         /// from the maintenance close-out, inside its transaction.
+        ///
+        /// The odometer field is optional on Log service, so a blank one
+        /// falls back to the bus's reading. Keeping the old baseline would
+        /// clear the date limit and leave the kilometre limit overdue. A
+        /// backdated service never moves a baseline backwards.
         /// </summary>
         public static void RecordServiced(System.Data.SqlClient.SqlConnection connection,
                                           System.Data.SqlClient.SqlTransaction transaction,
-                                          int scheduleId, int? odometer, DateTime servicedOn)
+                                          int busId, int scheduleId, int? odometer, DateTime servicedOn)
         {
             Db.ExecuteIn(connection, transaction, @"
-UPDATE dbo.BusServiceSchedule
-SET LastServicedAtKm = COALESCE(@odometer, LastServicedAtKm),
-    LastServicedOn   = @on
-WHERE BusServiceScheduleID = @id;",
+UPDATE s
+SET LastServicedAtKm = CASE WHEN s.LastServicedAtKm > COALESCE(@odometer, b.OdometerReading)
+                            THEN s.LastServicedAtKm
+                            ELSE COALESCE(@odometer, b.OdometerReading) END,
+    LastServicedOn   = CASE WHEN s.LastServicedOn > @on THEN s.LastServicedOn ELSE @on END
+FROM dbo.BusServiceSchedule s
+INNER JOIN dbo.Bus b ON b.BusID = s.BusID
+WHERE s.BusServiceScheduleID = @id AND s.BusID = @busId AND s.IsActive = 1;",
                 Db.P("@odometer", odometer),
                 Db.P("@on", servicedOn.Date),
-                Db.P("@id", scheduleId));
+                Db.P("@id", scheduleId),
+                Db.P("@busId", busId));
         }
 
         public static bool Deactivate(int scheduleId)

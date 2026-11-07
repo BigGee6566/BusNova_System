@@ -11,7 +11,6 @@ namespace BusNova_System
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl exportActions;
         protected global::System.Web.UI.WebControls.Button btnCsv;
         protected global::System.Web.UI.WebControls.Button btnExcel;
-        protected global::System.Web.UI.WebControls.Label lblMessage;
         protected global::System.Web.UI.WebControls.GridView gvReport;
     }
 }

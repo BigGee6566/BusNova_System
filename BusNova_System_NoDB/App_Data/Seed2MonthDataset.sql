@@ -270,6 +270,42 @@ BEGIN TRY
 
 
     /* --------------------------------------------------------------------------
+       7b. RECURRING SERVICE SCHEDULES
+       Minor service starts from the bus's last completed service, or from no
+       baseline when it has none. The bus's own reading is used because
+       MaintenanceLog.OdometerAtService is optional.
+       -------------------------------------------------------------------------- */
+    PRINT 'Seeding Recurring Service Schedules...';
+
+    INSERT INTO dbo.BusServiceSchedule (BusID, ScheduleName, IntervalKm, IntervalMonths, LastServicedAtKm, LastServicedOn)
+    SELECT b.BusID, 'Minor service', 15000, 6,
+           CASE WHEN latest.ServiceDate IS NOT NULL THEN b.OdometerReading END,
+           latest.ServiceDate
+    FROM dbo.Bus b
+    OUTER APPLY (SELECT MAX(ml.ServiceDate) AS ServiceDate FROM dbo.MaintenanceLog ml
+                 WHERE ml.BusID = b.BusID AND ml.Status = 'Completed') latest
+    WHERE b.Status <> 'Retired'
+      AND NOT EXISTS (SELECT 1 FROM dbo.BusServiceSchedule s
+                      WHERE s.BusID = b.BusID AND s.ScheduleName = 'Minor service');
+
+    INSERT INTO dbo.BusServiceSchedule (BusID, ScheduleName, IntervalMonths, LastServicedOn)
+    SELECT b.BusID, 'Annual roadworthy test', 12,
+           DATEADD(YEAR, DATEDIFF(MONTH, b.DateRegistered, GETDATE()) / 12, CAST(b.DateRegistered AS DATE))
+    FROM dbo.Bus b
+    WHERE b.Status <> 'Retired'
+      AND NOT EXISTS (SELECT 1 FROM dbo.BusServiceSchedule s
+                      WHERE s.BusID = b.BusID AND s.ScheduleName = 'Annual roadworthy test');
+
+    INSERT INTO dbo.BusServiceSchedule (BusID, ScheduleName, IntervalKm, IntervalMonths, LastServicedAtKm, LastServicedOn)
+    SELECT b.BusID, 'Tyre rotation', 5000, 3, b.OdometerReading - 5500,
+           DATEADD(MONTH, -4, CAST(GETDATE() AS DATE))
+    FROM dbo.Bus b
+    WHERE b.RegistrationNumber = 'CA 123-456'
+      AND NOT EXISTS (SELECT 1 FROM dbo.BusServiceSchedule s
+                      WHERE s.BusID = b.BusID AND s.ScheduleName = 'Tyre rotation');
+
+
+    /* --------------------------------------------------------------------------
        8. NOTIFICATIONS & AUDIT LOGS
        -------------------------------------------------------------------------- */
     PRINT 'Seeding Notifications and Audit Logs...';

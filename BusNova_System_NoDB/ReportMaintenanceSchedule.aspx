@@ -10,17 +10,16 @@
         <%-- The page title is rendered once, by Site.Master's top bar. --%>
         <p class="bn-page-intro">Preventive service schedules, overdue first.</p>
 
-        <div class="bn-card">
-            <div class="ops-actions ops-actions--start" runat="server" id="exportActions">
+        <div class="bn-card bn-mb-3" runat="server" id="exportActions">
+            <div class="ops-actions ops-actions--start">
                 <asp:Button ID="btnCsv" runat="server" Text="Export CSV"
                             CssClass="bn-btn bn-btn--secondary" OnClick="btnCsv_Click" />
                 <asp:Button ID="btnExcel" runat="server" Text="Export Excel"
                             CssClass="bn-btn bn-btn--secondary" OnClick="btnExcel_Click" />
             </div>
-            <asp:Label ID="lblMessage" runat="server" />
         </div>
 
-        <div class="bn-card bn-mt-3">
+        <div class="bn-card">
             <div class="ops-grid-wrap">
                 <asp:GridView ID="gvReport" runat="server" AutoGenerateColumns="false"
                               CssClass="ops-grid" GridLines="None" UseAccessibleHeader="true"
@@ -31,9 +30,9 @@
                             <i class="fas fa-calendar-check bn-empty__icon" aria-hidden="true"></i>
                             <div class="bn-empty__title">No preventive schedules yet</div>
                             <p class="bn-empty__hint">
-                                A schedule tells BusNova when a bus is next due for service, by
-                                distance or by date. Until one exists this report has nothing to
-                                work from and every bus is treated as not yet due.
+                                A schedule is a repeating service rule for a bus, by distance, by
+                                date, or both. Managers add them on the Manage Maintenance page.
+                                Single next service dates are on the Maintenance Due report.
                             </p>
                         </div>
                     </EmptyDataTemplate>

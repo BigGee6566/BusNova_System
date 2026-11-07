@@ -25,5 +25,21 @@ namespace BusNova_System
         protected global::System.Web.UI.WebControls.CheckBox chkPutUnderMaintenance;
 
         protected global::System.Web.UI.WebControls.Button btnSave;
+
+        protected global::System.Web.UI.WebControls.Panel pnlSchedules;
+
+        protected global::System.Web.UI.WebControls.GridView gvSchedules;
+
+        protected global::System.Web.UI.WebControls.TextBox txtScheduleName;
+
+        protected global::System.Web.UI.WebControls.TextBox txtIntervalKm;
+
+        protected global::System.Web.UI.WebControls.TextBox txtIntervalMonths;
+
+        protected global::System.Web.UI.WebControls.TextBox txtLastServicedKm;
+
+        protected global::System.Web.UI.WebControls.TextBox txtLastServicedOn;
+
+        protected global::System.Web.UI.WebControls.Button btnAddSchedule;
     }
 }

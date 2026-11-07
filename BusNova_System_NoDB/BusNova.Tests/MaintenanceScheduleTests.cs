@@ -199,5 +199,47 @@ namespace BusNova.Tests
             foreach (var c in cases)
                 Assert.IsFalse(string.IsNullOrWhiteSpace(c.Explanation));
         }
+
+        [TestMethod]
+        public void IntervalDescription_NamesEachLimitThatIsSet()
+        {
+            Assert.AreEqual(15000.ToString("N0") + " km or 6 months", Schedule(15000, 6, null, null).IntervalDescription);
+            Assert.AreEqual(15000.ToString("N0") + " km", Schedule(15000, null, null, null).IntervalDescription);
+            Assert.AreEqual("12 months", Schedule(null, 12, null, null).IntervalDescription);
+        }
+
+        [TestMethod]
+        public void LastServicedDescription_SaysWhenThereIsNoBaseline()
+        {
+            Assert.AreEqual("Never recorded", Schedule(15000, 6, null, null).LastServicedDescription);
+            Assert.AreEqual(Today.ToString("dd MMM yyyy"), Schedule(15000, 6, null, Today).LastServicedDescription);
+        }
+
+        [TestMethod]
+        public void Create_RejectsAScheduleWithNoName()
+        {
+            var result = MaintenanceScheduleService.Create(1, "   ", 15000, null, null, null);
+
+            Assert.IsFalse(result.Success);
+            StringAssert.Contains(result.ErrorMessage, "name");
+        }
+
+        [TestMethod]
+        public void Create_RejectsAScheduleWithNoInterval()
+        {
+            var result = MaintenanceScheduleService.Create(1, "Minor service", null, null, null, null);
+
+            Assert.IsFalse(result.Success);
+            StringAssert.Contains(result.ErrorMessage, "interval");
+        }
+
+        [TestMethod]
+        public void Create_RejectsANegativeBaselineOdometer()
+        {
+            var result = MaintenanceScheduleService.Create(1, "Minor service", 15000, null, -1, null);
+
+            Assert.IsFalse(result.Success);
+            StringAssert.Contains(result.ErrorMessage, "negative");
+        }
     }
 }

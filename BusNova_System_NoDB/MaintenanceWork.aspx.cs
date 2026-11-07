@@ -280,11 +280,30 @@ namespace BusNova_System
             pnlReturnToService.Visible = !isEditMode;
             chkReturnToService.Checked = true;
 
+            BindCompletedSchedules(record.BusId, isEditMode);
+
             btnConfirmService.Text = isEditMode ? "Save changes" : "Save and close fault";
 
             pnlService.Visible = true;
             pnlDetails.Visible = false;
             lblMessage.Text = string.Empty;
+        }
+
+        private void BindCompletedSchedules(int busId, bool isEditMode)
+        {
+            cblCompletedSchedules.Items.Clear();
+
+            if (!isEditMode)
+            {
+                foreach (var schedule in MaintenanceScheduleService.GetForBus(busId))
+                {
+                    // CheckBoxList writes item text to the page unencoded.
+                    var text = Server.HtmlEncode(schedule.ScheduleName + " (" + schedule.IntervalDescription + ")");
+                    cblCompletedSchedules.Items.Add(new ListItem(text, schedule.BusServiceScheduleId.ToString()));
+                }
+            }
+
+            pnlCompletedSchedules.Visible = cblCompletedSchedules.Items.Count > 0;
         }
 
         protected void btnCloseDetails_Click(object sender, EventArgs e)
@@ -371,9 +390,14 @@ namespace BusNova_System
             }
             else
             {
+                var completedScheduleIds = cblCompletedSchedules.Items.Cast<ListItem>()
+                    .Where(item => item.Selected)
+                    .Select(item => int.Parse(item.Value))
+                    .ToList();
+
                 result = OperationsService.LogService(maintenanceId, SessionHelper.UserId,
                     txtWorkPerformed.Text, txtPartsUsed.Text, cost, serviceDate, nextServiceDue,
-                    odometer, txtServiceCondition.Text, chkReturnToService.Checked);
+                    odometer, txtServiceCondition.Text, chkReturnToService.Checked, completedScheduleIds);
 
                 if (result.Success)
                 {

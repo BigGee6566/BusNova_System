@@ -444,7 +444,8 @@ SELECT CAST(SCOPE_IDENTITY() AS INT);";
                                                  string workPerformed, string partsUsed,
                                                  decimal? cost, DateTime serviceDate,
                                                  DateTime nextServiceDueDate, int? odometerAtService,
-                                                 string vehicleCondition, bool returnBusToService)
+                                                 string vehicleCondition, bool returnBusToService,
+                                                 IList<int> completedScheduleIds)
         {
             var record = GetMaintenanceById(maintenanceLogId);
             if (record == null) return OperationResult.Fail("That maintenance record no longer exists.");
@@ -520,6 +521,12 @@ WHERE MaintenanceLogID = @id;";
                     Db.ExecuteIn(connection, transaction,
                         "UPDATE dbo.Bus SET OdometerReading = @odometer WHERE BusID = @busId AND OdometerReading < @odometer;",
                         Db.P("@odometer", odometerAtService.Value), Db.P("@busId", record.BusId));
+                }
+
+                foreach (var scheduleId in completedScheduleIds)
+                {
+                    MaintenanceScheduleService.RecordServiced(connection, transaction, record.BusId,
+                        scheduleId, odometerAtService, serviceDate);
                 }
 
                 if (!returnBusToService) return false;

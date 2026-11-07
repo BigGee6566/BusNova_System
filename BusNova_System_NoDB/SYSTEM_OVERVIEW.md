@@ -41,7 +41,7 @@ Every protected page enforces its own role check server-side via `SessionHelper.
 - **RegisterBus.aspx** — register a bus (unique registration number, capacity, fuel type, year).
 - **CreateRoute.aspx** — create a route (unique code/name, origin/destination/distance/duration).
 - **AssignRoute.aspx** — assign a bus + driver to a route/date/time, with conflict and eligibility checks.
-- **ManageMaintenance.aspx** — set bus next service due dates, ground buses for maintenance, and manage scheduled maintenance notes.
+- **ManageMaintenance.aspx** — set bus next service due dates, ground buses for maintenance, manage scheduled maintenance notes, and add or retire each bus's recurring service schedules.
 - **DriverIssues.aspx** — read-only view of faults reported by drivers with bus, date range, severity, and status filters.
 - **MaintenanceWork.aspx** — read-only for Managers: upcoming services, logged faults and completed services. Only Maintenance Staff can change these records.
 - **ManageUsers.aspx** — create staff accounts, activate/deactivate staff and passengers.
@@ -53,7 +53,7 @@ Every protected page enforces its own role check server-side via `SessionHelper.
 - **ReportIssue.aspx** — report a bus fault, creating a maintenance log entry.
 
 ### MaintenanceStaff
-- **MaintenanceWork.aspx** — see upcoming services by bus; filter maintenance logs by bus, date range, and status; view full details with itemised parts and costs; edit overdue non-cancelled records; start work and log completed service. Access to **ReportMaintenanceDue.aspx** and **ReportMaintenanceSchedule.aspx**.
+- **MaintenanceWork.aspx** — see upcoming services by bus; filter maintenance logs by bus, date range, and status; view full details with itemised parts and costs; edit overdue non-cancelled records; start work and log completed service, ticking any recurring schedules the work completes. Access to **ReportMaintenanceDue.aspx** and **ReportMaintenanceSchedule.aspx**.
 
 ### Passenger
 - **BookTrip.aspx** — search trips, book 1–5 seats via a seat map; mandatory student number captured for booker and every traveller; active-trip duplicate prevention enforced atomically.

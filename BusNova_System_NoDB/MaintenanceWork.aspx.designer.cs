@@ -84,6 +84,10 @@ namespace BusNova_System
 
         protected global::System.Web.UI.WebControls.TextBox txtServiceCondition;
 
+        protected global::System.Web.UI.WebControls.Panel pnlCompletedSchedules;
+
+        protected global::System.Web.UI.WebControls.CheckBoxList cblCompletedSchedules;
+
         protected global::System.Web.UI.WebControls.Panel pnlReturnToService;
 
         protected global::System.Web.UI.WebControls.CheckBox chkReturnToService;

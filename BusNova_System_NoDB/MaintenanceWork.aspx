@@ -270,6 +270,12 @@
                         ValidationGroup="LogService" />
                 </div>
 
+                <asp:Panel ID="pnlCompletedSchedules" runat="server" CssClass="mb-3" Visible="false">
+                    <strong>Recurring schedules this work completes</strong>
+                    <div class="ops-subtitle">Ticked schedules restart from this service.</div>
+                    <asp:CheckBoxList ID="cblCompletedSchedules" runat="server" RepeatLayout="Flow" />
+                </asp:Panel>
+
                 <asp:Panel ID="pnlReturnToService" runat="server" CssClass="mb-3">
                     <asp:CheckBox ID="chkReturnToService" runat="server" Checked="true"
                                   Text=" Return this bus to service now" />
