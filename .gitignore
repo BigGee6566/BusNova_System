@@ -2,6 +2,8 @@
 [Bb]in/
 [Oo]bj/
 
+.claude
+
 # Visual Studio
 .vs/
 *.user
