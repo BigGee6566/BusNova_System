@@ -26,3 +26,10 @@ Web.*.local.config
 # OS
 Thumbs.db
 desktop.ini
+
+.claude/
+.vs/
+.idea/
+bin/
+obj/
+packages/
